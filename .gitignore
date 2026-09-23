@@ -1,0 +1,17 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# IDEs and Editors
+.vscode/
+.idea/
+*.swp
+*~
+
+# Temp and backups
+*.tmp
+*.bak
+*.log
+
+# Simulation tools (lock files / Logisim temp files)
+*.circ.bak
