@@ -1,8 +1,6 @@
 # UniFECAF - Simulação e Análise de Arquitetura Interna de um Computador
 
-**Data:** 23/09/2026  
-**Autor:** João Pedro Vieira da Costa Chaves  
-**Instituição:** UniFECAF  
+23/09/2026 - João Pedro Vieira da Costa Chaves
 
 ## Visão Geral
 
