@@ -5,11 +5,13 @@
 **Contexto e Desafio**
 
 Empresa: NeoCore Tech.   
-Objetivo: Criar uma prova de conceito de um simulador didático de arquitetura de computadores.   
+Objetivo: Criar uma prova de conceito de um simulador de arquitetura de computadores.   
 
-Problema: Estudantes têm dificuldade em compreender o que ocorre internamente na execução de instruções e a interação entre os componentes da CPU, memória e barramentos.   
+Problema: Estudantes têm dificuldade em entender o que ocorre na execução de instruções e a interação entre os componentes da CPU, memória e barramentos.   
 
-Pergunta Central: Como os componentes trabalham de forma coordenada para buscar, interpretar e executar uma instrução?   
+Pergunta Central: Como os componentes trabalham de forma coordenada para buscar, interpretar e executar uma instrução?
+
+---
 
 **Entregáveis e Avaliação**
 
