@@ -3,7 +3,7 @@
 ## Pré-produção e Pesquisa
 - [x] Criar repositório Git e estrutura de pastas (`docs/`, `src/`, `dist/`)
 - [x] Criar README.md inicial
-- [ ] Ler e entender os requisitos da entrega (`docs/REQUEST.md`)
+- [x] Ler e entender os requisitos da entrega (`docs/REQUEST.md`)
 - [ ] Pesquisar em livros confiáveis (Tanenbaum / Stallings):
   - [ ] Arquitetura Von Neumann vs. Harvard / RISC vs. CISC
   - [ ] Componentes da CPU: ULA, Unidade de Controle e Registradores (`PC`, `MAR`, `MBR`, `IR`, `AC`)
