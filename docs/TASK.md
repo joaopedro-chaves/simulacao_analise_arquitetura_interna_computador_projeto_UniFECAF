@@ -4,13 +4,24 @@
 - [x] Criar repositório Git e estrutura de pastas (`docs/`, `src/`, `dist/`)
 - [x] Criar README.md inicial
 - [x] Ler e entender os requisitos da entrega (`docs/REQUEST.md`)
-- [ ] Pesquisar em livros confiáveis (Tanenbaum / Stallings):
-  - [ ] Arquitetura Von Neumann vs. Harvard / RISC vs. CISC
-  - [ ] Componentes da CPU: ULA, Unidade de Controle e Registradores (`PC`, `MAR`, `MBR`, `IR`, `AC`)
-  - [ ] Barramentos (Dados, Endereço e Controle)
-  - [ ] Ciclo de instrução (*Busca*, *Decodificação* e *Execução*)
+- [x] Pesquisar em livros confiáveis (Tanenbaum / Stallings):
+  - [x] Arquitetura Von Neumann vs. Harvard / RISC vs. CISC
+  - [] Componentes da CPU: ULA, Unidade de Controle e Registradores (`PC`, `MAR`, `MBR`, `IR`, `AC`)
+  - [] Barramentos (Dados, Endereço e Controle)
+  - [] Ciclo de instrução (*Busca*, *Decodificação* e *Execução*)
 
 ## Produção
+
+### Parte Teórica – Relatório Técnico (25% da nota)
+- [ ] Preencher o relatório em `docs/technical_report.md`:
+  - [x] **Introdução:** Apresentar a empresa (NeoCore Tech) e o objetivo do simulador
+  - [] **Arquitetura Escolhida:** Explicar por que escolheu Von Neumann
+  - [ ] **Componentes:** Explicar para que serve cada registrador, ULA, UC e barramentos
+  - [ ] **Ciclo de Instrução:** Explicar o passo a passo da busca, decodificação e execução
+  - [ ] **Resultados e Prática:** Inserir imagens e explicar como o simulador funcionou
+  - [ ] **Conclusão:** Resumir o impacto do projeto para o aprendizado
+  - [ ] **Referências:** Citar os livros usados (formato ABNT)
+- [ ] Revisar o texto e exportar para PDF na pasta `dist/`
 
 ### Parte Prática – Simulador (50% da nota)
 - [ ] Escolher e abrir a ferramenta de simulação (Logisim, Tinkercad ou código)
@@ -25,18 +36,6 @@
   - [ ] 2. **Decodificação (Decode):** Interpretar o que a instrução faz
   - [ ] 3. **Execução (Execute):** Fazer a operação na ULA e salvar o resultado
 - [ ] Salvar os arquivos do circuito e imagens na pasta `src/` e `docs/assets/`
-
-### Parte Teórica – Relatório Técnico (25% da nota)
-- [ ] Preencher o relatório em `docs/technical_report.md`:
-  - [ ] **Introdução:** Apresentar a empresa (NeoCore Tech) e o objetivo do simulador
-  - [ ] **Arquitetura Escolhida:** Explicar por que escolheu Von Neumann
-  - [ ] **Componentes:** Explicar para que serve cada registrador, ULA, UC e barramentos
-  - [ ] **Ciclo de Instrução:** Explicar o passo a passo da busca, decodificação e execução
-  - [ ] **Resultados e Prática:** Inserir imagens e explicar como o simulador funcionou
-  - [ ] **Conclusão:** Resumir o impacto do projeto para o aprendizado
-  - [ ] **Referências:** Citar os livros usados (formato ABNT)
-- [ ] Revisar o texto e exportar para PDF na pasta `dist/`
-
 ### Vídeo Pitch (25% da nota)
 - [ ] Revisar o roteiro em `docs/pitch/pitch_script.md` (máximo de 4 minutos)
 - [ ] Gravar o vídeo dividido em 4 blocos:

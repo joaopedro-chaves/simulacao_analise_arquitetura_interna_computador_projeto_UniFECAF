@@ -14,7 +14,7 @@ Você foi contratado(a) como Analista de Arquitetura de Computadores para desenv
 
 Sua  missão  será  projetar  uma  arquitetura  computacional  didática  e  tecnicamente coerente,  representando  o  fluxo  de  informações  entre  CPU,  memória  e  dispositivos  de entrada  e  saída.  A  solução  deverá  demonstrar  como  uma  instrução  percorre  o  ciclo fetch–decode–execute,  indicando  quais  componentes  participam  de  cada  etapa  e como os dados são movimentados internamente.
 
-O projeto deverá considerar uma arquitetura de referência, como Von Neumann, e poderá incorporar  características  de  organizações  RISC  ou  outras  abordagens  estudadas  na disciplina, desde que as escolhas sejam justificadas.
+==🟠O projeto deverá considerar uma arquitetura de referência, como Von Neumann, e poderá incorporar  características  de  organizações  RISC  ou  outras  abordagens  estudadas  na disciplina, desde que as escolhas sejam justificadas.==
 
 A CPU deverá ser representada com seus principais componentes, incluindo ULA, Unidade de  Controle  e  registradores,  enquanto  o  subsistema  de  memória  deverá  demonstrar  a relação entre registradores, cache, memória principal e armazenamento. Também deverá ser  representado  o  papel  dos  barramentos  de  dados,  endereços  e  controle  na comunicação entre os componentes.
 
