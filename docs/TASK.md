@@ -5,19 +5,19 @@
 - [x] Criar README.md inicial
 - [x] Ler e entender os requisitos da entrega (`docs/REQUEST.md`)
 - [x] Pesquisar em livros confiáveis (Tanenbaum / Stallings):
-  - [x] Arquitetura Von Neumann vs. Harvard / RISC vs. CISC
-  - [] Componentes da CPU: ULA, Unidade de Controle e Registradores (`PC`, `MAR`, `MBR`, `IR`, `AC`)
-  - [] Barramentos (Dados, Endereço e Controle)
-  - [] Ciclo de instrução (*Busca*, *Decodificação* e *Execução*)
+  - [x] Arquitetura Von Neumann vs. Harvard / RISC vs. CISC, Arquitetura modificada x86-64
+  - [x] Componentes da CPU: ULA, Unidade de Controle e Registradores (`PC`, `MAR`, `MBR`, `IR`, `AC`)
+  - [x] Barramentos (Dados, Endereço e Controle)
+  - [x] Ciclo de instrução (*Busca*, *Decodificação* e *Execução*)
 
 ## Produção
 
 ### Parte Teórica – Relatório Técnico (25% da nota)
 - [ ] Preencher o relatório em `docs/technical_report.md`:
   - [x] **Introdução:** Apresentar a empresa (NeoCore Tech) e o objetivo do simulador
-  - [] **Arquitetura Escolhida:** Explicar por que escolheu Von Neumann
-  - [ ] **Componentes:** Explicar para que serve cada registrador, ULA, UC e barramentos
-  - [ ] **Ciclo de Instrução:** Explicar o passo a passo da busca, decodificação e execução
+  - [x] **Arquitetura Escolhida:** Explicar por que escolheu Von Neumann [REVISAR]
+  - [x] **Componentes:** Explicar para que serve cada registrador, ULA, UC e barramentos [REVISAR]
+  - [x] **Ciclo de Instrução:** Explicar o passo a passo da busca, decodificação e execução [REVISAR]
   - [ ] **Resultados e Prática:** Inserir imagens e explicar como o simulador funcionou
   - [ ] **Conclusão:** Resumir o impacto do projeto para o aprendizado
   - [ ] **Referências:** Citar os livros usados (formato ABNT)
@@ -50,3 +50,5 @@
 - [ ] Conferir se todos os entregáveis estão prontos (Simulador, Relatório PDF e Link do Vídeo)
 - [ ] Fazer commit e push final no Git
 - [ ] Enviar o trabalho na plataforma da UniFECAF dentro do prazo
+
+## hefesto-game (Extra)
