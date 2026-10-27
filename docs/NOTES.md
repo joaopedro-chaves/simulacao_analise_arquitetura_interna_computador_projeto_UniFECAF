@@ -41,3 +41,4 @@ A primeira artefato a ser criada é a parte teórica no Google Docs
 
 > Veja o [Parte Teórica](https://docs.google.com/document/d/1iN7AbfhUC7neMgXAucNmNMgSPVMIgc1Fp4ughGsdD_E/edit?usp=sharing) 
 
+A arquitetura escolhida pode ser mais complexa pelo nivel de abstração, mas o objetivo é mostrar como funciona a arquitetura do computador e como os componentes se comunicam, baixando o nível de abstração para que seja didático e compreensível.
