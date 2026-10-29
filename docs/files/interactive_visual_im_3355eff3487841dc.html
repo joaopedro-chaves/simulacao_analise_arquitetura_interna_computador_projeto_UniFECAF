@@ -1,1769 +1,795 @@
-```html
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
-<style id="lumi-runtime">
-/* luminous.css */
-/*
- * Luminous runtime stylesheet — injected once into every generated widget's
- * <head> by the C++ widget agent (id="lumi-runtime"). Single Source of Truth
- * for ALL design tokens and pre-baked .lumi-* component classes. The SI prompts
- * (design.md / html_generation.jinja2 / chart.jinja2) must NOT re-declare these
- * tokens or component CSS; they only reference them.
- *
- * Sections:
- *   1. Web fonts (Google Sans Flex + Google Sans Code)
- *   2. Light token :root (from previewer tokens.css, verbatim)
- *   3. Dark token overrides — REMAPPED to :root so canvas/D3 readers of
- *      getComputedStyle(document.documentElement) resolve dark values (D3).
- *   4. Short diagram/chart aliases (bridge legacy --surface / --chart-N names).
- *   5. In-scope pre-baked .lumi-* component classes.
- */
-
-/* ============================================================
- * 1. WEB FONTS  (Google Sans Flex + Google Sans Code only)
- *    Material Symbols Outlined is intentionally NOT loaded: no in-scope
- *    .lumi-* control has a functional CSS glyph dependency on it, and the
- *    icon ban forbids decorative icons (Decision D2).
- * ============================================================ */
-@import url('https://fonts.googleapis.com/css2?family=Google+Sans+Flex:ital,wght@0,300..700;1,300..700&family=Google+Sans+Code:ital,wght,MONO@0,300..700,0..1;1,300..700,0..1&display=swap');
-
-/* ============================================================
- * 2. LIGHT TOKENS (:root)
- * ============================================================ */
-:root {
-  --body-bg: transparent;
-  --ff-sans: 'Google Sans Flex', 'Google Sans Text', 'Google Sans', sans-serif;
-  --ff-mono: 'Google Sans Code', 'Google Sans Mono', monospace;
-
-  --lumi-sys-spacing--xxs: 2px;
-  --lumi-sys-spacing--xs: 4px;
-  --lumi-sys-spacing--s: 8px;
-  --lumi-sys-spacing--m: 12px;
-  --lumi-sys-spacing--l: 16px;
-  --lumi-sys-spacing--xl: 20px;
-  --lumi-sys-spacing--xxl: 24px;
-  --lumi-sys-spacing--3xl: 28px;
-  --lumi-sys-spacing--4xl: 36px;
-
-  --lumi-sys-shape--none: 0px;
-  --lumi-sys-shape--extra-small: 4px;
-  --lumi-sys-shape--small: 8px;
-  --lumi-sys-shape--medium: 12px;
-  --lumi-sys-shape--large: 16px;
-  --lumi-sys-shape--large-increased: 20px;
-  --lumi-sys-shape--large-max: 24px;
-  --lumi-sys-shape--xl: 28px;
-  --lumi-sys-shape--xl-increased: 32px;
-  --lumi-sys-shape--xl-max: 40px;
-  --lumi-sys-shape--xxl: 48px;
-  --lumi-sys-shape--xxl-increased: 56px;
-  --lumi-sys-shape--full: 999px;
-
-  --lumi-sys-elevation--level1: 0 0 20px 0 rgba(0, 0, 0, 0.04);
-  --lumi-sys-elevation--level2: 0 0 20px 0 rgba(0, 0, 0, 0.11);
-
-  --lumi-sys-color--surface: #fdfcfc;
-  --lumi-sys-color--surface-dim: #f2f0f0;
-  --lumi-sys-color--surface-bright: #ffffff;
-  --lumi-sys-color--surface-background: #fdfcfc;
-  --lumi-sys-color--surface-accent: #9dd2ff;
-  --lumi-sys-color--surface-container: #f2f0f0;
-  --lumi-sys-color--surface-container-high: #e6e6e6;
-  --lumi-sys-color--surface-translucent: rgba(255, 255, 255, 0.88);
-  --lumi-sys-color--on-surface: #000000;
-  --lumi-sys-color--on-surface-default: #000000;
-  --lumi-sys-color--on-surface-variant: rgba(0, 0, 0, 0.55);
-  --lumi-sys-color--on-surface-de-emphasis: rgba(0, 0, 0, 0.55);
-  --lumi-sys-color--on-surface-low: rgba(0, 0, 0, 0.08);
-  --lumi-sys-color--positive: #008052;
-  --lumi-sys-color--positive-container: #daf9d4;
-  --lumi-sys-color--on-positive-container: #009954;
-  --lumi-sys-color--error: #de2d29;
-  --lumi-sys-color--error-container: #ffdeec;
-  --lumi-sys-color--on-error-container: #de2d29;
-  --lumi-sys-color--accent: #9dd2ff;
-  --lumi-sys-color--accent-container: #dcf1ff;
-  --lumi-sys-color--accent-fixed: #3186ff;
-  --lumi-sys-color--primary: #3186ff;
-  --lumi-sys-color--on-primary: #ffffff;
-  --lumi-sys-color--black: #000000;
-  --lumi-sys-color--white: #ffffff;
-  --lumi-sys-color--outline: #727676;
-  --lumi-sys-color--stroke-default: #e3e3e3;
-
-  --lumi-sys-opacity-state--hover: 0.08;
-  --lumi-sys-opacity-state--focus: 0.08;
-  --lumi-sys-opacity-state--pressed: 0.12;
-  --lumi-sys-opacity-state--disabled: 0.12;
-  --lumi-sys-opacity-state--disabled-label: 0.38;
-
-  --lumi-sys-color--code-background: #000000;
-  --lumi-sys-color--code-primary-text: #ffffff;
-  --lumi-sys-color--code-blue-text: #4fa0ff;
-  --lumi-sys-color--code-green-text: #60d673;
-  --lumi-sys-color--code-grey-text: #808080;
-  --lumi-sys-color--code-pink-text: #ff96da;
-  --lumi-sys-color--code-purple-text: #969dff;
-  --lumi-sys-color--code-red-text: #ff5a59;
-  --lumi-sys-color--code-yellow-text: #ffdb0f;
-
-  --lumi-sys-color--chart-series-1: #2575fc;
-  --lumi-sys-color--chart-series-2: #5b6e9e;
-  --lumi-sys-color--chart-series-3: #228a49;
-  --lumi-sys-color--chart-series-4: #62991b;
-  --lumi-sys-color--chart-series-5: #1e564d;
-  --lumi-sys-color--chart-series-6: #526a45;
-  --lumi-sys-color--chart-series-7: #2780c4;
-  --lumi-sys-color--chart-series-8: #997112;
-  --lumi-sys-color--chart-series-9: #705ec2;
-  --lumi-sys-color--chart-series-10: #c84288;
-}
-
-/* ============================================================
- * 3. DARK TOKENS  (REMAPPED to :root — Decision D3)
- *    Canvas / Chart.js / D3 read getComputedStyle(document.documentElement);
- *    the theme-sync listener sets data-theme="dark" on <html>, so dark values
- *    MUST live on :root (not scoped to body) to prevent black-chart regressions.
- * ============================================================ */
-:root[data-theme="dark"],
-body.dark-mode,
-:root[data-theme="dark"] body {
-  --body-bg: #0f0f0f;
-  --lumi-sys-elevation--level1: 0 0 20px 0 rgba(0, 0, 0, 0.28);
-  --lumi-sys-elevation--level2: 0 0 20px 0 rgba(0, 0, 0, 0.40);
-
-  --lumi-sys-color--surface: #0f0f0f;
-  --lumi-sys-color--surface-dim: #141414;
-  --lumi-sys-color--surface-bright: #1c1c1c;
-  --lumi-sys-color--surface-background: #0f0f0f;
-  --lumi-sys-color--surface-accent: #14204f;
-  --lumi-sys-color--surface-container: #141414;
-  --lumi-sys-color--surface-container-high: #1c1c1c;
-  --lumi-sys-color--surface-translucent: rgba(24, 24, 27, 0.88);
-  --lumi-sys-color--on-surface: #e0e0e0;
-  --lumi-sys-color--on-surface-default: #e0e0e0;
-  --lumi-sys-color--on-surface-variant: rgba(255, 255, 255, 0.55);
-  --lumi-sys-color--on-surface-de-emphasis: rgba(255, 255, 255, 0.55);
-  --lumi-sys-color--on-surface-low: rgba(255, 255, 255, 0.12);
-  --lumi-sys-color--positive: #0ebc5f;
-  --lumi-sys-color--positive-container: #002220;
-  --lumi-sys-color--on-positive-container: #0ebc5f;
-  --lumi-sys-color--error: #ff4c45;
-  --lumi-sys-color--error-container: #3c0202;
-  --lumi-sys-color--on-error-container: #ff4c45;
-  --lumi-sys-color--accent: #1f3b9b;
-  --lumi-sys-color--accent-container: #192967;
-  --lumi-sys-color--accent-fixed: #3186ff;
-  --lumi-sys-color--primary: #9dd2ff;
-  --lumi-sys-color--on-primary: #192967;
-  --lumi-sys-color--black: #000000;
-  --lumi-sys-color--white: #ffffff;
-  --lumi-sys-color--outline: #9a9b9c;
-  --lumi-sys-color--stroke-default: #2d2f38;
-
-  --lumi-sys-color--code-background: #141414;
-  --lumi-sys-color--code-primary-text: #ffffff;
-  --lumi-sys-color--code-blue-text: #4fa0ff;
-  --lumi-sys-color--code-green-text: #60d673;
-  --lumi-sys-color--code-grey-text: #808080;
-  --lumi-sys-color--code-pink-text: #ff96da;
-  --lumi-sys-color--code-purple-text: #969dff;
-  --lumi-sys-color--code-red-text: #ff5a59;
-  --lumi-sys-color--code-yellow-text: #ffdb0f;
-
-  --lumi-sys-color--chart-series-1: #9dd2ff;
-  --lumi-sys-color--chart-series-2: #96a7d6;
-  --lumi-sys-color--chart-series-3: #50e389;
-  --lumi-sys-color--chart-series-4: #c8f585;
-  --lumi-sys-color--chart-series-5: #f5f2e6;
-  --lumi-sys-color--chart-series-6: #dcd8c0;
-  --lumi-sys-color--chart-series-7: #82c7ff;
-  --lumi-sys-color--chart-series-8: #f5d77f;
-  --lumi-sys-color--chart-series-9: #d9ceff;
-  --lumi-sys-color--chart-series-10: #ffa6d7;
-}
-
-/* ============================================================
- * 3b. OS-LEVEL DARK FALLBACK  (prefers-color-scheme)
- *     A prior refactor introduced this stylesheet and moved the dark tokens onto
- *     :root[data-theme="dark"], but dropped the @media (prefers-color-scheme:
- *     dark) trigger that widgets previously carried in their own <style>.
- *     Inline widgets whose host sends no set-theme / data-theme message therefore
- *     stayed on the light --surface (#fdfcfc), rendering white in dark mode.
- *     Re-apply the dark values on OS dark; an explicit host data-theme="light"
- *     still opts back to light. Keep in sync with the :root[data-theme="dark"]
- *     block above.
- * ============================================================ */
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --body-bg: #0f0f0f;
-    --lumi-sys-elevation--level1: 0 0 20px 0 rgba(0, 0, 0, 0.28);
-    --lumi-sys-elevation--level2: 0 0 20px 0 rgba(0, 0, 0, 0.40);
-
-    --lumi-sys-color--surface: #0f0f0f;
-    --lumi-sys-color--surface-dim: #141414;
-    --lumi-sys-color--surface-bright: #1c1c1c;
-    --lumi-sys-color--surface-background: #0f0f0f;
-    --lumi-sys-color--surface-accent: #14204f;
-    --lumi-sys-color--surface-container: #141414;
-    --lumi-sys-color--surface-container-high: #1c1c1c;
-    --lumi-sys-color--surface-translucent: rgba(24, 24, 27, 0.88);
-    --lumi-sys-color--on-surface: #e0e0e0;
-    --lumi-sys-color--on-surface-default: #e0e0e0;
-    --lumi-sys-color--on-surface-variant: rgba(255, 255, 255, 0.55);
-    --lumi-sys-color--on-surface-de-emphasis: rgba(255, 255, 255, 0.55);
-    --lumi-sys-color--on-surface-low: rgba(255, 255, 255, 0.12);
-    --lumi-sys-color--positive: #0ebc5f;
-    --lumi-sys-color--positive-container: #002220;
-    --lumi-sys-color--on-positive-container: #0ebc5f;
-    --lumi-sys-color--error: #ff4c45;
-    --lumi-sys-color--error-container: #3c0202;
-    --lumi-sys-color--on-error-container: #ff4c45;
-    --lumi-sys-color--accent: #1f3b9b;
-    --lumi-sys-color--accent-container: #192967;
-    --lumi-sys-color--accent-fixed: #3186ff;
-    --lumi-sys-color--primary: #9dd2ff;
-    --lumi-sys-color--on-primary: #192967;
-    --lumi-sys-color--black: #000000;
-    --lumi-sys-color--white: #ffffff;
-    --lumi-sys-color--outline: #9a9b9c;
-    --lumi-sys-color--stroke-default: #2d2f38;
-
-    --lumi-sys-color--code-background: #141414;
-    --lumi-sys-color--code-primary-text: #ffffff;
-    --lumi-sys-color--code-blue-text: #4fa0ff;
-    --lumi-sys-color--code-green-text: #60d673;
-    --lumi-sys-color--code-grey-text: #808080;
-    --lumi-sys-color--code-pink-text: #ff96da;
-    --lumi-sys-color--code-purple-text: #969dff;
-    --lumi-sys-color--code-red-text: #ff5a59;
-    --lumi-sys-color--code-yellow-text: #ffdb0f;
-
-    --lumi-sys-color--chart-series-1: #9dd2ff;
-    --lumi-sys-color--chart-series-2: #96a7d6;
-    --lumi-sys-color--chart-series-3: #50e389;
-    --lumi-sys-color--chart-series-4: #c8f585;
-    --lumi-sys-color--chart-series-5: #f5f2e6;
-    --lumi-sys-color--chart-series-6: #dcd8c0;
-    --lumi-sys-color--chart-series-7: #82c7ff;
-    --lumi-sys-color--chart-series-8: #f5d77f;
-    --lumi-sys-color--chart-series-9: #d9ceff;
-    --lumi-sys-color--chart-series-10: #ffa6d7;
-  }
-}
-
-/* ============================================================
- * 4. SHORT DIAGRAM / CHART ALIASES
- *    Legacy diagram.md and chart.jinja2 reference short names such as
- *    --surface, --on-surface, --chart-1..10, --primary, --r-full. These MUST
- *    resolve to the canonical --lumi-sys-color--* tokens (which flip in dark
- *    mode) — otherwise every diagram var() falls back to black (historical
- *    mass-regression bug #4). Light-hex fallbacks are a last resort only.
- * ============================================================ */
-:root {
-  /* surfaces */
-  --surface: var(--lumi-sys-color--surface, #fdfcfc);
-  --surface-dim: var(--lumi-sys-color--surface-dim, #f2f0f0);
-  --surface-bright: var(--lumi-sys-color--surface-bright, #ffffff);
-  --surface-container: var(--lumi-sys-color--surface-container, #f2f0f0);
-  --surface-container-high: var(--lumi-sys-color--surface-container-high, #e6e6e6);
-  --surface-container-lowest: var(--lumi-sys-color--surface, #ffffff);
-  --surface-accent: var(--lumi-sys-color--surface-accent, #9dd2ff);
-  --surface-translucent: var(--lumi-sys-color--surface-translucent, rgba(255, 255, 255, 0.88));
-  --surface-glass: var(--lumi-sys-color--surface-translucent, rgba(255, 255, 255, 0.88));
-  /* foreground */
-  --on-surface: var(--lumi-sys-color--on-surface, #000000);
-  --on-surface-variant: var(--lumi-sys-color--on-surface-variant, rgba(0, 0, 0, 0.55));
-  --on-surface-low: var(--lumi-sys-color--on-surface-low, rgba(0, 0, 0, 0.08));
-  /* accents / brand */
-  --primary: var(--lumi-sys-color--primary, #3186ff);
-  --primary-container: var(--lumi-sys-color--accent-container, #dcf1ff);
-  --accent: var(--lumi-sys-color--accent, #9dd2ff);
-  --accent-container: var(--lumi-sys-color--accent-container, #dcf1ff);
-  --accent-fixed: var(--lumi-sys-color--accent-fixed, #3186ff);
-  /* status */
-  --positive: var(--lumi-sys-color--positive, #008052);
-  --positive-container: var(--lumi-sys-color--positive-container, #daf9d4);
-  --error: var(--lumi-sys-color--error, #de2d29);
-  --error-container: var(--lumi-sys-color--error-container, #ffdeec);
-  /* structure */
-  --outline: var(--lumi-sys-color--outline, #727676);
-  --stroke-default: var(--lumi-sys-color--stroke-default, #e3e3e3);
-  /* chart series 1..10 */
-  --chart-1: var(--lumi-sys-color--chart-series-1, #2575fc);
-  --chart-2: var(--lumi-sys-color--chart-series-2, #5b6e9e);
-  --chart-3: var(--lumi-sys-color--chart-series-3, #228a49);
-  --chart-4: var(--lumi-sys-color--chart-series-4, #62991b);
-  --chart-5: var(--lumi-sys-color--chart-series-5, #1e564d);
-  --chart-6: var(--lumi-sys-color--chart-series-6, #526a45);
-  --chart-7: var(--lumi-sys-color--chart-series-7, #2780c4);
-  --chart-8: var(--lumi-sys-color--chart-series-8, #997112);
-  --chart-9: var(--lumi-sys-color--chart-series-9, #705ec2);
-  --chart-10: var(--lumi-sys-color--chart-series-10, #c84288);
-  /* code palette */
-  --code-background: var(--lumi-sys-color--code-background, #000000);
-  --code-primary-text: var(--lumi-sys-color--code-primary-text, #ffffff);
-  /* spacing shorthands */
-  --spacing-xs: var(--lumi-sys-spacing--xs, 4px);
-  --spacing-s: var(--lumi-sys-spacing--s, 8px);
-  --spacing-m: var(--lumi-sys-spacing--m, 12px);
-  --spacing-l: var(--lumi-sys-spacing--l, 16px);
-  --spacing-xl: var(--lumi-sys-spacing--xl, 20px);
-  /* radius shorthands */
-  --r-s: var(--lumi-sys-shape--small, 8px);
-  --r-m: var(--lumi-sys-shape--medium, 12px);
-  --r-l: var(--lumi-sys-shape--large, 16px);
-  --r-full: var(--lumi-sys-shape--full, 999px);
-}
-
-/* ============================================================
- * 5. IN-SCOPE PRE-BAKED COMPONENT CLASSES
- *    Interactive controls + simple display components only (Decision D5).
- *    Complex components (timeline, sequence, stepper, pros-cons, hero, HUD,
- *    hotspot, media grid) are intentionally excluded.
- * ============================================================ */
-
-/* Global font rendering quality + themed surface backdrop.
- * background/color MUST be set here (SSoT) so the widget backdrop follows the
- * light/dark surface token deterministically. Without this, a widget whose
- * model-generated markup forgets `background: var(--surface)` on its root
- * container falls back to the browser-default white body, producing a broken
- * dark mode (light header/chart area behind a dark card). Regression source:
- * batch1 PB-A02 dark. */
-html, body {
-  background: var(--body-bg, transparent) !important;
-  color: var(--on-surface) !important;
-  /* Auto-resizing iframe: content grows the frame, never scrolls the document.
-   * Model widgets already emit this; declared here as the SSoT default. */
-  overflow-y: hidden;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  font-optical-sizing: auto;
-  text-rendering: optimizeLegibility;
-}
-
-.widget-container {
-  width: 100% !important;
-  max-width: 100% !important;
-  padding-inline: 0 !important;
-  box-sizing: border-box;
-}
-
-/* ============================================================
- * SCROLLBAR DISCIPLINE (single source of truth)
- *   Long lists/cards flow and let the iframe auto-resize (see the C++
- *   NeutralizeInnerScroll pass, which removes accidental tiny scroll boxes).
- *   For LEGITIMATE overflow that remains (wide tables, code, pan-containers,
- *   large >=240px viewports) render a slim, theme-aware scrollbar.
- *   One token carries the correct light/dark contrast (the auto-flipped
- *   stroke token is too dark on #0f0f0f), referenced once = SSoT.
- * ============================================================ */
-:root { --lumi-scrollbar-thumb: rgba(0, 0, 0, 0.20); }
-:root[data-theme="dark"], body.dark-mode { --lumi-scrollbar-thumb: rgba(255, 255, 255, 0.20); }
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) { --lumi-scrollbar-thumb: rgba(255, 255, 255, 0.20); }
-}
-* {
-  scrollbar-width: thin;
-  scrollbar-color: var(--lumi-scrollbar-thumb) transparent;
-}
-::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb {
-  background-color: var(--lumi-scrollbar-thumb);
-  border-radius: var(--lumi-sys-shape--full, 999px);
-}
-
-/* --- Buttons --- */
-/* Universal button fallback (element specificity 0,0,1) — beats `* { padding: 0 }`
-   author resets (0,0,0) while still yielding to any author class selector (0,1,0). */
-button {
-  appearance: none;
-  -webkit-appearance: none;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--lumi-sys-spacing--xs, 6px);
-  min-height: 36px;
-  padding: 6px 16px;
-  font-family: var(--ff-sans, 'Google Sans Flex', 'Google Sans', sans-serif);
-  font-size: 13px;
-  font-weight: 500;
-  line-height: 18px;
-  color: var(--on-surface, #000000);
-  background-color: var(--surface-bright, #ffffff);
-  border: 1px solid var(--stroke-default, #e3e3e3);
-  border-radius: var(--lumi-sys-shape--full, 999px);
-  cursor: pointer;
-  user-select: none;
-  box-sizing: border-box;
-  transition: background-color 0.15s, color 0.15s, border-color 0.15s;
-}
-button:hover {
-  background-color: var(--surface-container-high, #e6e6e6);
-}
-button.active, button.is-active, button.selected, button.is-selected, button[aria-pressed="true"], button[aria-selected="true"] {
-  background-color: var(--accent-container, #dcf1ff);
-  color: var(--accent-fixed, #3186ff);
-  border-color: transparent;
-}
-
-.lumi-btn, [class^="lumi-btn-"], [class*=" lumi-btn-"] { display: inline-flex; align-items: center; justify-content: center; gap: var(--lumi-sys-spacing--s, 8px); min-height: 40px; padding: 0px 20px; font-family: var(--ff-sans, 'Google Sans Flex', 'Google Sans', sans-serif); font-size: 14px; font-weight: 500; line-height: 20px; border-radius: var(--lumi-sys-shape--full, 999px); border: 1px solid var(--lumi-sys-color--stroke-default, #e3e3e3); cursor: pointer; user-select: none; transition: background-color 0.15s, color 0.15s, border-color 0.15s, box-shadow 0.15s, transform 0.1s; text-decoration: none; box-sizing: border-box; white-space: nowrap; }
-.lumi-btn:active, .lumi-btn.is-pressed, [class^="lumi-btn-"]:active, [class*=" lumi-btn-"]:active { transform: scale(0.98); }
-.lumi-btn--tonal, .lumi-btn-tonal, .lumi-btn--secondary, .lumi-btn-secondary, [class^="lumi-btn-"], [class*=" lumi-btn-"] { background-color: var(--lumi-sys-color--surface-bright, #ffffff); color: var(--lumi-sys-color--on-surface-default, #000000); }
-.lumi-btn--tonal:hover, .lumi-btn-tonal:hover, .lumi-btn--secondary:hover, .lumi-btn-secondary:hover, [class^="lumi-btn-"]:hover, [class*=" lumi-btn-"]:hover { background-color: var(--lumi-sys-color--surface-container-high, #e6e6e6); }
-.lumi-btn--accent, .lumi-btn-accent, .lumi-btn--primary, .lumi-btn-primary { background-color: var(--lumi-sys-color--accent, #9dd2ff); color: var(--lumi-sys-color--on-surface-default, #000000); border-color: transparent; }
-.lumi-btn--accent:hover, .lumi-btn-accent:hover, .lumi-btn--primary:hover, .lumi-btn-primary:hover { background-color: var(--lumi-sys-color--accent-container, #dcf1ff); }
-.lumi-btn--bright, .lumi-btn-bright { background-color: var(--lumi-sys-color--surface-bright, #ffffff); color: var(--lumi-sys-color--on-surface-default, #000000); border-color: var(--lumi-sys-color--stroke-default, #e3e3e3); box-shadow: none; }
-.lumi-btn--bright:hover, .lumi-btn-bright:hover { background-color: var(--lumi-sys-color--surface-container-high, #e6e6e6); }
-.lumi-btn--ghost, .lumi-btn-ghost, .lumi-btn--on-surface { background-color: var(--lumi-sys-color--on-surface-low, rgba(0, 0, 0, 0.04)); color: var(--lumi-sys-color--on-surface-default, #000000); border-color: transparent; }
-.lumi-btn--ghost:hover, .lumi-btn-ghost:hover, .lumi-btn--on-surface:hover { background-color: var(--lumi-sys-color--on-surface-low, rgba(0, 0, 0, 0.08)); }
-.lumi-btn--translucent { background-color: rgba(255, 255, 255, 0.25); backdrop-filter: blur(12px); color: var(--lumi-sys-color--on-surface-default, #000000); border-color: rgba(255, 255, 255, 0.3); }
-.lumi-btn--translucent:hover { background-color: rgba(255, 255, 255, 0.35); }
-.lumi-btn--small, .lumi-btn-small { min-height: 36px; padding: 0px 16px; font-size: 13px; line-height: 18px; gap: var(--lumi-sys-spacing--xs, 4px); }
-.lumi-btn--xsmall, .lumi-btn-xsmall { min-height: 24px; padding: 0px 10px; font-size: 11px; line-height: 16px; gap: 4px; }
-.lumi-btn:disabled, .lumi-btn.is-disabled, [class^="lumi-btn-"]:disabled, [class*=" lumi-btn-"]:disabled { opacity: var(--lumi-sys-opacity-state--disabled, 0.38); cursor: not-allowed; pointer-events: none; }
-.lumi-btn.is-selected, .lumi-btn.selected, .lumi-btn.is-active, .lumi-btn.active, .lumi-btn[aria-pressed="true"], .lumi-btn[aria-selected="true"] { background-color: var(--lumi-sys-color--accent-container, #dcf1ff); color: var(--lumi-sys-color--on-surface-default, #000000); border-color: transparent; }
-.lumi-btn.is-selected:hover, .lumi-btn.selected:hover, .lumi-btn.is-active:hover, .lumi-btn.active:hover, .lumi-btn[aria-pressed="true"]:hover, .lumi-btn[aria-selected="true"]:hover { background-color: var(--lumi-sys-color--accent, #9dd2ff); }
-
-/* --- Switch --- */
-.lumi-switch { display: inline-flex; align-items: center; gap: var(--lumi-sys-spacing--s, 8px); cursor: pointer; font-family: var(--ff-sans, 'Google Sans Flex', 'Google Sans', sans-serif); font-size: 15px; color: var(--lumi-sys-color--on-surface-default, #000000); user-select: none; }
-.lumi-switch input[type="checkbox"] { position: absolute; opacity: 0; width: 0px; height: 0px; pointer-events: none; }
-.lumi-switch__track { position: relative; display: inline-flex; align-items: center; width: 52px; height: 32px; background-color: var(--lumi-sys-color--surface-dim, #f2f0f0); border: 2px solid var(--lumi-sys-color--stroke-default, rgba(0, 0, 0, 0.12)); border-radius: var(--lumi-sys-shape--full, 999px); transition: background-color 0.2s, border-color 0.2s; flex-shrink: 0; box-sizing: border-box; }
-.lumi-switch__thumb, .lumi-switch__track::after { content: ""; position: absolute; top: 50%; left: 6px; transform: translateY(-50%); width: 16px; height: 16px; border-radius: 50%; background-color: var(--lumi-sys-color--on-surface-variant, #757575); transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1); display: flex; align-items: center; justify-content: center; box-sizing: border-box; }
-.lumi-switch input[type="checkbox"]:checked + .lumi-switch__track { background-color: var(--lumi-sys-color--accent-fixed, #3186ff); border-color: transparent; }
-.lumi-switch input[type="checkbox"]:checked + .lumi-switch__track .lumi-switch__thumb, .lumi-switch input[type="checkbox"]:checked + .lumi-switch__track::after { left: 22px; width: 24px; height: 24px; background-color: rgb(255, 255, 255); }
-.lumi-switch input[type="checkbox"]:disabled + .lumi-switch__track { opacity: var(--lumi-sys-opacity-state--disabled, 0.38); cursor: not-allowed; }
-.lumi-switch--small .lumi-switch__track, .lumi-switch--mini .lumi-switch__track { width: 32px; height: 20px; }
-.lumi-switch--small .lumi-switch__thumb, .lumi-switch--small .lumi-switch__track::after, .lumi-switch--mini .lumi-switch__thumb, .lumi-switch--mini .lumi-switch__track::after { width: 12px; height: 12px; left: 2px; }
-.lumi-switch--small input[type="checkbox"]:checked + .lumi-switch__track .lumi-switch__thumb, .lumi-switch--small input[type="checkbox"]:checked + .lumi-switch__track::after, .lumi-switch--mini input[type="checkbox"]:checked + .lumi-switch__track .lumi-switch__thumb, .lumi-switch--mini input[type="checkbox"]:checked + .lumi-switch__track::after { left: 12px; width: 16px; height: 16px; }
-
-/* --- Checkbox --- */
-.lumi-checkbox-label { display: inline-flex; align-items: center; gap: var(--lumi-sys-spacing--s, 8px); cursor: pointer; font-family: var(--ff-sans, 'Google Sans Flex', 'Google Sans', sans-serif); font-size: 15px; color: var(--lumi-sys-color--on-surface-default, #000000); user-select: none; }
-.lumi-checkbox-label input[type="checkbox"] { position: absolute; opacity: 0; width: 0px; height: 0px; pointer-events: none; }
-.lumi-checkbox { position: relative; width: 24px; height: 24px; border-radius: var(--lumi-sys-shape--small, 8px); border: 2px solid var(--lumi-sys-color--on-surface-variant, rgba(0, 0, 0, 0.55)); background-color: transparent; transition: background-color 0.15s, border-color 0.15s, box-shadow 0.15s; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-sizing: border-box; }
-.lumi-checkbox-label:hover .lumi-checkbox { background-color: var(--lumi-sys-color--on-surface-low, rgba(0, 0, 0, 0.04)); border-color: var(--lumi-sys-color--on-surface-default, #000000); }
-.lumi-checkbox-label input[type="checkbox"]:checked ~ .lumi-checkbox, .lumi-checkbox-label input[type="checkbox"]:indeterminate ~ .lumi-checkbox, .lumi-checkbox.is-indeterminate { background-color: var(--lumi-sys-color--on-surface-default, #000000); border-color: transparent; }
-.lumi-checkbox .lumi-checkmark { font-size: 18px; line-height: 1; color: var(--lumi-sys-color--surface, #ffffff); fill: var(--lumi-sys-color--surface, #ffffff); display: none; user-select: none; }
-.lumi-checkbox-label input[type="checkbox"]:checked ~ .lumi-checkbox .lumi-checkmark, .lumi-checkbox-label input[type="checkbox"]:checked ~ .lumi-checkbox .lumi-checkbox__check { display: block; }
-.lumi-checkbox-label input[type="checkbox"]:indeterminate ~ .lumi-checkbox .lumi-checkbox__indeterminate, .lumi-checkbox.is-indeterminate .lumi-checkbox__indeterminate { display: block; }
-.lumi-checkbox-label input[type="checkbox"]:disabled ~ .lumi-checkbox, .lumi-checkbox-label input[type="checkbox"]:disabled ~ span { opacity: var(--lumi-sys-opacity-state--disabled, 0.38); cursor: not-allowed; }
-
-/* --- Slider --- */
-.lumi-slider-container { display: flex; align-items: center; gap: var(--lumi-sys-spacing--m, 16px); width: 100%; }
-.lumi-slider-row { display: flex; flex-direction: column; gap: var(--lumi-sys-spacing--xs, 4px); width: 100%; }
-.lumi-slider-label { font-family: var(--ff-sans, 'Google Sans Flex', 'Google Sans', sans-serif); font-size: 15px; font-weight: 400; color: var(--lumi-sys-color--on-surface-default, #000000); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.lumi-slider { appearance: none; width: calc(100% + 28px); margin-left: -14px; margin-right: -14px; height: 40px; background: transparent; cursor: pointer; box-sizing: border-box; }
-.lumi-slider:focus { outline: none; }
-.lumi-slider::-webkit-slider-runnable-track { height: 4px; --thumb-center: calc(14px + (100% - 28px) * (var(--progress, 50%) / 100%)); --active-end: calc(var(--thumb-center) - 8px + (var(--progress, 50%) / 100%) * 6px); background-image: radial-gradient(circle at calc(100% - 18px) center, var(--lumi-sys-color--on-surface-variant, #757575) 2px, transparent 2.5px), linear-gradient( to right, transparent 0, transparent 14px, var(--lumi-sys-color--on-surface-default, #000000) 14px, var(--lumi-sys-color--on-surface-default, #000000) var(--active-end), transparent var(--active-end), transparent calc(var(--thumb-center) + 8px), var(--lumi-sys-color--stroke-default, rgba(0, 0, 0, 0.12)) calc(var(--thumb-center) + 8px), var(--lumi-sys-color--stroke-default, rgba(0, 0, 0, 0.12)) calc(100% - 16px), transparent calc(100% - 16px), transparent 100% ); border-radius: var(--lumi-sys-shape--full, 999px); border-width: medium; border-style: none; border-color: currentcolor; border-image: none; }
-.lumi-slider::-webkit-slider-thumb { appearance: none; width: 32px; height: 32px; border-radius: 50%; background-color: transparent; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Crect x='14' y='6' width='4' height='20' rx='2' fill='%23000000'/%3E%3C/svg%3E"); background-size: 32px 32px; background-repeat: no-repeat; background-position: center center; border-width: medium; border-style: none; border-color: currentcolor; border-image: none; box-sizing: border-box; margin-top: -14px; cursor: pointer; transition: background-color 0.15s; }
-.lumi-slider:hover::-webkit-slider-thumb { background-color: var(--lumi-sys-color--on-surface-low, rgba(0, 0, 0, 0.08)); }
-.lumi-slider:active::-webkit-slider-thumb { background-color: var(--lumi-sys-color--on-surface-low, rgba(0, 0, 0, 0.12)); }
-.lumi-slider:disabled { opacity: var(--lumi-sys-opacity-state--disabled, 0.38); cursor: not-allowed; }
-.lumi-slider:disabled::-webkit-slider-thumb { cursor: not-allowed; box-shadow: none; }
-.lumi-slider-value { display: flex; align-items: center; justify-content: center; min-width: 64px; height: 40px; padding: 0px 12px; background-color: var(--lumi-sys-color--surface-dim, #f2f0f0); border-radius: var(--lumi-sys-shape--medium, 16px); font-family: var(--ff-mono, 'Google Sans Code', 'Google Sans Mono', monospace); font-size: 15px; font-weight: 400; color: var(--lumi-sys-color--on-surface-default, #000000); flex-shrink: 0; box-sizing: border-box; }
-
-/* --- Text input --- */
-.lumi-input-group { display: flex; flex-direction: column; gap: var(--lumi-sys-spacing--xs, 4px); width: 100%; }
-.lumi-input-label { font-family: var(--ff-sans, 'Google Sans Flex', 'Google Sans', sans-serif); font-size: 14px; font-weight: 500; line-height: 20px; color: var(--lumi-sys-color--on-surface-default, #000000); }
-.lumi-input { appearance: none; width: 100%; min-height: 48px; padding: 0px 16px; font-family: var(--ff-sans, 'Google Sans Flex', 'Google Sans', sans-serif); font-size: 15px; font-weight: 400; line-height: 22px; color: var(--lumi-sys-color--on-surface-default, #000000); background-color: var(--lumi-sys-color--surface-bright, #ffffff); border: 1px solid var(--lumi-sys-color--stroke-default, rgba(0, 0, 0, 0.12)); border-radius: var(--lumi-sys-shape--large, 16px); background-clip: padding-box; outline: none; box-sizing: border-box; transition: border-color 0.15s, box-shadow 0.15s, background-color 0.15s; }
-.lumi-input::placeholder { color: var(--lumi-sys-color--on-surface-variant, rgba(0, 0, 0, 0.55)); opacity: 0.7; }
-.lumi-input:hover { border-color: var(--lumi-sys-color--on-surface-default, #000000); }
-.lumi-input:focus, .lumi-input:focus-visible { border-color: var(--lumi-sys-color--accent-fixed, #3186ff); box-shadow: 0 0 0 2px var(--lumi-sys-color--accent-container, rgba(49, 134, 255, 0.25)); }
-textarea.lumi-input, .lumi-input--area { min-height: 100px; padding: 12px 16px; resize: vertical; line-height: 22px; }
-.lumi-input.is-error, .lumi-input-group.is-error .lumi-input { border-color: var(--lumi-sys-color--error, #ff4c45); }
-.lumi-input-helper { font-family: var(--ff-sans, 'Google Sans Flex', 'Google Sans', sans-serif); font-size: 12px; line-height: 16px; color: var(--lumi-sys-color--on-surface-variant, rgba(0, 0, 0, 0.55)); }
-.lumi-input-group.is-error .lumi-input-helper, .lumi-input-helper--error { color: var(--lumi-sys-color--error, #ff4c45); }
-.lumi-input:disabled, .lumi-input.is-disabled { opacity: var(--lumi-sys-opacity-state--disabled, 0.38); background-color: var(--lumi-sys-color--surface-dim, #f2f0f0); cursor: not-allowed; }
-
-/* --- Focus ring --- */
-:focus-visible { outline: 2px solid var(--lumi-sys-color--on-surface-default, #000000) !important; outline-offset: 2px !important; box-shadow: none !important; }
-.lumi-btn:focus-visible, .lumi-switch input[type="checkbox"]:focus-visible + .lumi-switch__track, .lumi-checkbox-label input[type="checkbox"]:focus-visible ~ .lumi-checkbox, .lumi-slider:focus-visible::-webkit-slider-thumb, .lumi-input:focus-visible { outline: 2px solid var(--lumi-sys-color--on-surface-default, #000000); outline-offset: 2px; box-shadow: none; }
-
-/* --- Typography: Display / Headline / Body / Label --- */
-.lumi-display-l { font-family: var(--ff-sans, 'Google Sans Flex', sans-serif); font-size: 42px; line-height: 48px; font-weight: 280; font-variation-settings: "wght" 280, "wdth" 100, "opsz" 42, "ROND" 100; }
-.lumi-display-l-emphasized { font-family: var(--ff-sans, 'Google Sans Flex', sans-serif); font-size: 42px; line-height: 48px; font-weight: 450; font-variation-settings: "wght" 450, "wdth" 100, "opsz" 42, "ROND" 100; }
-.lumi-display-m { font-family: var(--ff-sans, 'Google Sans Flex', sans-serif); font-size: 36px; line-height: 44px; font-weight: 320; font-variation-settings: "wght" 320, "wdth" 100, "opsz" 36, "ROND" 100; }
-.lumi-display-m-emphasized { font-family: var(--ff-sans, 'Google Sans Flex', sans-serif); font-size: 36px; line-height: 44px; font-weight: 480; font-variation-settings: "wght" 480, "wdth" 100, "opsz" 36, "ROND" 100; }
-.lumi-display-s { font-family: var(--ff-sans, 'Google Sans Flex', sans-serif); font-size: 32px; line-height: 38px; font-weight: 360; font-variation-settings: "wght" 360, "wdth" 100, "opsz" 32, "ROND" 100; }
-.lumi-display-s-emphasized { font-family: var(--ff-sans, 'Google Sans Flex', sans-serif); font-size: 32px; line-height: 38px; font-weight: 500; font-variation-settings: "wght" 500, "wdth" 100, "opsz" 32, "ROND" 100; }
-.lumi-headline-l { font-family: var(--ff-sans, 'Google Sans Flex', sans-serif); font-size: 28px; line-height: 36px; font-weight: 350; font-variation-settings: "wght" 350, "wdth" 100, "opsz" 28, "ROND" 20; }
-.lumi-headline-l-emphasized { font-family: var(--ff-sans, 'Google Sans Flex', sans-serif); font-size: 28px; line-height: 36px; font-weight: 520; font-variation-settings: "wght" 520, "wdth" 100, "opsz" 28, "ROND" 20; }
-.lumi-headline-m { font-family: var(--ff-sans, 'Google Sans Flex', sans-serif); font-size: 24px; line-height: 28px; font-weight: 380; font-variation-settings: "wght" 380, "wdth" 100, "opsz" 24, "ROND" 20; }
-.lumi-headline-m-emphasized { font-family: var(--ff-sans, 'Google Sans Flex', sans-serif); font-size: 24px; line-height: 28px; font-weight: 540; font-variation-settings: "wght" 540, "wdth" 100, "opsz" 24, "ROND" 20; }
-.lumi-headline-s { font-family: var(--ff-sans, 'Google Sans Flex', sans-serif); font-size: 20px; line-height: 24px; font-weight: 470; font-variation-settings: "wght" 470, "wdth" 94, "opsz" 20, "ROND" 20; }
-.lumi-headline-s-emphasized { font-family: var(--ff-sans, 'Google Sans Flex', sans-serif); font-size: 20px; line-height: 24px; font-weight: 580; font-variation-settings: "wght" 580, "wdth" 94, "opsz" 20, "ROND" 20; }
-.lumi-body-l { font-family: var(--ff-sans, 'Google Sans Flex', sans-serif); font-size: 17px; line-height: 24px; font-weight: 400; font-variation-settings: "wght" 400, "wdth" 92, "opsz" 17; }
-.lumi-body-l-emphasized { font-family: var(--ff-sans, 'Google Sans Flex', sans-serif); font-size: 17px; line-height: 24px; font-weight: 540; font-variation-settings: "wght" 540, "wdth" 92, "opsz" 17; font-variant-numeric: tabular-nums; }
-.lumi-body-m { font-family: var(--ff-sans, 'Google Sans Flex', sans-serif); font-size: 15px; line-height: 20px; font-weight: 400; font-variation-settings: "wght" 400, "wdth" 92, "opsz" 15; }
-.lumi-body-m-emphasized { font-family: var(--ff-sans, 'Google Sans Flex', sans-serif); font-size: 15px; line-height: 20px; font-weight: 540; font-variation-settings: "wght" 540, "wdth" 92, "opsz" 15; font-variant-numeric: tabular-nums; }
-.lumi-body-s { font-family: var(--ff-sans, 'Google Sans Flex', sans-serif); font-size: 13px; line-height: 17px; font-weight: 400; font-variation-settings: "wght" 400, "wdth" 92, "opsz" 13; }
-.lumi-body-s-emphasized { font-family: var(--ff-sans, 'Google Sans Flex', sans-serif); font-size: 13px; line-height: 17px; font-weight: 540; font-variation-settings: "wght" 540, "wdth" 92, "opsz" 13; font-variant-numeric: tabular-nums; }
-.lumi-label-l { font-family: var(--ff-sans, 'Google Sans Flex', sans-serif); font-size: 17px; line-height: 24px; font-weight: 370; font-variation-settings: "wght" 370, "wdth" 92, "opsz" 17; }
-.lumi-label-l-emphasized { font-family: var(--ff-sans, 'Google Sans Flex', sans-serif); font-size: 17px; line-height: 24px; font-weight: 510; font-variation-settings: "wght" 510, "wdth" 92, "opsz" 17; }
-.lumi-label-m { font-family: var(--ff-sans, 'Google Sans Flex', sans-serif); font-size: 15px; line-height: 20px; font-weight: 370; font-variation-settings: "wght" 370, "wdth" 92, "opsz" 15; }
-.lumi-label-m-emphasized { font-family: var(--ff-sans, 'Google Sans Flex', sans-serif); font-size: 15px; line-height: 20px; font-weight: 510; font-variation-settings: "wght" 510, "wdth" 92, "opsz" 15; }
-.lumi-label-s { font-family: var(--ff-sans, 'Google Sans Flex', sans-serif); font-size: 13px; line-height: 20px; font-weight: 370; font-variation-settings: "wght" 370, "wdth" 92, "opsz" 13; }
-.lumi-label-s-emphasized { font-family: var(--ff-sans, 'Google Sans Flex', sans-serif); font-size: 13px; line-height: 20px; font-weight: 510; font-variation-settings: "wght" 510, "wdth" 92, "opsz" 13; }
-
-/* --- Typography: Monospace / Extended (Google Sans Code) --- */
-.lumi-blockquote { font-family: var(--ff-mono, 'Google Sans Code', monospace); font-style: italic; font-size: 22px; line-height: 30px; font-weight: 300; font-variation-settings: "wght" 300, "opsz" 22, "MONO" 0; }
-.lumi-takeaway { font-family: var(--ff-mono, 'Google Sans Code', monospace); font-style: italic; font-size: 17px; line-height: 24px; font-weight: 400; font-variation-settings: "wght" 400, "opsz" 17, "MONO" 0; }
-.lumi-caption { font-family: var(--ff-mono, 'Google Sans Code', monospace); font-style: italic; font-size: 13px; line-height: 20px; font-weight: 400; font-variation-settings: "wght" 400, "opsz" 13, "MONO" 0; }
-.lumi-code { font-family: var(--ff-mono, 'Google Sans Code', monospace); font-size: 15px; line-height: 20px; font-weight: 400; font-variation-settings: "wght" 400, "MONO" 1; }
-.lumi-bullet { font-family: var(--ff-mono, 'Google Sans Code', monospace); font-size: 15px; line-height: 24px; font-weight: 650; font-variation-settings: "wght" 650, "MONO" 1; }
-
-/* --- Cards & attribution --- */
-.lumi-summary-card { padding: var(--lumi-sys-spacing--l, 16px); background-color: var(--lumi-sys-color--surface-container, #f2f0f0); border-radius: var(--lumi-sys-shape--medium, 12px); color: var(--lumi-sys-color--on-surface-default, #000000); font-family: var(--ff-sans, 'Google Sans Flex', sans-serif); font-size: 15px; line-height: 20px; box-sizing: border-box; }
-.lumi-link-card { display: flex; align-items: center; justify-content: space-between; padding: var(--lumi-sys-spacing--l, 16px); background-color: var(--lumi-sys-color--surface-container, #f2f0f0); border-radius: var(--lumi-sys-shape--medium, 12px); text-decoration: none; color: var(--lumi-sys-color--on-surface-default, #000000); transition: background-color 0.15s; box-sizing: border-box; }
-.lumi-link-card:hover { background-color: var(--lumi-sys-color--surface-container-high, #e6e6e6); }
-.lumi-attribution-buffer { margin-top: var(--lumi-sys-spacing--xxl, 24px); font-family: var(--ff-sans, 'Google Sans Flex', sans-serif); font-size: 13px; color: var(--lumi-sys-color--on-surface-de-emphasis, rgba(0, 0, 0, 0.55)); }
-.lumi-card { background-color: var(--lumi-sys-color--surface-dim, #f2f0f0); border-radius: var(--lumi-sys-shape--large-max, 24px); padding: var(--lumi-sys-spacing--3xl, 28px); display: flex; flex-direction: column; gap: var(--lumi-sys-spacing--s, 8px); width: 100%; box-sizing: border-box; }
-.lumi-card-title { font-family: var(--ff-sans, 'Google Sans Flex', sans-serif); font-size: 20px; font-weight: 500; font-variation-settings: "wght" 470, "wdth" 94, "opsz" 20; color: var(--lumi-sys-color--on-surface, #000000); margin: 0px; }
-.lumi-card-subtitle { font-family: var(--ff-sans, 'Google Sans Flex', sans-serif); font-size: 13px; font-weight: 400; font-variation-settings: "wght" 400, "wdth" 92, "opsz" 13; color: var(--lumi-sys-color--on-surface-variant, rgba(0, 0, 0, 0.55)); margin: 0px; }
-.lumi-card-body { font-family: var(--ff-sans, 'Google Sans Flex', sans-serif); font-size: 15px; font-weight: 400; font-variation-settings: "wght" 400, "wdth" 92, "opsz" 15; color: var(--lumi-sys-color--on-surface, #000000); margin: var(--lumi-sys-spacing--xs, 4px) 0 0 0; }
-.lumi-overlay-card { background-color: var(--surface-translucent, rgba(255, 255, 255, 0.88)); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid var(--stroke-default); border-radius: var(--lumi-sys-shape--medium, 12px); padding: var(--lumi-sys-spacing--m, 12px) var(--lumi-sys-spacing--l, 16px); color: var(--on-surface); box-shadow: var(--lumi-sys-elevation--level1); box-sizing: border-box; }
-
-/* --- Progress bar --- */
-.lumi-progress-tracker { display: flex; flex-direction: column; gap: var(--lumi-sys-spacing--xs, 4px); width: 100%; }
-.lumi-progress-bar { width: 100%; height: 8px; background-color: var(--lumi-sys-color--stroke-default, #e3e3e3); border-radius: var(--lumi-sys-shape--full, 999px); overflow: hidden; }
-.lumi-progress-fill { height: 100%; background-color: var(--lumi-sys-color--accent-fixed, #3186ff); border-radius: var(--lumi-sys-shape--full, 999px); transition: width 0.3s; }
-
-/* --- Accordion (card group variant) --- */
-.lumi-accordion-group { display: flex; flex-direction: column; gap: var(--lumi-sys-spacing--s, 8px); }
-.lumi-accordion-group .lumi-accordion-item { background-color: var(--lumi-sys-color--surface-container, #f2f0f0); border-radius: var(--lumi-sys-shape--medium, 12px); overflow: hidden; transition: background-color 0.15s; }
-.lumi-accordion-group .lumi-accordion-header { padding: var(--lumi-sys-spacing--l, 16px); font-family: var(--ff-sans, sans-serif); font-size: 15px; font-weight: 540; cursor: pointer; user-select: none; display: flex; justify-content: space-between; align-items: center; color: var(--lumi-sys-color--on-surface-default, #000000); }
-.lumi-accordion-group .lumi-accordion-chevron { transition: transform 0.2s; font-size: 12px; }
-.lumi-accordion-group .lumi-accordion-item.active .lumi-accordion-chevron { transform: rotate(180deg); }
-.lumi-accordion-group .lumi-accordion-body { display: none; padding: 0 var(--lumi-sys-spacing--l, 16px) var(--lumi-sys-spacing--l, 16px) var(--lumi-sys-spacing--l, 16px); font-family: var(--ff-sans, sans-serif); font-size: 15px; color: var(--lumi-sys-color--on-surface-de-emphasis, rgba(0, 0, 0, 0.55)); line-height: 20px; }
-.lumi-accordion-group .lumi-accordion-item.active .lumi-accordion-body { display: block; }
-
-/* --- Accordion (borderless list variant) --- */
-.lumi-accordion { display: flex; flex-direction: column; width: 100%; border-top: 1px solid var(--lumi-sys-color--on-surface-low, rgba(0, 0, 0, 0.08)); }
-.lumi-accordion-item { display: flex; flex-direction: column; width: 100%; background: transparent; border-radius: 0px; border-bottom: 1px solid var(--lumi-sys-color--on-surface-low, rgba(0, 0, 0, 0.08)); }
-.lumi-accordion-header { display: flex; justify-content: space-between; align-items: center; padding: var(--lumi-sys-spacing--xl, 20px) 0; cursor: pointer; user-select: none; }
-.lumi-accordion-title { margin: 0px; color: var(--lumi-sys-color--on-surface-default, #000000); }
-.lumi-accordion-item.active .lumi-accordion-content { display: flex; flex-direction: column; gap: var(--lumi-sys-spacing--l, 16px); }
-.lumi-accordion-content { display: none; padding-bottom: var(--lumi-sys-spacing--xxl, 24px); }
-.lumi-accordion-field { display: flex; flex-direction: column; gap: var(--lumi-sys-spacing--xxs, 2px); }
-.lumi-accordion-field-label { margin: 0px; color: var(--lumi-sys-color--on-surface-default, #000000); }
-.lumi-accordion-field-val { margin: 0px; color: var(--lumi-sys-color--on-surface-default, #000000); }
-
-/* --- Segmented control --- */
-.lumi-segmented-group { display: flex; background-color: var(--lumi-sys-color--surface-container, #f2f0f0); padding: 4px; border-radius: var(--lumi-sys-shape--full, 999px); gap: 4px; }
-.lumi-segmented-btn { flex: 1 1 0%; padding: 8px 16px; border-width: medium; border-style: none; border-color: currentcolor; border-image: none; border-radius: var(--lumi-sys-shape--full, 999px); background-color: transparent; font-family: var(--ff-sans, sans-serif); font-size: 14px; font-weight: 510; cursor: pointer; color: var(--lumi-sys-color--on-surface-de-emphasis, rgba(0, 0, 0, 0.55)); transition: 0.2s; }
-.lumi-segmented-btn.is-active { background-color: var(--lumi-sys-color--surface-bright, #ffffff); color: var(--lumi-sys-color--on-surface-default, #000000); box-shadow: var(--lumi-sys-elevation--level1); }
-
-/* --- Tabs --- */
-.lumi-tab-group { display: flex; flex-direction: column; gap: var(--lumi-sys-spacing--4xl, 36px); width: 100%; }
-.lumi-tab-bar { display: flex; gap: var(--lumi-sys-spacing--l, 16px); padding-bottom: 0px; overflow-x: auto; scrollbar-width: none; }
-.lumi-tab-bar::-webkit-scrollbar { display: none; }
-.lumi-tab { height: 40px; padding: 0 var(--lumi-sys-spacing--xl, 20px); display: flex; align-items: center; justify-content: center; font-family: var(--ff-sans, 'Google Sans Flex', sans-serif); font-size: 17px; line-height: 24px; font-weight: 370; font-variation-settings: "wght" 370, "wdth" 92, "opsz" 17; color: var(--lumi-sys-color--on-surface-de-emphasis, rgba(0, 0, 0, 0.55)); background: transparent; border-width: medium; border-style: none; border-color: currentcolor; border-image: none; border-radius: var(--lumi-sys-shape--full, 999px); cursor: pointer; white-space: nowrap; transition: background-color 0.15s, color 0.15s; }
-.lumi-tab:hover { color: var(--lumi-sys-color--on-surface-default, #000000); }
-.lumi-tab.active { background-color: var(--lumi-sys-color--surface-container-high, #f2f0f0); color: var(--lumi-sys-color--on-surface-default, #000000); font-weight: 510; font-variation-settings: "wght" 510, "wdth" 92, "opsz" 17; }
-.lumi-tab-content { display: flex; flex-direction: column; gap: var(--lumi-sys-spacing--m, 12px); padding-top: 0px; padding-bottom: 0px; }
-.lumi-tab-content .lumi-body-l-emphasized, .lumi-tab-content .lumi-headline-s { margin: 0px; }
-.lumi-tab-content .lumi-body-l { margin: 0px; color: var(--lumi-sys-color--on-surface-default, #000000); }
-
-/* --- Callout / pullquote --- */
-.lumi-callout { display: flex; flex-direction: column; gap: var(--lumi-sys-spacing--xs, 4px); width: 100%; }
-.lumi-callout .lumi-body-l-emphasized { margin: 0px; }
-.lumi-pullquote { display: flex; gap: var(--lumi-sys-spacing--xl, 20px); width: 100%; margin: 0px; }
-.lumi-pullquote-mark { width: 30px; height: 22px; flex-shrink: 0; margin-top: 4px; color: var(--lumi-sys-color--on-surface-default, #000000); }
-.lumi-pullquote-body { display: flex; flex-direction: column; gap: var(--lumi-sys-spacing--l, 16px); flex: 1 1 0%; min-width: 0px; }
-p.lumi-pullquote-text, .lumi-pullquote-text { font-family: var(--ff-mono, 'Google Sans Code', monospace); font-style: italic; font-weight: 300; font-variation-settings: "wght" 300, "opsz" 22, "MONO" 0; color: var(--lumi-sys-color--on-surface-default, #000000); margin: 0px; font-size: 22px !important; line-height: 30px !important; }
-.lumi-pullquote-cite { display: flex; flex-direction: column; font-style: normal; }
-.lumi-pullquote-cite .lumi-de-emphasis { color: var(--lumi-sys-color--on-surface-de-emphasis, rgba(0, 0, 0, 0.55)); }
-
-/* --- Data table (simple) --- */
-.lumi-data-table-container { width: 100%; overflow-x: auto; border-radius: var(--lumi-sys-shape--medium, 12px); border: 1px solid var(--lumi-sys-color--stroke-default, rgba(0, 0, 0, 0.12)); }
-.lumi-data-table { width: 100%; border-collapse: collapse; font-family: var(--ff-sans, sans-serif); font-size: 14px; text-align: left; }
-.lumi-data-table th { padding: 12px 16px; font-weight: 600; background-color: var(--lumi-sys-color--surface-container, #f2f0f0); border-bottom: 1px solid var(--lumi-sys-color--stroke-default, rgba(0, 0, 0, 0.12)); color: var(--lumi-sys-color--on-surface-default, #000000); }
-.lumi-data-table td { padding: 12px 16px; border-bottom: 1px solid var(--lumi-sys-color--stroke-default, rgba(0, 0, 0, 0.12)); color: var(--lumi-sys-color--on-surface-default, #000000); }
-.lumi-data-table tr:last-child td { border-bottom-width: medium; border-bottom-style: none; border-bottom-color: currentcolor; }
-
-/* --- Table widget (prose-style) --- */
-.lumi-table-widget { display: flex; flex-direction: column; gap: var(--lumi-sys-spacing--xxl, 24px); width: 100%; }
-.lumi-table-title { margin: 0px; color: var(--lumi-sys-color--on-surface-default, #000000); }
-.lumi-table { width: 100%; border-collapse: collapse; font-family: var(--ff-sans, 'Google Sans Flex', sans-serif); text-align: left; }
-.lumi-table th { padding: 12px 16px 12px 0px; font-size: 17px; line-height: 24px; font-weight: 540; font-variation-settings: "wght" 540, "wdth" 92, "opsz" 17; color: var(--lumi-sys-color--on-surface-default, #000000); border-bottom: 1px solid var(--lumi-sys-color--on-surface-low, rgba(0, 0, 0, 0.08)); }
-.lumi-table td { padding: 16px 16px 16px 0px; font-size: 17px; line-height: 24px; font-weight: 400; font-variation-settings: "wght" 400, "wdth" 92, "opsz" 17; color: var(--lumi-sys-color--on-surface-default, #000000); border-bottom: 1px solid var(--lumi-sys-color--on-surface-low, rgba(0, 0, 0, 0.08)); }
-.lumi-table td:last-child, .lumi-table th:last-child { padding-right: 0px; }
-.lumi-table tr.lumi-table-ellipsis-row td { padding: 16px 0px 0px; border-bottom-width: medium; border-bottom-style: none; border-bottom-color: currentcolor; color: var(--lumi-sys-color--on-surface-variant, rgba(0, 0, 0, 0.55)); }
-
-/* --- Code block --- */
-.lumi-code-block { background-color: var(--lumi-sys-color--code-background, #000000); border-radius: var(--lumi-sys-shape--xl-max, 40px); padding: 32px; display: flex; flex-direction: column; gap: var(--lumi-sys-spacing--l, 16px); width: 100%; box-sizing: border-box; }
-.lumi-code-header { display: flex; justify-content: space-between; align-items: center; width: 100%; }
-.lumi-code-lang { font-family: var(--ff-sans, 'Google Sans Flex', sans-serif); font-size: 15px; font-weight: 500; font-variation-settings: "wght" 540, "wdth" 92, "opsz" 15; color: var(--lumi-sys-color--code-primary-text, #ffffff); }
-.lumi-code-copy { background: transparent; border-width: medium; border-style: none; border-color: currentcolor; border-image: none; color: var(--lumi-sys-color--code-primary-text, #ffffff); cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 4px; border-radius: var(--lumi-sys-shape--full, 999px); transition: background-color 0.2s; }
-.lumi-code-copy:hover { background-color: rgba(255, 255, 255, 0.1); }
-.lumi-code-snippet { margin: 0px; overflow-x: auto; width: 100%; }
-.lumi-code-snippet code { font-family: var(--ff-mono, 'Google Sans Code', monospace); font-size: 15px; line-height: 20px; color: var(--lumi-sys-color--code-primary-text, #ffffff); display: block; white-space: pre; }
-
-/* --- Section / prose --- */
-.lumi-section { display: flex; flex-direction: column; align-items: flex-start; width: 100%; }
-.lumi-section h1 { font-family: var(--ff-sans, 'Google Sans Flex', sans-serif); font-size: 28px; line-height: 36px; font-weight: 350; font-variation-settings: "wght" 350, "wdth" 100, "opsz" 28; color: var(--lumi-sys-color--on-surface, #000000); margin-top: var(--lumi-sys-spacing--m, 12px); margin-bottom: var(--lumi-sys-spacing--xxl, 24px); }
-.lumi-section h1:first-child { margin-top: 0px; }
-.lumi-section h2 { font-family: var(--ff-sans, 'Google Sans Flex', sans-serif); font-size: 24px; line-height: 28px; font-weight: 380; font-variation-settings: "wght" 380, "wdth" 100, "opsz" 24; color: var(--lumi-sys-color--on-surface, #000000); margin-top: var(--lumi-sys-spacing--m, 12px); margin-bottom: var(--lumi-sys-spacing--m, 12px); }
-.lumi-section h2:first-child { margin-top: 0px; }
-.lumi-section h3 { font-family: var(--ff-sans, 'Google Sans Flex', sans-serif); font-size: 20px; line-height: 24px; font-weight: 470; font-variation-settings: "wght" 470, "wdth" 94, "opsz" 20; color: var(--lumi-sys-color--on-surface, #000000); margin-top: var(--lumi-sys-spacing--m, 12px); margin-bottom: var(--lumi-sys-spacing--xs, 4px); }
-.lumi-section h3:first-child { margin-top: 0px; }
-.lumi-section p { font-family: var(--ff-sans, 'Google Sans Flex', sans-serif); font-size: 17px; line-height: 24px; font-weight: 400; font-variation-settings: "wght" 400, "wdth" 92, "opsz" 17; color: var(--lumi-sys-color--on-surface, #000000); margin-top: 0px; margin-bottom: var(--lumi-sys-spacing--m, 12px); }
-.lumi-section p:last-child { margin-bottom: 0px; }
-.lumi-section ul { list-style: none; padding: 0px; margin: 0 0 var(--lumi-sys-spacing--m, 12px) 0; width: 100%; }
-.lumi-section ul:last-child { margin-bottom: 0px; }
-.lumi-section li { position: relative; padding-left: 40px; padding-bottom: 12px; font-family: var(--ff-sans, 'Google Sans Flex', sans-serif); font-size: 17px; line-height: 24px; font-weight: 400; font-variation-settings: "wght" 400, "wdth" 92, "opsz" 17; color: var(--lumi-sys-color--on-surface, #000000); box-sizing: border-box; }
-.lumi-section li:last-child { padding-bottom: 0px; }
-.lumi-section li::before { content: "○"; position: absolute; left: 3.5px; top: 0px; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-family: var(--ff-mono, 'Google Sans Code', monospace); font-size: 15px; font-weight: 650; font-variation-settings: "MONO" 1, "wght" 650; color: var(--lumi-sys-color--on-surface, #000000); }
-.lumi-section li ul { margin-top: 12px; margin-bottom: 0px; padding-left: 40px; }
-
-/* --- Chart legend (1:1 series color match) --- */
-.lumi-chart-header, .lumi-chart-title { margin-bottom: 32px; }
-.lumi-chart-legend { display: flex; justify-content: center; align-items: center; gap: 24px; margin-top: 32px; padding-top: 0px; width: 100%; flex-wrap: wrap; }
-.lumi-legend-item { display: inline-flex; align-items: center; gap: 8px; }
-.lumi-legend-dot { width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.lumi-legend-dot-swatch { width: 20px; height: 20px; border-radius: 50%; display: block; }
-span.lumi-legend-dot[style*="background"] { width: 20px; height: 20px; border-radius: 50%; flex-shrink: 0; display: inline-block; }
-.lumi-legend-label { font-family: var(--ff-mono, 'Google Sans Code', monospace); font-style: italic; font-size: 13px; font-weight: 400; line-height: 20px; color: var(--lumi-sys-color--on-surface, #000000); font-variation-settings: "MONO" 0; white-space: nowrap; }
-
-/* Canonical themed <select>. Uses element+class specificity (select.lumi-select)
-   so it intentionally wins over any model hand-rolled `.lumi-select` rule: the
-   runtime stylesheet is injected before widget <style> blocks, so a bare
-   `.lumi-select` (same specificity, later) would otherwise override it. This
-   provides appearance:none + a theme-neutral chevron so no native OS arrow leaks. */
-select.lumi-select {
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  width: 100%;
-  padding: var(--lumi-sys-spacing--s, 8px) 40px var(--lumi-sys-spacing--s, 8px)
-    var(--lumi-sys-spacing--m, 12px);
-  border: 1px solid var(--stroke-default);
-  border-radius: var(--r-full, 999px);
-  background-color: var(--surface);
-  color: var(--on-surface);
-  font-family: var(--ff-sans, 'Google Sans Flex', sans-serif);
-  font-size: 15px;
-  line-height: 20px;
-  cursor: pointer;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2380868b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 14px center;
-  background-size: 14px;
-}
-select.lumi-select:focus-visible {
-  outline: 2px solid var(--lumi-sys-color--accent-fixed, #3186ff);
-  outline-offset: 2px;
-}
-
-/* Toggle / filter chip. Models frequently emit `<button class="lumi-chip">`
-   (or `.lumi-chip-btn`, `.lumi-filter-btn`, `[class^="lumi-chip-"]`, with
-   `.is-active`/`.active`/`.is-selected`) for toggle pills; without a
-   canonical rule these fall back to native (retro) browser button chrome.
-   Theme-aware via runtime tokens so it is correct in light and dark. */
-.lumi-chip,
-[class^="lumi-chip"],
-[class*=" lumi-chip"],
-[class^="lumi-pill"],
-[class*=" lumi-pill"] {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--lumi-sys-spacing--s, 8px);
-  min-height: 32px;
-  padding: 0 16px;
-  font-family: var(--ff-sans, 'Google Sans Flex', 'Google Sans', sans-serif);
-  font-size: 14px;
-  font-weight: 500;
-  line-height: 20px;
-  color: var(--lumi-sys-color--on-surface-default, #1f1f1f);
-  background: var(--lumi-sys-color--surface-dim, #f2f0f0);
-  border: 1px solid transparent;
-  border-radius: var(--lumi-sys-shape--full, 999px);
-  cursor: pointer;
-  user-select: none;
-  white-space: nowrap;
-  box-sizing: border-box;
-  transition: background-color 0.15s, color 0.15s, border-color 0.15s;
-  -webkit-appearance: none;
-  appearance: none;
-}
-.lumi-chip:hover,
-[class^="lumi-chip"]:hover,
-[class*=" lumi-chip"]:hover,
-[class^="lumi-pill"]:hover,
-[class*=" lumi-pill"]:hover {
-  background: var(--lumi-sys-color--surface-container-high, #e6e6e6);
-}
-.lumi-chip.is-active,
-.lumi-chip.active,
-.lumi-chip.is-selected,
-.lumi-chip.selected,
-.lumi-chip[aria-pressed="true"],
-.lumi-chip[aria-selected="true"],
-[class^="lumi-chip"].is-active,
-[class^="lumi-chip"].active,
-[class^="lumi-chip"].is-selected,
-[class^="lumi-chip"].selected,
-[class^="lumi-chip"][aria-pressed="true"],
-[class^="lumi-chip"][aria-selected="true"],
-[class*=" lumi-chip"].is-active,
-[class*=" lumi-chip"].active,
-[class*=" lumi-chip"].is-selected,
-[class*=" lumi-chip"].selected,
-[class^="lumi-pill"].is-active,
-[class^="lumi-pill"].active,
-[class*=" lumi-pill"].is-active,
-[class*=" lumi-pill"].active {
-  color: var(--lumi-sys-color--accent-fixed, #3186ff);
-  background: var(--lumi-sys-color--accent-container, rgba(49, 134, 255, 0.14));
-  border-color: transparent;
-  font-weight: 600;
-}
-.lumi-chip:focus-visible,
-[class^="lumi-chip"]:focus-visible,
-[class*=" lumi-chip"]:focus-visible,
-[class^="lumi-pill"]:focus-visible,
-[class*=" lumi-pill"]:focus-visible {
-  outline: 2px solid var(--lumi-sys-color--accent-fixed, #3186ff);
-  outline-offset: 2px;
-}
-
-/* ============================================================
- * DIAGRAM GUARD — SVG <text> is fill-only.
- *   An inherited group stroke (e.g. `.node:hover { stroke }` on a <g>)
- *   otherwise cascades into child <text>, thickening glyph outlines
- *   (fake-bold) and recoloring the label. Highlight strokes belong on
- *   shapes (rect/path); text never paints a stroke.
- * ============================================================ */
-svg text { stroke: none; paint-order: fill; }
-
-</style>
-<style id="lumi-surface-button-fallbacks">
-.widget-container {
-  width: 100% !important;
-  max-width: 100% !important;
-  padding-inline: 0 !important;
-  box-sizing: border-box;
-}
-:root {
-  --lumi-sys-color--surface-translucent: rgba(255, 255, 255, 0.88);
-  --surface-translucent: var(--lumi-sys-color--surface-translucent, rgba(255, 255, 255, 0.88));
-  --surface-glass: var(--lumi-sys-color--surface-translucent, rgba(255, 255, 255, 0.88));
-}
-:root[data-theme="dark"], body.dark-mode {
-  --lumi-sys-color--surface-translucent: rgba(24, 24, 27, 0.88);
-  --surface-translucent: rgba(24, 24, 27, 0.88);
-  --surface-glass: rgba(24, 24, 27, 0.88);
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --lumi-sys-color--surface-translucent: rgba(24, 24, 27, 0.88);
-    --surface-translucent: rgba(24, 24, 27, 0.88);
-    --surface-glass: rgba(24, 24, 27, 0.88);
-  }
-}
-button {
-  appearance: none;
-  -webkit-appearance: none;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  min-height: 36px;
-  padding: 8px 18px;
-  font-family: var(--ff-sans, 'Google Sans Flex', sans-serif);
-  font-size: 13px;
-  font-weight: 500;
-  line-height: 18px;
-  color: var(--on-surface, #000000);
-  background-color: var(--lumi-sys-color--surface-bright, #ffffff);
-  border: 1px solid var(--stroke-default, #e3e3e3);
-  border-radius: 999px;
-  cursor: pointer;
-  box-sizing: border-box;
-}
-button:hover {
-  background-color: var(--surface-container-high, #e6e6e6);
-}
-button.active, button.is-active, button.selected, button.is-selected, button[aria-pressed="true"], button[aria-selected="true"] {
-  background-color: var(--accent-container, #dcf1ff);
-  color: var(--accent-fixed, #3186ff);
-  border-color: transparent;
-}
-.lumi-btn, [class^="lumi-btn-"], [class*=" lumi-btn-"] {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  min-height: 38px;
-  padding: 8px 18px;
-  background-color: var(--lumi-sys-color--surface-bright, #ffffff);
-  color: var(--on-surface, #000000);
-  border: 1px solid var(--stroke-default, #e3e3e3);
-  border-radius: 999px;
-  box-sizing: border-box;
-}
-.lumi-btn--primary, .lumi-btn-primary {
-  background-color: var(--lumi-sys-color--accent, #9dd2ff);
-  color: var(--lumi-sys-color--on-surface-default, #000000);
-  border-color: transparent;
-}
-.lumi-btn--primary:hover, .lumi-btn-primary:hover {
-  background-color: var(--lumi-sys-color--accent-container, #dcf1ff);
-}
-:where(.lumi-chip, [class^="lumi-chip"], [class*=" lumi-chip"], [class^="lumi-pill"], [class*=" lumi-pill"]) {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 32px;
-  padding: 0 16px;
-  font-family: var(--ff-sans, 'Google Sans Flex', sans-serif);
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--on-surface, #1f1f1f);
-  background: var(--surface-dim, #f2f0f0);
-  border: 1px solid transparent;
-  border-radius: 999px;
-  cursor: pointer;
-}
-:where(.lumi-chip.is-active, .lumi-chip.active, [class^="lumi-chip"].is-active, [class^="lumi-chip"].active, [class*=" lumi-chip"].is-active, [class*=" lumi-chip"].active, [class^="lumi-pill"].is-active, [class^="lumi-pill"].active) {
-  color: var(--accent-fixed, #3186ff);
-  background: var(--accent-container, rgba(49, 134, 255, 0.14));
-  border-color: transparent;
-  font-weight: 600;
-}
-</style>
-
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Simulador Von Neumann 8 bits</title>
+  <title>Referência Visual e Interativa - Logisim-Evolution</title>
+  <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    /* Widget specific layout glue */
-    .widget-container {
-      width: 100%;
-      min-height: 280px;
-      padding-inline: 0;
-      overflow-x: hidden;
-      font-family: var(--ff-sans);
-      color: var(--on-surface);
-      box-sizing: border-box;
+    /* Fundo idêntico ao Canvas do Logisim-Evolution */
+    .logisim-grid {
+      background-color: #ffffff;
+      background-image: radial-gradient(#777777 1.1px, transparent 1.1px);
+      background-size: 10px 10px;
+      background-position: 0 0;
     }
-
-    .sim-header {
-      padding: var(--spacing-l) var(--spacing-l) var(--spacing-m) var(--spacing-l);
-      display: flex;
-      flex-direction: column;
-      gap: var(--spacing-s);
+    .logisim-label-blue {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-weight: 800;
+      fill: #0000ff;
+      user-select: none;
     }
-
-    .sim-title-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: var(--spacing-s);
+    .logisim-label-black {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-weight: 800;
+      fill: #000000;
+      user-select: none;
     }
-
-    .sim-pills {
-      display: flex;
-      gap: var(--spacing-xs);
-      align-items: center;
-      flex-wrap: wrap;
+    .logisim-mono {
+      font-family: 'Courier New', Courier, monospace;
+      font-weight: 700;
+      user-select: none;
     }
-
-    .cycle-pill {
-      font-family: var(--ff-mono);
-      font-size: 12px;
-      padding: 4px 10px;
-      border-radius: var(--r-full);
-      background: var(--surface-container);
-      color: var(--on-surface-variant);
-      border: 1px solid var(--stroke-default);
-      transition: all 0.2s ease;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .cycle-pill.active-t0 {
-      background: rgba(49, 134, 255, 0.15);
-      color: var(--accent-fixed);
-      border-color: var(--accent-fixed);
-      font-weight: 600;
-    }
-
-    .cycle-pill.active-t1 {
-      background: rgba(234, 179, 8, 0.18);
-      color: #d97706;
-      border-color: #d97706;
-      font-weight: 600;
-    }
-
-    .cycle-pill.active-t2 {
-      background: rgba(14, 188, 95, 0.15);
-      color: var(--positive);
-      border-color: var(--positive);
-      font-weight: 600;
-    }
-
-    .dot-led {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--outline);
-    }
-
-    .active-t0 .dot-led { background: var(--accent-fixed); box-shadow: 0 0 6px var(--accent-fixed); }
-    .active-t1 .dot-led { background: #d97706; box-shadow: 0 0 6px #d97706; }
-    .active-t2 .dot-led { background: var(--positive); box-shadow: 0 0 6px var(--positive); }
-
-    .inst-nav-row {
-      display: flex;
-      gap: var(--spacing-xs);
-      overflow-x: auto;
-      padding-bottom: 2px;
-    }
-
-    .inst-chip {
-      font-family: var(--ff-mono);
-      font-size: 13px;
-      padding: 6px 12px;
-      border-radius: var(--r-full);
-      background: var(--surface-dim);
-      color: var(--on-surface);
-      border: 1px solid transparent;
+    .poke-cursor {
       cursor: pointer;
-      white-space: nowrap;
-      transition: all 0.2s ease;
     }
-
-    .inst-chip:hover {
-      background: var(--surface-container-high);
+    .poke-cursor:hover rect.pin-box {
+      stroke: #ff6600;
+      stroke-width: 2.5px;
     }
-
-    .inst-chip.is-active {
-      background: var(--accent-container);
-      color: var(--accent-fixed);
-      border-color: var(--primary);
-      font-weight: 600;
-    }
-
-    /* Datapath Viewport */
-    .datapath-card {
-      background: var(--surface-dim);
-      border-radius: var(--r-m);
-      margin: 0 var(--spacing-l);
-      padding: var(--spacing-m);
-      border: 1px solid var(--stroke-default);
-      position: relative;
-    }
-
-    .svg-viewport {
-      width: 100%;
-      height: auto;
-      display: block;
-    }
-
-    /* Interactive Node Styling */
-    .node-group {
-      cursor: pointer;
-      transition: transform 0.2s ease, opacity 0.2s ease;
-    }
-
-    .node-group rect, .node-group path {
-      transition: fill 0.2s ease, stroke 0.2s ease, stroke-width 0.2s ease;
-    }
-
-    .node-group:hover rect {
-      stroke: var(--primary);
-      stroke-width: 2px;
-    }
-
-    .node-group.is-active rect {
-      fill: var(--surface-bright);
-      stroke: var(--primary);
-      stroke-width: 2px;
-    }
-
-    .node-title {
-      font-family: var(--ff-sans);
-      font-size: 13px;
-      fill: var(--on-surface);
-      font-weight: 500;
-      pointer-events: none;
-    }
-
-    .node-detail {
-      font-family: var(--ff-mono);
-      font-size: 12px;
-      fill: var(--on-surface-variant);
-      pointer-events: none;
-    }
-
-    /* Bus Styling */
-    .bus-path {
-      fill: none;
-      stroke: var(--stroke-default);
-      stroke-width: 2;
-      transition: stroke 0.3s ease, stroke-width 0.3s ease;
-      pointer-events: none;
-    }
-
-    .bus-path.bus-addr.is-active {
-      stroke: var(--accent-fixed);
-      stroke-width: 3.5;
-    }
-
-    .bus-path.bus-data.is-active {
-      stroke: var(--positive);
-      stroke-width: 3.5;
-    }
-
-    .bus-path.bus-ctrl.is-active {
-      stroke: #d97706;
-      stroke-width: 3.5;
-      stroke-dasharray: 4 4;
-      animation: dashMove 1s linear infinite;
-    }
-
-    @keyframes dashMove {
-      to { stroke-dashoffset: -16; }
-    }
-
-    /* Control Deck */
-    .control-deck {
-      display: flex;
-      flex-direction: column;
-      gap: var(--spacing-m);
-      padding: var(--spacing-m) var(--spacing-l);
-    }
-
-    .playback-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: var(--spacing-m);
-      flex-wrap: wrap;
-    }
-
-    .btn-group {
-      display: flex;
-      align-items: center;
-      gap: var(--spacing-s);
-    }
-
-    .step-counter {
-      font-family: var(--ff-mono);
-      font-size: 13px;
-      color: var(--on-surface-variant);
-    }
-
-    /* Info Grid */
-    .info-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: var(--spacing-m);
-      padding: 0 var(--spacing-l) var(--spacing-l) var(--spacing-l);
-    }
-
-    @media (max-width: 580px) {
-      .info-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .info-panel {
-      background: var(--surface-dim);
-      border-radius: var(--r-m);
-      padding: var(--spacing-m);
-      border: 1px solid var(--stroke-default);
-      display: flex;
-      flex-direction: column;
-      gap: var(--spacing-s);
-    }
-
-    .panel-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      border-bottom: 1px solid var(--stroke-default);
-      padding-bottom: var(--spacing-xs);
-    }
-
-    .panel-title {
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--on-surface);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-
-    .micro-desc {
-      font-size: 14px;
-      line-height: 1.45;
-      color: var(--on-surface);
-    }
-
-    .reg-tag-list {
-      display: flex;
-      flex-wrap: wrap;
-      gap: var(--spacing-xs);
-      margin-top: var(--spacing-xs);
-    }
-
-    .reg-tag {
-      font-family: var(--ff-mono);
-      font-size: 12px;
-      padding: 3px 8px;
-      border-radius: var(--r-s);
-      background: var(--surface-container);
-      border: 1px solid var(--outline);
-      color: var(--on-surface);
-    }
-
-    .reg-tag span {
-      color: var(--primary);
-      font-weight: 600;
-    }
-
-    /* RAM & Cache Table */
-    .ram-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-family: var(--ff-mono);
-      font-size: 12px;
-    }
-
-    .ram-table th {
-      text-align: left;
-      padding: 4px 6px;
-      color: var(--on-surface-variant);
-      border-bottom: 1px solid var(--stroke-default);
-      font-weight: 400;
-    }
-
-    .ram-table td {
-      padding: 4px 6px;
-      color: var(--on-surface);
-    }
-
-    .ram-row.is-accessed {
-      background: var(--accent-container);
-    }
-
-    .ram-row.is-accessed td {
-      color: var(--accent-fixed);
-      font-weight: 600;
-    }
-
-    /* Modal / Inspector Drawer */
-    .inspector-card {
-      background: var(--surface-bright);
-      border-radius: var(--r-m);
-      padding: var(--spacing-m);
-      border: 1px solid var(--primary);
-      margin: 0 var(--spacing-l) var(--spacing-m) var(--spacing-l);
-      display: none;
-      animation: fadeIn 0.2s ease;
-    }
-
-    .inspector-card.is-visible {
-      display: block;
-    }
-
-    .inspector-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: var(--spacing-xs);
-    }
-
-    .inspector-close {
-      background: transparent;
-      border: none;
-      color: var(--on-surface-variant);
-      cursor: pointer;
-      font-size: 16px;
-      padding: 0 4px;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-4px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .bus-legend-bar {
-      display: flex;
-      gap: var(--spacing-m);
-      justify-content: center;
-      padding-top: var(--spacing-xs);
-      border-top: 1px dashed var(--stroke-default);
-      margin-top: var(--spacing-xs);
-      font-size: 12px;
-      font-family: var(--ff-mono);
-    }
-
-    .bus-legend-item {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .bus-swatch {
-      width: 12px;
-      height: 3px;
-      border-radius: 2px;
+    .wire-transition {
+      transition: stroke 0.15s ease, stroke-width 0.15s ease, opacity 0.2s ease;
     }
   </style>
-<script id="lumi-os-theme-init">
-(function() {
-  function syncBody() {
-    var dt = document.documentElement.getAttribute('data-theme');
-    if (document.body && (dt === 'dark' || dt === 'light')) {
-      document.body.classList.toggle('dark-mode', dt === 'dark');
-    }
-  }
-  function syncTheme(theme) {
-    if (theme !== 'dark' && theme !== 'light') return;
-    document.documentElement.setAttribute('data-theme', theme);
-    syncBody();
-  }
-  if (typeof MutationObserver === 'function') {
-    new MutationObserver(syncBody).observe(document.documentElement, {
-      attributes: true, attributeFilter: ['data-theme']
-    });
-  }
-  if (typeof document.addEventListener === 'function') {
-    document.addEventListener('DOMContentLoaded', syncBody);
-  }
-  try {
-    var mq = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)');
-    if (mq) {
-      var cur = document.documentElement.getAttribute('data-theme');
-      if (!cur) {
-        syncTheme(mq.matches ? 'dark' : 'light');
-      } else {
-        syncTheme(cur);
-      }
-      if (mq.addEventListener) {
-        mq.addEventListener('change', function(e) {
-          syncTheme(e.matches ? 'dark' : 'light');
-        });
-      }
-    }
-  } catch (e) {}
-  window.addEventListener('message', function(e) {
-    if (e.data && (e.data.type === 'set-theme' || e.data.type === 'APPLY_THEME') && e.data.theme) {
-      syncTheme(e.data.theme);
-    }
-  });
-})();
-</script>
 </head>
-<body>
-  <div class="widget-container">
-    
-    <!-- HEADER -->
-    <div class="sim-header">
-      <div class="sim-title-row">
-        <h2 class="lumi-headline-m" style="margin:0;">Arquitetura de Von Neumann (8 bits)</h2>
-        <div class="sim-pills">
-          <div id="pill-t0" class="cycle-pill"><span class="dot-led"></span>T0 Busca</div>
-          <div id="pill-t1" class="cycle-pill"><span class="dot-led"></span>T1 Decodificação</div>
-          <div id="pill-t2" class="cycle-pill"><span class="dot-led"></span>T2 Execução</div>
-        </div>
-      </div>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col font-sans">
 
-      <!-- INSTRUCTION SELECTOR CHIPS -->
-      <div class="inst-nav-row">
-        <button class="inst-chip is-active" onclick="jumpToInstruction(0)">1. LDA [04] (0x14)</button>
-        <button class="inst-chip" onclick="jumpToInstruction(1)">2. ADD [05] (0x25)</button>
-        <button class="inst-chip" onclick="jumpToInstruction(2)">3. OUT [00] (0x30)</button>
+  <!-- Barra Superior Estilo Logisim + Controles Didáticos -->
+  <header class="bg-slate-800 border-b border-slate-700 px-4 py-3 flex flex-wrap items-center justify-between gap-3 shadow-lg">
+    <div class="flex items-center gap-3">
+      <div class="bg-blue-600 text-white font-bold px-2.5 py-1 rounded text-sm tracking-wide shadow">
+        Logisim-Evolution Style
       </div>
+      <h1 class="text-base md:text-lg font-bold text-white">
+        Esquema de Ligação Fiel ao seu Print (CPU 8 bits)
+      </h1>
     </div>
 
-    <!-- DATAPATH ARCHITECTURE SVG CARD -->
-    <div class="datapath-card">
-      <svg class="svg-viewport" viewBox="0 0 660 330" aria-label="Diagrama do Datapath de Von Neumann">
-        <defs>
-          <marker id="lumi-caret" viewBox="0 0 10 10" refX="7.5" refY="5" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" orient="auto">
-            <path d="M 3 1.2 L 7.5 5 L 3 8.8" fill="none" stroke="var(--on-surface)" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
-          </marker>
-        </defs>
-
-        <!-- BUS LINES LAYER -->
-        <!-- Address Bus (Blue) -->
-        <path id="bus-addr" class="bus-path bus-addr" d="M 210 120 L 210 160 L 115 160 L 115 200 M 210 160 L 340 160 L 340 200" />
-        
-        <!-- Data Bus (Green) -->
-        <path id="bus-data" class="bus-path bus-data" d="M 115 200 L 115 180 L 340 180 L 340 200 M 340 180 L 565 180 L 565 200 M 340 180 L 340 120 M 565 180 L 565 120" />
-        
-        <!-- Control Bus (Amber / Dashed) -->
-        <path id="bus-ctrl" class="bus-path bus-ctrl" d="M 115 120 L 115 140 L 565 140 L 565 75 M 340 140 L 340 75 M 115 140 L 115 200 M 340 140 L 340 200 M 565 140 L 565 200" />
-
-        <!-- 6 TOP-LEVEL MODULE NODES -->
-        
-        <!-- 1. Unidade de Controle -->
-        <g id="node-control" class="node-group" onclick="inspectModule('control')">
-          <rect x="20" y="30" width="190" height="90" rx="12" fill="var(--surface-container)" stroke="var(--outline)" stroke-width="1.2"/>
-          <text x="115" y="52" text-anchor="middle" class="node-title">Unidade de Controle</text>
-          <text x="115" y="72" text-anchor="middle" class="node-detail">Decodificador / Clock</text>
-          <text id="node-ctrl-signal" x="115" y="92" text-anchor="middle" class="node-detail" style="fill: #d97706; font-weight: 600;">CTRL: LER_MEM</text>
-        </g>
-
-        <!-- 2. Registradores CPU -->
-        <g id="node-regs" class="node-group" onclick="inspectModule('regs')">
-          <rect x="245" y="30" width="190" height="90" rx="12" fill="var(--surface-container)" stroke="var(--outline)" stroke-width="1.2"/>
-          <text x="340" y="50" text-anchor="middle" class="node-title">Registradores CPU</text>
-          <text id="svg-reg-pc-ir" x="340" y="70" text-anchor="middle" class="node-detail">PC: 0x00 | IR: 0x14</text>
-          <text id="svg-reg-acc-b" x="340" y="90" text-anchor="middle" class="node-detail">ACC: 0x00 | REG_B: 0x00</text>
-        </g>
-
-        <!-- 3. ULA -->
-        <g id="node-ula" class="node-group" onclick="inspectModule('ula')">
-          <path d="M 470 30 L 515 30 L 525 50 L 535 30 L 660 30 L 640 120 L 490 120 Z" fill="var(--surface-container)" stroke="var(--outline)" stroke-width="1.2"/>
-          <text x="565" y="62" text-anchor="middle" class="node-title">ULA (ALU 8-bit)</text>
-          <text id="svg-ula-op" x="565" y="86" text-anchor="middle" class="node-detail">Status: Inativa</text>
-        </g>
-
-        <!-- 4. Memória Cache -->
-        <g id="node-cache" class="node-group" onclick="inspectModule('cache')">
-          <rect x="20" y="200" width="190" height="90" rx="12" fill="var(--surface-container)" stroke="var(--outline)" stroke-width="1.2"/>
-          <text x="115" y="228" text-anchor="middle" class="node-title">Memória Cache (L1)</text>
-          <text id="svg-cache-status" x="115" y="250" text-anchor="middle" class="node-detail">Status: MISS</text>
-          <text id="svg-cache-line" x="115" y="270" text-anchor="middle" class="node-detail">Linha: [0x00] = 0x14</text>
-        </g>
-
-        <!-- 5. Memória RAM Principal -->
-        <g id="node-ram" class="node-group" onclick="inspectModule('ram')">
-          <rect x="245" y="200" width="190" height="90" rx="12" fill="var(--surface-container)" stroke="var(--outline)" stroke-width="1.2"/>
-          <text x="340" y="228" text-anchor="middle" class="node-title">Memória Principal RAM</text>
-          <text id="svg-ram-addr" x="340" y="250" text-anchor="middle" class="node-detail">Endereço: 0x00</text>
-          <text id="svg-ram-val" x="340" y="270" text-anchor="middle" class="node-detail">Dado Lido: 0x14</text>
-        </g>
-
-        <!-- 6. Dispositivos E/S (I/O) -->
-        <g id="node-io" class="node-group" onclick="inspectModule('io')">
-          <rect x="470" y="200" width="190" height="90" rx="12" fill="var(--surface-container)" stroke="var(--outline)" stroke-width="1.2"/>
-          <text x="565" y="228" text-anchor="middle" class="node-title">Dispositivos E/S</text>
-          <text id="svg-io-val" x="565" y="252" text-anchor="middle" class="node-detail">Display Hex: 0x00</text>
-          <text x="565" y="272" text-anchor="middle" class="node-detail">Saída Periférica</text>
-        </g>
-      </svg>
-
-      <!-- BUS LEGEND BAR -->
-      <div class="bus-legend-bar">
-        <div class="bus-legend-item">
-          <div class="bus-swatch" style="background: var(--accent-fixed);"></div>
-          <span>Endereços</span>
-        </div>
-        <div class="bus-legend-item">
-          <div class="bus-swatch" style="background: var(--positive);"></div>
-          <span>Dados</span>
-        </div>
-        <div class="bus-legend-item">
-          <div class="bus-swatch" style="background: #d97706;"></div>
-          <span>Controle</span>
-        </div>
+    <div class="flex flex-wrap items-center gap-2">
+      <!-- Filtro de Fios -->
+      <div class="flex items-center bg-slate-900 p-1 rounded-lg border border-slate-700 text-xs">
+        <span class="px-2 text-slate-400 font-semibold">Destacar Fios:</span>
+        <button onclick="setWireFilter('all')" id="btn-filter-all" class="px-2.5 py-1 rounded bg-blue-600 text-white font-semibold">Todos</button>
+        <button onclick="setWireFilter('clock')" id="btn-filter-clock" class="px-2.5 py-1 rounded text-slate-300 hover:text-white">1. Clock</button>
+        <button onclick="setWireFilter('control')" id="btn-filter-control" class="px-2.5 py-1 rounded text-slate-300 hover:text-white">2. Controle (WE)</button>
+        <button onclick="setWireFilter('address')" id="btn-filter-address" class="px-2.5 py-1 rounded text-slate-300 hover:text-white">3. Endereço</button>
+        <button onclick="setWireFilter('data')" id="btn-filter-data" class="px-2.5 py-1 rounded text-slate-300 hover:text-white">4. Dados/ULA</button>
       </div>
+
+      <button onclick="downloadCircFile()" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-3 py-2 rounded-lg shadow flex items-center gap-1.5 transition">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+        Baixar Arquivo .CIRC
+      </button>
     </div>
+  </header>
 
-    <!-- INSPECTOR DRAWER (Shown when module is clicked) -->
-    <div id="inspector-card" class="inspector-card">
-      <div class="inspector-header">
-        <h3 id="inspector-title" class="lumi-headline-s" style="margin:0;">Módulo</h3>
-        <button class="inspector-close" onclick="closeInspector()">✕</button>
-      </div>
-      <p id="inspector-desc" class="lumi-body-s" style="margin:0; color: var(--on-surface-variant);"></p>
+  <!-- Barra de Simulação Automática Passo a Passo -->
+  <div class="bg-slate-800/80 border-b border-slate-700 px-4 py-2 flex flex-wrap items-center justify-between gap-3 text-xs">
+    <div class="flex items-center gap-2">
+      <span class="font-bold text-amber-400 uppercase tracking-wider">Mãozinha (Poke Tool) Ativa:</span>
+      <span class="text-slate-300">Clique direto nos pinos verdes <code class="bg-slate-900 px-1.5 py-0.5 rounded text-emerald-400">0/1</code> ou no <code class="bg-slate-900 px-1.5 py-0.5 rounded text-emerald-400">CLOCK</code> na tela branca abaixo, ou use o guia automático:</span>
     </div>
-
-    <!-- CONTROL DECK -->
-    <div class="control-deck">
-      <div class="playback-row">
-        <div class="btn-group">
-          <button class="lumi-btn lumi-btn--tonal lumi-btn--small" onclick="prevStep()">Passo Anterior</button>
-          <button id="btn-play" class="lumi-btn lumi-btn--primary lumi-btn--small" onclick="togglePlay()">Auto Executar</button>
-          <button class="lumi-btn lumi-btn--tonal lumi-btn--small" onclick="nextStep()">Próximo Pulso (Ctrl+T)</button>
-        </div>
-        <div class="step-counter">
-          Pulso de Clock: <span id="clock-step-num" style="color:var(--primary); font-weight:600;">1</span> / 9
-        </div>
-      </div>
-
-      <div class="lumi-slider-container">
-        <input type="range" id="step-slider" class="lumi-slider" min="0" max="8" value="0" style="--progress: 0%;" oninput="onSliderChange(this.value)">
-      </div>
+    <div class="flex items-center gap-2">
+      <button onclick="runGuidedStep()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-3 py-1.5 rounded shadow transition">
+        ▶ Executar Próximo Passo do Ciclo (Fetch → Decode → Execute)
+      </button>
+      <button onclick="resetCPU()" class="bg-slate-700 hover:bg-slate-600 text-slate-200 font-semibold px-3 py-1.5 rounded transition">
+        ↺ Resetar CPU
+      </button>
     </div>
-
-    <!-- INFO GRID: MICRO-OPERATION & RAM CONTENT -->
-    <div class="info-grid">
-      <!-- LEFT: Micro-Operation & Registers -->
-      <div class="info-panel">
-        <div class="panel-header">
-          <span class="panel-title">Micro-Operação do Ciclo</span>
-          <span id="micro-opcode-badge" class="reg-tag">Opcode: <span>0001 (LDA)</span></span>
-        </div>
-        <p id="micro-desc-text" class="micro-desc">
-          PC (0x00) é enviado ao Barramento de Endereços. A RAM lê a instrução 0x14 (LDA [04]) e transfere pelo Barramento de Dados para o Registrador de Instrução (IR).
-        </p>
-        <div class="reg-tag-list">
-          <div class="reg-tag">PC: <span id="tag-pc">0x00</span></div>
-          <div class="reg-tag">IR: <span id="tag-ir">0x14</span></div>
-          <div class="reg-tag">ACC: <span id="tag-acc">0x00</span></div>
-          <div class="reg-tag">REG_B: <span id="tag-regb">0x00</span></div>
-          <div class="reg-tag">Bar. End: <span id="tag-bus-addr">0x00</span></div>
-          <div class="reg-tag">Bar. Dados: <span id="tag-bus-data">0x14</span></div>
-        </div>
-      </div>
-
-      <!-- RIGHT: RAM & IO Status -->
-      <div class="info-panel">
-        <div class="panel-header">
-          <span class="panel-title">Conteúdo da Memória RAM</span>
-          <span id="tag-io-out" class="reg-tag">Saída E/S: <span>0x00</span></span>
-        </div>
-        <table class="ram-table">
-          <thead>
-            <tr>
-              <th>Endereço</th>
-              <th>Conteúdo (Hex)</th>
-              <th>Significado</th>
-            </tr>
-          </thead>
-          <tbody id="ram-table-body">
-            <!-- Dynamic rows -->
-          </tbody>
-        </table>
-      </div>
-    </div>
-
   </div>
 
+  <!-- Banner de Explicação do Passo Atual -->
+  <div id="step-banner" class="bg-blue-950/90 border-b border-blue-800 px-4 py-2 text-xs md:text-sm text-blue-100 flex items-center justify-between">
+    <div>
+      <strong class="text-amber-300" id="step-title">Pronto para Simular:</strong>
+      <span id="step-desc">A RAM já contém o valor <code class="font-bold text-white">05</code> no endereço <code class="font-bold text-white">00</code> e <code class="font-bold text-white">03</code> no endereço <code class="font-bold text-white">01</code>. Clique em "Executar Próximo Passo" ou interaja direto no circuito!</span>
+    </div>
+    <span id="step-counter" class="bg-blue-900 text-blue-200 px-2.5 py-0.5 rounded font-mono font-bold whitespace-nowrap ml-2">Passo 0 / 5</span>
+  </div>
+
+  <!-- Área Principal: Canvas Idêntico ao Logisim-Evolution -->
+  <main class="flex-1 overflow-auto p-3 md:p-5 flex justify-center items-start bg-slate-950">
+    <div class="rounded-lg overflow-hidden shadow-2xl border-2 border-slate-600 logisim-grid relative">
+      
+      <svg id="logisim-svg" width="1120" height="630" viewBox="0 0 1120 630">
+        <defs>
+          <!-- Sombra leve para caixas selecionadas -->
+          <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+            <feDropShadow dx="0" dy="1" stdDeviation="1.5" flood-opacity="0.25"/>
+          </filter>
+        </defs>
+
+        <!-- =========================================================
+             CAMADA 1: FIOS E BARRAMENTOS (ESTILO LOGISIM-EVOLUTION)
+             ========================================================= -->
+
+        <!-- 1. REDE DE CLOCK (Verde Logisim) -->
+        <g id="layer-clock" class="wire-transition">
+          <!-- Saída do Clock até tronco vertical -->
+          <polyline id="wire-clk-main" points="135,230 160,230 160,510" fill="none" stroke="#008e00" stroke-width="2.5"/>
+          <!-- Ramificações para cada Registrador -->
+          <!-- Para MAR (x=230, y=240) -->
+          <line id="wire-clk-mar" x1="160" y1="240" x2="230" y2="240" stroke="#008e00" stroke-width="2.5"/>
+          <circle cx="160" cy="240" r="3.5" fill="#008e00"/>
+          <!-- Para PC (x=245, y=365) -->
+          <polyline id="wire-clk-pc" points="160,380 245,380 245,365" fill="none" stroke="#008e00" stroke-width="2.5"/>
+          <circle cx="160" cy="380" r="3.5" fill="#008e00"/>
+          <!-- Para IR (x=320, y=280) -->
+          <polyline id="wire-clk-ir" points="160,295 305,295 305,280 320,280" fill="none" stroke="#008e00" stroke-width="2.5"/>
+          <circle cx="160" cy="295" r="3.5" fill="#008e00"/>
+          <!-- Para MBR (x=420, y=510) -->
+          <line id="wire-clk-mbr" x1="160" y1="510" x2="420" y2="510" stroke="#008e00" stroke-width="2.5"/>
+          <!-- Para ACUMULADOR (x=690, y=430) -->
+          <polyline id="wire-clk-ac" points="400,510 400,560 675,560 675,430 690,430" fill="none" stroke="#008e00" stroke-width="2.5"/>
+          <circle cx="400" cy="510" r="3.5" fill="#008e00"/>
+        </g>
+
+        <!-- 2. BARRAMENTO DE CONTROLE (Sinais WE / Load de 1 bit) -->
+        <g id="layer-control" class="wire-transition">
+          <!-- MAR_Load -> MAR.WE (230, 220) -->
+          <polyline id="wire-ctrl-mar" points="175,380 195,380 195,220 230,220" fill="none" stroke="#008e00" stroke-width="2"/>
+          
+          <!-- RAM_Read_MBR -> MBR.WE (420, 490) e RAM.OE (530, 220) -->
+          <polyline id="wire-ctrl-mbr" points="175,415 205,415 205,490 420,490" fill="none" stroke="#008e00" stroke-width="2"/>
+          <polyline id="wire-ctrl-ram-oe" points="205,415 205,135 510,135 510,220 530,220" fill="none" stroke="#008e00" stroke-width="2"/>
+          <circle cx="205" cy="415" r="3.5" fill="#008e00"/>
+
+          <!-- IR_Load -> IR.WE (320, 260) -->
+          <polyline id="wire-ctrl-ir" points="175,450 215,450 215,260 320,260" fill="none" stroke="#008e00" stroke-width="2"/>
+
+          <!-- PC_Inc -> PC.ct (230, 355) -->
+          <polyline id="wire-ctrl-pc" points="175,485 222,485 222,355 230,355" fill="none" stroke="#008e00" stroke-width="2"/>
+
+          <!-- AC_Exec -> ACUMULADOR.WE (690, 410) -->
+          <polyline id="wire-ctrl-ac" points="175,520 215,520 215,575 665,575 665,410 690,410" fill="none" stroke="#008e00" stroke-width="2"/>
+        </g>
+
+        <!-- 3. BARRAMENTO DE ENDEREÇOS (8 bits - Fio Preto Grosso no Logisim) -->
+        <g id="layer-address" class="wire-transition">
+          <!-- PC.Q (260, 340) -> MAR.D (230, 200) -->
+          <polyline points="260,340 280,340 280,290 210,290 210,200 230,200" fill="none" stroke="#000000" stroke-width="4"/>
+          
+          <!-- MAR.Q (270, 200) -> RAM.A (530, 165) -->
+          <polyline points="270,200 295,200 295,165 530,165" fill="none" stroke="#000000" stroke-width="4"/>
+          <text x="335" y="157" class="logisim-label-blue" font-size="11">Barramento de Endereços (8b)</text>
+        </g>
+
+        <!-- 4. BARRAMENTO DE DADOS E CICLO DA ULA (8 bits - Fio Preto Grosso) -->
+        <g id="layer-data" class="wire-transition">
+          <!-- Saída da RAM.D (770, 235) -> Descendo para MBR.D (420, 470) -->
+          <polyline points="770,235 810,235 810,330 405,330 405,470 420,470" fill="none" stroke="#000000" stroke-width="4"/>
+          <circle cx="810" cy="235" r="4.5" fill="#000000"/>
+
+          <!-- Ligação do Teclado (Entrada E/S) -> Entrada de Escrita da RAM.D_in (530, 250) -->
+          <polyline points="980,245 980,115 495,115 495,250 530,250" fill="none" stroke="#000000" stroke-width="3.5" stroke-dasharray="6,3"/>
+          <text x="650" y="108" fill="#475569" font-size="11" font-weight="bold">Entrada E/S (Teclado → Escrita na RAM)</text>
+
+          <!-- Saída do MBR.Q (460, 470) -> Barramento de Dados para ULA e IR -->
+          <polyline points="460,470 490,470 490,395 565,395" fill="none" stroke="#000000" stroke-width="4"/>
+          <circle cx="490" cy="395" r="4.5" fill="#000000"/>
+          <!-- Ramo de MBR.Q para IR.D (320, 240) -->
+          <polyline points="490,395 490,350 305,350 305,240 320,240" fill="none" stroke="#000000" stroke-width="4"/>
+          <text x="415" y="343" class="logisim-label-blue" font-size="11">Barramento de Dados (8b)</text>
+
+          <!-- Saída do IR.Q (360, 240) -> Visor de Opcode Decodificado -->
+          <polyline points="360,240 415,240" fill="none" stroke="#000000" stroke-width="4"/>
+
+          <!-- Saída da ULA (605, 405) -> ACUMULADOR.D (690, 390) -->
+          <polyline points="605,405 645,405 645,390 690,390" fill="none" stroke="#000000" stroke-width="4"/>
+
+          <!-- Saída do ACUMULADOR.Q (730, 390) -> Monitor e Realimentação da ULA -->
+          <polyline points="730,390 790,390 865,390 865,420" fill="none" stroke="#000000" stroke-width="4"/>
+          <circle cx="790" cy="390" r="4.5" fill="#000000"/>
+          <!-- Loop de volta para ULA Entrada B (565, 415) -->
+          <polyline points="790,390 790,505 535,505 535,415 565,415" fill="none" stroke="#000000" stroke-width="4"/>
+        </g>
+
+
+        <!-- =========================================================
+             CAMADA 2: COMPONENTES NATIVOS DO LOGISIM-EVOLUTION
+             ========================================================= -->
+
+        <!-- 1. COMPONENTE CLOCK (x=95, y=218) -->
+        <g transform="translate(95, 218)" onclick="pulseClock()" class="poke-cursor">
+          <text x="-12" y="-18" class="logisim-label-black" font-size="15">CLOCK</text>
+          <polygon points="0,0 28,0 38,12 28,24 0,24" fill="#ffffff" stroke="#000000" stroke-width="2" class="pin-box"/>
+          <!-- Onda quadrada interna -->
+          <polyline id="clk-wave" points="5,17 11,17 11,7 19,7 19,17 25,17" fill="none" stroke="#008e00" stroke-width="2"/>
+          <circle cx="40" cy="12" r="2.5" fill="#008e00"/>
+          <title>Clique aqui para dar um pulso de Clock!</title>
+        </g>
+
+        <!-- 2. PINOS DE CONTROLE MANUAIS (Canto Inferior Esquerdo - Idêntico ao seu print) -->
+        <!-- Pino 1: MAR_Load -->
+        <g transform="translate(153, 369)" onclick="togglePin('MAR_Load')" class="poke-cursor">
+          <text x="-8" y="16" text-anchor="end" class="logisim-label-blue" font-size="15">MAR_Load</text>
+          <rect x="0" y="0" width="22" height="22" fill="#ffffff" stroke="#000000" stroke-width="2" class="pin-box"/>
+          <circle id="pin-bg-MAR_Load" cx="11" cy="11" r="8" fill="#006400"/>
+          <text id="pin-txt-MAR_Load" x="11" y="15" text-anchor="middle" fill="#ffffff" class="logisim-mono" font-size="13">0</text>
+          <circle cx="22" cy="11" r="2.5" fill="#008e00"/>
+        </g>
+
+        <!-- Pino 2: RAM_Read_MBR -->
+        <g transform="translate(153, 404)" onclick="togglePin('RAM_Read_MBR')" class="poke-cursor">
+          <text x="-8" y="16" text-anchor="end" class="logisim-label-blue" font-size="15">RAM_Read_MBR</text>
+          <rect x="0" y="0" width="22" height="22" fill="#ffffff" stroke="#000000" stroke-width="2" class="pin-box"/>
+          <circle id="pin-bg-RAM_Read_MBR" cx="11" cy="11" r="8" fill="#006400"/>
+          <text id="pin-txt-RAM_Read_MBR" x="11" y="15" text-anchor="middle" fill="#ffffff" class="logisim-mono" font-size="13">0</text>
+          <circle cx="22" cy="11" r="2.5" fill="#008e00"/>
+        </g>
+
+        <!-- Pino 3: IR_Load -->
+        <g transform="translate(153, 439)" onclick="togglePin('IR_Load')" class="poke-cursor">
+          <text x="-8" y="16" text-anchor="end" class="logisim-label-blue" font-size="15">IR_Load</text>
+          <rect x="0" y="0" width="22" height="22" fill="#ffffff" stroke="#000000" stroke-width="2" class="pin-box"/>
+          <circle id="pin-bg-IR_Load" cx="11" cy="11" r="8" fill="#006400"/>
+          <text id="pin-txt-IR_Load" x="11" y="15" text-anchor="middle" fill="#ffffff" class="logisim-mono" font-size="13">0</text>
+          <circle cx="22" cy="11" r="2.5" fill="#008e00"/>
+        </g>
+
+        <!-- Pino 4: PC_Inc -->
+        <g transform="translate(153, 474)" onclick="togglePin('PC_Inc')" class="poke-cursor">
+          <text x="-8" y="16" text-anchor="end" class="logisim-label-blue" font-size="15">PC_Inc</text>
+          <rect x="0" y="0" width="22" height="22" fill="#ffffff" stroke="#000000" stroke-width="2" class="pin-box"/>
+          <circle id="pin-bg-PC_Inc" cx="11" cy="11" r="8" fill="#006400"/>
+          <text id="pin-txt-PC_Inc" x="11" y="15" text-anchor="middle" fill="#ffffff" class="logisim-mono" font-size="13">0</text>
+          <circle cx="22" cy="11" r="2.5" fill="#008e00"/>
+        </g>
+
+        <!-- Pino 5: AC_Exec -->
+        <g transform="translate(153, 509)" onclick="togglePin('AC_Exec')" class="poke-cursor">
+          <text x="-8" y="16" text-anchor="end" class="logisim-label-blue" font-size="15">AC_Exec</text>
+          <rect x="0" y="0" width="22" height="22" fill="#ffffff" stroke="#000000" stroke-width="2" class="pin-box"/>
+          <circle id="pin-bg-AC_Exec" cx="11" cy="11" r="8" fill="#006400"/>
+          <text id="pin-txt-AC_Exec" x="11" y="15" text-anchor="middle" fill="#ffffff" class="logisim-mono" font-size="13">0</text>
+          <circle cx="22" cy="11" r="2.5" fill="#008e00"/>
+        </g>
+
+
+        <!-- 3. REGISTRADOR MAR (x=230, y=185) -->
+        <g transform="translate(230, 185)">
+          <text x="20" y="-28" text-anchor="middle" class="logisim-label-blue" font-size="15">MAR</text>
+          <!-- Caixa cinza de valor no topo -->
+          <rect x="9" y="-20" width="22" height="16" fill="#cccccc"/>
+          <text id="val-MAR" x="20" y="-8" text-anchor="middle" class="logisim-mono" font-size="12" fill="#333">00</text>
+          <!-- Efeito de folhas empilhadas do Classic Logisim -->
+          <rect x="6" y="6" width="40" height="60" fill="#ffffff" stroke="#000000" stroke-width="1.5"/>
+          <rect x="3" y="3" width="40" height="60" fill="#ffffff" stroke="#000000" stroke-width="1.5"/>
+          <rect x="0" y="0" width="40" height="60" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+          <!-- Rótulos internos -->
+          <text x="4" y="18" font-size="11" font-family="sans-serif">D</text>
+          <text x="27" y="18" font-size="11" font-family="sans-serif">Q</text>
+          <text x="4" y="38" font-size="10" font-family="sans-serif">WE</text>
+          <polyline points="0,50 7,55 0,60" fill="none" stroke="#000000" stroke-width="1.5"/>
+          <text x="18" y="57" font-size="10" fill="#888" font-family="sans-serif">R</text>
+        </g>
+
+
+        <!-- 4. CONTADOR PC (x=230, y=325) -->
+        <g transform="translate(230, 325)">
+          <text x="15" y="-8" text-anchor="middle" class="logisim-label-blue" font-size="15">PC</text>
+          <rect x="0" y="0" width="30" height="40" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+          <text id="val-PC" x="15" y="13" text-anchor="middle" class="logisim-mono" font-size="12" fill="#000">00</text>
+          <text x="3" y="23" font-size="10" font-family="sans-serif">D</text>
+          <text x="19" y="23" font-size="10" font-family="sans-serif">Q</text>
+          <text x="3" y="34" font-size="9" fill="#555" font-family="sans-serif">ct</text>
+          <polyline points="11,40 15,34 19,40" fill="none" stroke="#000000" stroke-width="1.5"/>
+        </g>
+
+
+        <!-- 5. REGISTRADOR IR (x=320, y=225) -->
+        <g transform="translate(320, 225)">
+          <text x="20" y="-28" text-anchor="middle" class="logisim-label-blue" font-size="15">IR</text>
+          <rect x="9" y="-20" width="22" height="16" fill="#cccccc"/>
+          <text id="val-IR" x="20" y="-8" text-anchor="middle" class="logisim-mono" font-size="12" fill="#333">00</text>
+          <rect x="6" y="6" width="40" height="60" fill="#ffffff" stroke="#000000" stroke-width="1.5"/>
+          <rect x="3" y="3" width="40" height="60" fill="#ffffff" stroke="#000000" stroke-width="1.5"/>
+          <rect x="0" y="0" width="40" height="60" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+          <text x="4" y="18" font-size="11" font-family="sans-serif">D</text>
+          <text x="27" y="18" font-size="11" font-family="sans-serif">Q</text>
+          <text x="4" y="38" font-size="10" font-family="sans-serif">WE</text>
+          <polyline points="0,50 7,55 0,60" fill="none" stroke="#000000" stroke-width="1.5"/>
+          <text x="18" y="57" font-size="10" fill="#888" font-family="sans-serif">R</text>
+        </g>
+
+        <!-- Visor do Decodificador na saída do IR -->
+        <g transform="translate(415, 226)">
+          <rect x="0" y="0" width="76" height="26" rx="4" fill="#fef3c7" stroke="#d97706" stroke-width="1.5"/>
+          <text x="38" y="11" text-anchor="middle" font-size="8.5" font-weight="bold" fill="#92400e">DECODER UC</text>
+          <text id="val-DECODER" x="38" y="22" text-anchor="middle" class="logisim-mono" font-size="10" fill="#78350f">NOP (00)</text>
+        </g>
+
+
+        <!-- 6. REGISTRADOR MBR (x=420, y=455) -->
+        <g transform="translate(420, 455)">
+          <text x="20" y="-28" text-anchor="middle" class="logisim-label-blue" font-size="15">MBR</text>
+          <rect x="9" y="-20" width="22" height="16" fill="#cccccc"/>
+          <text id="val-MBR" x="20" y="-8" text-anchor="middle" class="logisim-mono" font-size="12" fill="#333">00</text>
+          <rect x="6" y="6" width="40" height="60" fill="#ffffff" stroke="#000000" stroke-width="1.5"/>
+          <rect x="3" y="3" width="40" height="60" fill="#ffffff" stroke="#000000" stroke-width="1.5"/>
+          <rect x="0" y="0" width="40" height="60" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+          <text x="4" y="18" font-size="11" font-family="sans-serif">D</text>
+          <text x="27" y="18" font-size="11" font-family="sans-serif">Q</text>
+          <text x="4" y="38" font-size="10" font-family="sans-serif">WE</text>
+          <polyline points="0,50 7,55 0,60" fill="none" stroke="#000000" stroke-width="1.5"/>
+          <text x="18" y="57" font-size="10" fill="#888" font-family="sans-serif">R</text>
+        </g>
+
+
+        <!-- 7. MEMÓRIA RAM 256 x 8 (x=530, y=140) -->
+        <g transform="translate(530, 140)">
+          <text x="120" y="-12" text-anchor="middle" class="logisim-label-black" font-size="16">RAM</text>
+          <rect x="0" y="0" width="240" height="165" fill="#ffffff" stroke="#000000" stroke-width="1.8"/>
+          <text x="120" y="15" text-anchor="middle" font-size="12" font-family="sans-serif">RAM 256 x 8</text>
+          
+          <!-- Pinos da esquerda -->
+          <text x="5" y="29" font-size="11" font-family="sans-serif">A</text>
+          <text x="5" y="72" font-size="10" font-family="sans-serif">WE</text>
+          <text x="5" y="84" font-size="10" font-family="sans-serif">OE</text>
+          <polyline points="0,86 6,91 0,96" fill="none" stroke="#000000" stroke-width="1.3"/>
+          <text x="5" y="114" font-size="11" font-family="sans-serif">D</text>
+
+          <!-- Pino da direita (Saída D) -->
+          <text x="226" y="99" font-size="11" font-family="sans-serif">D</text>
+
+          <!-- Grade de Memória Interna -->
+          <rect x="42" y="20" width="155" height="132" fill="#b8b8b8" stroke="#666666" stroke-width="1"/>
+          <!-- Coluna de Endereços -->
+          <text x="45" y="37" class="logisim-mono" font-size="12" fill="#222">00</text>
+          <text x="45" y="57" class="logisim-mono" font-size="12" fill="#222">04</text>
+          <text x="45" y="77" class="logisim-mono" font-size="12" fill="#222">08</text>
+          <text x="45" y="97" class="logisim-mono" font-size="12" fill="#222">0c</text>
+          <text x="45" y="117" class="logisim-mono" font-size="12" fill="#222">10</text>
+          <text x="45" y="137" class="logisim-mono" font-size="12" fill="#222">14</text>
+
+          <line x1="65" y1="20" x2="65" y2="152" stroke="#555" stroke-width="1"/>
+
+          <!-- Células Destacadas (Endereço 00 e 01) -->
+          <rect id="ram-cell-0" x="68" y="24" width="22" height="17" fill="#444444"/>
+          <text id="ram-val-0" x="79" y="37" text-anchor="middle" class="logisim-mono" font-size="12" fill="#ffffff">05</text>
+
+          <rect id="ram-cell-1" x="93" y="24" width="22" height="17" fill="#b8b8b8"/>
+          <text id="ram-val-1" x="104" y="37" text-anchor="middle" class="logisim-mono" font-size="12" fill="#111111">03</text>
+
+          <text x="130" y="37" class="logisim-mono" font-size="12" fill="#222">00 00</text>
+          <text x="70" y="57" class="logisim-mono" font-size="12" fill="#222">00 00 00 00</text>
+          <text x="70" y="77" class="logisim-mono" font-size="12" fill="#222">00 00 00 00</text>
+          <text x="70" y="97" class="logisim-mono" font-size="12" fill="#222">00 00 00 00</text>
+          <text x="70" y="117" class="logisim-mono" font-size="12" fill="#222">00 00 00 00</text>
+          <text x="70" y="137" class="logisim-mono" font-size="12" fill="#222">00 00 00 00</text>
+        </g>
+
+
+        <!-- 8. ULA / ADDER (x=565, y=385) -->
+        <g transform="translate(565, 385)">
+          <text x="20" y="-10" text-anchor="middle" class="logisim-label-black" font-size="15">ULA</text>
+          <rect x="0" y="0" width="40" height="40" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+          <text x="10" y="12" font-size="9" fill="#888" font-family="sans-serif">c in</text>
+          <text x="8" y="36" font-size="9" fill="#888" font-family="sans-serif">c out</text>
+          <text x="29" y="26" font-size="18" font-weight="bold" font-family="sans-serif">+</text>
+        </g>
+
+
+        <!-- 9. REGISTRADOR ACUMULADOR (x=690, y=375) -->
+        <g transform="translate(690, 375)">
+          <text x="20" y="-28" text-anchor="middle" class="logisim-label-blue" font-size="15">ACUMULADOR (AC)</text>
+          <rect x="9" y="-20" width="22" height="16" fill="#cccccc"/>
+          <text id="val-AC" x="20" y="-8" text-anchor="middle" class="logisim-mono" font-size="12" fill="#333">00</text>
+          <rect x="6" y="6" width="40" height="60" fill="#ffffff" stroke="#000000" stroke-width="1.5"/>
+          <rect x="3" y="3" width="40" height="60" fill="#ffffff" stroke="#000000" stroke-width="1.5"/>
+          <rect x="0" y="0" width="40" height="60" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+          <text x="4" y="18" font-size="11" font-family="sans-serif">D</text>
+          <text x="27" y="18" font-size="11" font-family="sans-serif">Q</text>
+          <text x="4" y="38" font-size="10" font-family="sans-serif">WE</text>
+          <polyline points="0,50 7,55 0,60" fill="none" stroke="#000000" stroke-width="1.5"/>
+          <text x="18" y="57" font-size="10" fill="#888" font-family="sans-serif">R</text>
+        </g>
+
+
+        <!-- 10. MONITOR (Pino de Saída de 8 bits - x=825, y=420) -->
+        <g transform="translate(825, 420)">
+          <rect x="0" y="0" width="82" height="22" rx="7" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+          <text id="val-Monitor" x="41" y="15" text-anchor="middle" class="logisim-mono" font-size="12" fill="#000">00000000</text>
+          <text x="41" y="38" text-anchor="middle" class="logisim-label-black" font-size="15">Monitor</text>
+        </g>
+
+
+        <!-- 11. TECLADO (Pino de Entrada de 8 bits - x=898, y=234) -->
+        <g transform="translate(898, 234)">
+          <text x="-8" y="16" text-anchor="end" class="logisim-label-blue" font-size="15">Teclado</text>
+          <rect x="0" y="0" width="82" height="22" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+          <text x="41" y="15" text-anchor="middle" class="logisim-mono" font-size="12" fill="#000">00000000</text>
+        </g>
+
+        <!-- NOTA VISUAL EXPLICATIVA SOBRE OS BLOCOS DUPLICADOS DO SEU PRINT -->
+        <g transform="translate(40, 25)">
+          <rect x="0" y="0" width="420" height="58" rx="6" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.5"/>
+          <text x="12" y="20" font-size="12" font-weight="bold" fill="#1e40af">💡 Ajuste feito em relação ao seu último print:</text>
+          <text x="12" y="37" font-size="11" fill="#1e3a8a">• Removidos os blocos repetidos (você tinha <tspan font-weight="bold">IR + REG_INST</tspan> e <tspan font-weight="bold">AC + ACUMULADOR</tspan>).</text>
+          <text x="12" y="51" font-size="11" fill="#1e3a8a">• O <tspan font-weight="bold">Teclado</tspan> foi separado da saída da <tspan font-weight="bold">RAM</tspan> para não causar fio vermelho (curto-circuito).</text>
+        </g>
+
+      </svg>
+
+    </div>
+  </main>
+
+  <!-- Rodapé com Resumo Rápido das Ligações -->
+  <footer class="bg-slate-900 border-t border-slate-800 px-6 py-4 text-xs text-slate-300 grid grid-cols-1 md:grid-cols-4 gap-4">
+    <div class="bg-slate-800/70 p-3 rounded border border-slate-700">
+      <div class="font-bold text-emerald-400 mb-1">1. Fios do CLOCK (Verdes)</div>
+      Saem do <code class="text-white">CLOCK</code> e entram no pino do <strong>triângulo (&gt;)</strong> na parte inferior esquerda do <code class="text-white">MAR</code>, <code class="text-white">PC</code>, <code class="text-white">IR</code>, <code class="text-white">MBR</code> e <code class="text-white">ACUMULADOR</code>.
+    </div>
+    <div class="bg-slate-800/70 p-3 rounded border border-slate-700">
+      <div class="font-bold text-emerald-400 mb-1">2. Fios de Controle (WE)</div>
+      Cada um dos 5 pinos verdes de 1 bit vai no pino <code class="text-white">WE</code> do seu registrador correspondente (e o <code class="text-white">RAM_Read_MBR</code> também liga no <code class="text-white">OE</code> da RAM).
+    </div>
+    <div class="bg-slate-800/70 p-3 rounded border border-slate-700">
+      <div class="font-bold text-blue-400 mb-1">3. Barramento de Endereços</div>
+      A saída <code class="text-white">Q</code> do <code class="text-white">PC</code> entra no <code class="text-white">D</code> do <code class="text-white">MAR</code>. A saída <code class="text-white">Q</code> do <code class="text-white">MAR</code> entra no pino <code class="text-white">A</code> (Address) da <code class="text-white">RAM</code>.
+    </div>
+    <div class="bg-slate-800/70 p-3 rounded border border-slate-700">
+      <div class="font-bold text-amber-400 mb-1">4. Barramento de Dados e ULA</div>
+      A saída direita <code class="text-white">D</code> da <code class="text-white">RAM</code> vai ao <code class="text-white">D</code> do <code class="text-white">MBR</code>. O <code class="text-white">Q</code> do <code class="text-white">MBR</code> vai para o <code class="text-white">IR</code> e para a <code class="text-white">ULA</code>.
+    </div>
+  </footer>
+
   <script>
-    // 9 CLOCK STATES SPECIFICATION
-    const SIM_STEPS = [
-      // Inst 1: LDA [04]
-      {
-        instIdx: 0,
-        cycle: 'T0',
-        pc: '0x00', ir: '0x14', acc: '0x00', regB: '0x00',
-        ula: 'Inativa', cache: 'MISS',
-        busAddr: '0x00', busData: '0x14', busCtrl: 'LER_MEM + CARREGAR_IR',
-        output: '0x00',
-        activeNodes: ['node-control', 'node-regs', 'node-ram', 'node-cache'],
-        activeBuses: ['bus-addr', 'bus-data', 'bus-ctrl'],
-        desc: 'T0 (Busca): O valor do Contador de Programa PC (0x00) é colocado no Barramento de Endereços. A RAM lê a instrução 0x14 (LDA [04]) e a envia pelo Barramento de Dados para o IR.',
-        ramAccessedAddr: '0x00',
-        opcodeInfo: '0001 (LDA)'
-      },
-      {
-        instIdx: 0,
-        cycle: 'T1',
-        pc: '0x01', ir: '0x14', acc: '0x00', regB: '0x00',
-        ula: 'Inativa', cache: 'INATIVA',
-        busAddr: '---', busData: '---', busCtrl: 'DECODIFICAR_LDA + INC_PC',
-        output: '0x00',
-        activeNodes: ['node-control', 'node-regs'],
-        activeBuses: ['bus-ctrl'],
-        desc: 'T1 (Decodificação): A Unidade de Controle decodifica o Opcode 0001 (LDA) e operando 04. O PC é incrementado para 0x01 para preparar a próxima busca.',
-        ramAccessedAddr: null,
-        opcodeInfo: '0001 (LDA)'
-      },
-      {
-        instIdx: 0,
-        cycle: 'T2',
-        pc: '0x01', ir: '0x14', acc: '0x03', regB: '0x00',
-        ula: 'Inativa', cache: 'MISS (Carrega 0x03)',
-        busAddr: '0x04', busData: '0x03', busCtrl: 'LER_MEM + CARREGAR_ACC',
-        output: '0x00',
-        activeNodes: ['node-control', 'node-regs', 'node-ram', 'node-cache'],
-        activeBuses: ['bus-addr', 'bus-data', 'bus-ctrl'],
-        desc: 'T2 (Execução): O endereço de operando 0x04 é colocado no barramento. O dado 0x03 é lido da RAM (Cache Miss), trafega pelo Barramento de Dados e é carregado no Acumulador (ACC).',
-        ramAccessedAddr: '0x04',
-        opcodeInfo: '0001 (LDA)'
-      },
-
-      // Inst 2: ADD [05]
-      {
-        instIdx: 1,
-        cycle: 'T0',
-        pc: '0x01', ir: '0x25', acc: '0x03', regB: '0x00',
-        ula: 'Inativa', cache: 'MISS',
-        busAddr: '0x01', busData: '0x25', busCtrl: 'LER_MEM + CARREGAR_IR',
-        output: '0x00',
-        activeNodes: ['node-control', 'node-regs', 'node-ram', 'node-cache'],
-        activeBuses: ['bus-addr', 'bus-data', 'bus-ctrl'],
-        desc: 'T0 (Busca): PC (0x01) vai ao Barramento de Endereços. A mem. RAM busca a instrução 0x25 (ADD [05]) pelo Barramento de Dados e armazena no IR.',
-        ramAccessedAddr: '0x01',
-        opcodeInfo: '0010 (ADD)'
-      },
-      {
-        instIdx: 1,
-        cycle: 'T1',
-        pc: '0x02', ir: '0x25', acc: '0x03', regB: '0x00',
-        ula: 'Configurada SOMA', cache: 'INATIVA',
-        busAddr: '---', busData: '---', busCtrl: 'DECODIFICAR_ADD + INC_PC',
-        output: '0x00',
-        activeNodes: ['node-control', 'node-regs', 'node-ula'],
-        activeBuses: ['bus-ctrl'],
-        desc: 'T1 (Decodificação): A UC decodifica Opcode 0010 (ADD) e operando 05. A ULA é configurada para operação de adição. O PC é incrementado para 0x02.',
-        ramAccessedAddr: null,
-        opcodeInfo: '0010 (ADD)'
-      },
-      {
-        instIdx: 1,
-        cycle: 'T2',
-        pc: '0x02', ir: '0x25', acc: '0x07', regB: '0x04',
-        ula: '0x03 + 0x04 = 0x07', cache: 'MISS (Carrega 0x04)',
-        busAddr: '0x05', busData: '0x04 → 0x07', busCtrl: 'ATIVAR_ULA + CARREGAR_ACC',
-        output: '0x00',
-        activeNodes: ['node-control', 'node-regs', 'node-ram', 'node-ula', 'node-cache'],
-        activeBuses: ['bus-addr', 'bus-data', 'bus-ctrl'],
-        desc: 'T2 (Execução): O dado 0x04 no end. 0x05 é carregado no Registrador B. A ULA executa 0x03 + 0x04 = 0x07 e o resultado é armazenado no Acumulador (ACC).',
-        ramAccessedAddr: '0x05',
-        opcodeInfo: '0010 (ADD)'
-      },
-
-      // Inst 3: OUT [00]
-      {
-        instIdx: 2,
-        cycle: 'T0',
-        pc: '0x02', ir: '0x30', acc: '0x07', regB: '0x04',
-        ula: 'Inativa', cache: 'MISS',
-        busAddr: '0x02', busData: '0x30', busCtrl: 'LER_MEM + CARREGAR_IR',
-        output: '0x00',
-        activeNodes: ['node-control', 'node-regs', 'node-ram', 'node-cache'],
-        activeBuses: ['bus-addr', 'bus-data', 'bus-ctrl'],
-        desc: 'T0 (Busca): PC (0x02) é enviado ao Barramento de Endereços. A RAM disponibiliza a instrução 0x30 (OUT) para o Registrador de Instrução (IR).',
-        ramAccessedAddr: '0x02',
-        opcodeInfo: '0011 (OUT)'
-      },
-      {
-        instIdx: 2,
-        cycle: 'T1',
-        pc: '0x03', ir: '0x30', acc: '0x07', regB: '0x04',
-        ula: 'Inativa', cache: 'INATIVA',
-        busAddr: '---', busData: '---', busCtrl: 'DECODIFICAR_OUT + INC_PC',
-        output: '0x00',
-        activeNodes: ['node-control', 'node-regs'],
-        activeBuses: ['bus-ctrl'],
-        desc: 'T1 (Decodificação): A Unidade de Controle decodifica o Opcode 0011 (OUT). O Contador de Programa (PC) avança para 0x03.',
-        ramAccessedAddr: null,
-        opcodeInfo: '0011 (OUT)'
-      },
-      {
-        instIdx: 2,
-        cycle: 'T2',
-        pc: '0x03', ir: '0x30', acc: '0x07', regB: '0x04',
-        ula: 'Inativa', cache: 'HIT',
-        busAddr: '---', busData: '0x07', busCtrl: 'IO_OUT',
-        output: '0x07',
-        activeNodes: ['node-control', 'node-regs', 'node-io'],
-        activeBuses: ['bus-data', 'bus-ctrl'],
-        desc: 'T2 (Execução): O valor contido no Acumulador ACC (0x07) é enviado pelo Barramento de Dados até o dispositivo de saída de E/S (Display Hexadecimal).',
-        ramAccessedAddr: null,
-        opcodeInfo: '0011 (OUT)'
-      }
-    ];
-
-    const RAM_INITIAL = [
-      { addr: '0x00', val: '0x14', label: 'LDA [04]' },
-      { addr: '0x01', val: '0x25', label: 'ADD [05]' },
-      { addr: '0x02', val: '0x30', label: 'OUT [00]' },
-      { addr: '0x03', val: '0x00', label: 'NOP' },
-      { addr: '0x04', val: '0x03', label: 'Dado 3' },
-      { addr: '0x05', val: '0x04', label: 'Dado 4' }
-    ];
-
-    const MODULE_INFO = {
-      control: {
-        title: 'Unidade de Controle (UC)',
-        desc: 'Gerencia a temporização (Clock) e envia sinais de controle sincronizados para a ULA, Registradores e Memória. Decodifica o código de operação (Opcode) no registrador IR durante a fase T1.'
+    // Estado interno da simulação fiel ao Logisim
+    const state = {
+      pins: {
+        MAR_Load: 0,
+        RAM_Read_MBR: 0,
+        IR_Load: 0,
+        PC_Inc: 0,
+        AC_Exec: 0
       },
       regs: {
-        title: 'Registradores da CPU',
-        desc: 'Locais de armazenamento ultra-rápidos dentro da CPU. Contém o Contador de Programa (PC), Registrador de Instrução (IR), Acumulador (ACC) e Registrador B (REG_B aux. da ULA).'
+        PC: 0x00,
+        MAR: 0x00,
+        IR: 0x00,
+        MBR: 0x00,
+        AC: 0x00
       },
-      ula: {
-        title: 'Unidade Lógica e Aritmética (ULA)',
-        desc: 'Circuito combinacional responsável por somar, subtrair e realizar operações lógicas bit a bit. Recebe operandos do Acumulador (ACC) e Registrador B, devolvendo o resultado ao ACC.'
-      },
-      cache: {
-        title: 'Memória Cache (L1)',
-        desc: 'Memória estática de alta velocidade que armazena cópias das posições da RAM mais recentes. Reduz os ciclos de espera de leitura da memória principal.'
-      },
-      ram: {
-        title: 'Memória Principal (RAM)',
-        desc: 'Memória volátil organizada em endereços de 8 bits. Armazena tanto as instruções do programa quanto os dados da aplicação (conceito Von Neumann de programa armazenado).'
-      },
-      io: {
-        title: 'Dispositivos de Entrada / Saída (E/S)',
-        desc: 'Interface entre o processador e o mundo externo. Neste modelo, representa um Display Hexadecimal de saída que recebe e exibe o valor do Acumulador quando executada a instrução OUT.'
-      }
+      ram: [0x05, 0x03, 0x00, 0x00],
+      guidedStep: 0
     };
 
-    let currentStepIdx = 0;
-    let timerId = null;
-
-    function updateViz() {
-      const step = SIM_STEPS[currentStepIdx];
-
-      // Update Instruction selector active state
-      document.querySelectorAll('.inst-chip').forEach((chip, idx) => {
-        chip.classList.toggle('is-active', idx === step.instIdx);
-      });
-
-      // Update Phase LEDs (T0, T1, T2)
-      document.getElementById('pill-t0').className = `cycle-pill ${step.cycle === 'T0' ? 'active-t0' : ''}`;
-      document.getElementById('pill-t1').className = `cycle-pill ${step.cycle === 'T1' ? 'active-t1' : ''}`;
-      document.getElementById('pill-t2').className = `cycle-pill ${step.cycle === 'T2' ? 'active-t2' : ''}`;
-
-      // Update Clock Step counter & Slider
-      document.getElementById('clock-step-num').textContent = currentStepIdx + 1;
-      const slider = document.getElementById('step-slider');
-      slider.value = currentStepIdx;
-      slider.style.setProperty('--progress', `${(currentStepIdx / 8) * 100}%`);
-
-      // SVG Nodes Highlight
-      ['node-control', 'node-regs', 'node-ula', 'node-cache', 'node-ram', 'node-io'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.classList.toggle('is-active', step.activeNodes.includes(id));
-      });
-
-      // SVG Buses Highlight
-      ['bus-addr', 'bus-data', 'bus-ctrl'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.classList.toggle('is-active', step.activeBuses.includes(id));
-      });
-
-      // Update SVG Text elements
-      document.getElementById('node-ctrl-signal').textContent = `CTRL: ${step.busCtrl.split('+')[0].trim()}`;
-      document.getElementById('svg-reg-pc-ir').textContent = `PC: ${step.pc} | IR: ${step.ir}`;
-      document.getElementById('svg-reg-acc-b').textContent = `ACC: ${step.acc} | REG_B: ${step.regB}`;
-      document.getElementById('svg-ula-op').textContent = `ULA: ${step.ula}`;
-      document.getElementById('svg-cache-status').textContent = `Status: ${step.cache.startsWith('MISS') ? 'MISS' : (step.cache.startsWith('HIT') ? 'HIT' : 'INATIVA')}`;
-      document.getElementById('svg-cache-line').textContent = step.cache;
-      document.getElementById('svg-ram-addr').textContent = `Bar. End: ${step.busAddr}`;
-      document.getElementById('svg-ram-val').textContent = `Bar. Dados: ${step.busData}`;
-      document.getElementById('svg-io-val').textContent = `Display Hex: ${step.output}`;
-
-      // Update Panel Text & Tags
-      document.getElementById('micro-desc-text').textContent = step.desc;
-      document.getElementById('micro-opcode-badge').querySelector('span').textContent = step.opcodeInfo;
-      document.getElementById('tag-pc').textContent = step.pc;
-      document.getElementById('tag-ir').textContent = step.ir;
-      document.getElementById('tag-acc').textContent = step.acc;
-      document.getElementById('tag-regb').textContent = step.regB;
-      document.getElementById('tag-bus-addr').textContent = step.busAddr;
-      document.getElementById('tag-bus-data').textContent = step.busData;
-      document.getElementById('tag-io-out').querySelector('span').textContent = step.output;
-
-      // Update RAM Table
-      const tbody = document.getElementById('ram-table-body');
-      if (tbody) tbody.innerHTML = RAM_INITIAL.map(row => {
-        const isAccessed = row.addr === step.ramAccessedAddr;
-        return `
-          <tr class="ram-row ${isAccessed ? 'is-accessed' : ''}">
-            <td>${row.addr}</td>
-            <td>${row.val}</td>
-            <td>${row.label}</td>
-          </tr>
-        `;
-      }).join('');
+    function toHex2(val) {
+      return (val & 0xFF).toString(16).toUpperCase().padStart(2, '0');
     }
 
-    function nextStep() {
-      currentStepIdx = (currentStepIdx + 1) % SIM_STEPS.length;
-      updateViz();
+    function toBin8(val) {
+      return (val & 0xFF).toString(2).padStart(8, '0');
     }
 
-    function prevStep() {
-      currentStepIdx = (currentStepIdx - 1 + SIM_STEPS.length) % SIM_STEPS.length;
-      updateViz();
+    function togglePin(pinName) {
+      state.pins[pinName] = state.pins[pinName] === 1 ? 0 : 1;
+      renderCircuit();
     }
 
-    function jumpToInstruction(instIdx) {
-      currentStepIdx = instIdx * 3; // Step 0, 3, or 6
-      updateViz();
+    function pulseClock() {
+      // Animação rápida da onda do Clock
+      const clkWave = document.getElementById('clk-wave');
+      clkWave.setAttribute('stroke', '#00ff00');
+      setTimeout(() => clkWave.setAttribute('stroke', '#008e00'), 220);
+
+      // 1. Calcular o resultado atual da ULA antes da borda de subida
+      const aluSum = (state.regs.AC + state.regs.MBR) & 0xFF;
+
+      // 2. Atualizar registradores cujos pinos WE / Count estão em 1
+      if (state.pins.MAR_Load === 1) {
+        state.regs.MAR = state.regs.PC;
+      }
+      if (state.pins.RAM_Read_MBR === 1) {
+        const addr = state.regs.MAR & 0x03;
+        state.regs.MBR = state.ram[addr];
+      }
+      if (state.pins.IR_Load === 1) {
+        state.regs.IR = state.regs.MBR;
+      }
+      if (state.pins.PC_Inc === 1) {
+        state.regs.PC = (state.regs.PC + 1) & 0xFF;
+      }
+      if (state.pins.AC_Exec === 1) {
+        state.regs.AC = aluSum;
+      }
+
+      renderCircuit();
     }
 
-    function onSliderChange(val) {
-      currentStepIdx = parseInt(val, 10);
-      updateViz();
+    function renderCircuit() {
+      // Atualizar Pinos Verdes e Fios de Controle
+      const pinWireMap = {
+        MAR_Load: ['wire-ctrl-mar'],
+        RAM_Read_MBR: ['wire-ctrl-mbr', 'wire-ctrl-ram-oe'],
+        IR_Load: ['wire-ctrl-ir'],
+        PC_Inc: ['wire-ctrl-pc'],
+        AC_Exec: ['wire-ctrl-ac']
+      };
+
+      for (const [pin, val] of Object.entries(state.pins)) {
+        const bg = document.getElementById(`pin-bg-${pin}`);
+        const txt = document.getElementById(`pin-txt-${pin}`);
+        bg.setAttribute('fill', val === 1 ? '#00d800' : '#006400');
+        txt.textContent = val.toString();
+
+        pinWireMap[pin].forEach(wireId => {
+          const w = document.getElementById(wireId);
+          w.setAttribute('stroke', val === 1 ? '#00d800' : '#006400');
+          w.setAttribute('stroke-width', val === 1 ? '3' : '2');
+        });
+      }
+
+      // Atualizar textos dos Registradores
+      document.getElementById('val-PC').textContent = toHex2(state.regs.PC);
+      document.getElementById('val-MAR').textContent = toHex2(state.regs.MAR);
+      document.getElementById('val-IR').textContent = toHex2(state.regs.IR);
+      document.getElementById('val-MBR').textContent = toHex2(state.regs.MBR);
+      document.getElementById('val-AC').textContent = toHex2(state.regs.AC);
+      document.getElementById('val-Monitor').textContent = toBin8(state.regs.AC);
+
+      // Atualizar Decodificador UC
+      const decTxt = document.getElementById('val-DECODER');
+      if (state.regs.IR === 0) decTxt.textContent = 'NOP (00)';
+      else if (state.regs.IR === 5) decTxt.textContent = 'LOAD/ADD 05';
+      else if (state.regs.IR === 3) decTxt.textContent = 'ADD 03';
+      else decTxt.textContent = `OP (${toHex2(state.regs.IR)})`;
+
+      // Destacar célula ativa da RAM conforme MAR
+      const activeAddr = state.regs.MAR & 0x01;
+      document.getElementById('ram-cell-0').setAttribute('fill', activeAddr === 0 ? '#444444' : '#b8b8b8');
+      document.getElementById('ram-val-0').setAttribute('fill', activeAddr === 0 ? '#ffffff' : '#111111');
+      document.getElementById('ram-cell-1').setAttribute('fill', activeAddr === 1 ? '#444444' : '#b8b8b8');
+      document.getElementById('ram-val-1').setAttribute('fill', activeAddr === 1 ? '#ffffff' : '#111111');
     }
 
-    function togglePlay() {
-      const btn = document.getElementById('btn-play');
-      if (timerId) {
-        clearInterval(timerId);
-        timerId = null;
-        if (btn) btn.textContent = 'Auto Executar';
-        btn.classList.remove('is-active');
+    // Sequência Guiada Automática (Fetch -> Decode -> Execute)
+    const guidedSteps = [
+      {
+        title: "Passo 1 (Busca / Fetch - Parte A): PC → MAR",
+        desc: "Ativamos MAR_Load = 1 e pulsamos o CLOCK. O endereço 00 que estava no PC entrou no MAR e selecionou a posição 00 da RAM!",
+        pins: { MAR_Load: 1, RAM_Read_MBR: 0, IR_Load: 0, PC_Inc: 0, AC_Exec: 0 }
+      },
+      {
+        title: "Passo 2 (Busca / Fetch - Parte B): RAM → MBR",
+        desc: "Ativamos RAM_Read_MBR = 1 e pulsamos o CLOCK. O número 05 saiu pelo pino D da RAM e foi guardado no registrador MBR!",
+        pins: { MAR_Load: 0, RAM_Read_MBR: 1, IR_Load: 0, PC_Inc: 0, AC_Exec: 0 }
+      },
+      {
+        title: "Passo 3 (Decodificação / Decode): MBR → IR e PC + 1",
+        desc: "Ativamos IR_Load = 1 e PC_Inc = 1. O código 05 foi para o IR (Decodificador UC) e o PC avançou para o endereço 01!",
+        pins: { MAR_Load: 0, RAM_Read_MBR: 0, IR_Load: 1, PC_Inc: 1, AC_Exec: 0 }
+      },
+      {
+        title: "Passo 4 (Execução / Execute): ULA soma 00 + 05 → ACUMULADOR",
+        desc: "Ativamos AC_Exec = 1 e pulsamos o CLOCK. A ULA somou 00 + 05 e o ACUMULADOR guardou 05 (veja 00000101 no Monitor)!",
+        pins: { MAR_Load: 0, RAM_Read_MBR: 0, IR_Load: 0, PC_Inc: 0, AC_Exec: 1 }
+      },
+      {
+        title: "Passo 5 (Ciclo 2 Completo): Buscando o 03 na RAM e somando 05 + 03 = 08!",
+        desc: "Executamos o segundo ciclo buscando o valor 03 no endereço 01 da RAM e somando na ULA: agora o ACUMULADOR vale 08 (00001000 no Monitor)!",
+        customAction: () => {
+          state.regs.MAR = 0x01;
+          state.regs.MBR = 0x03;
+          state.regs.IR = 0x03;
+          state.regs.PC = 0x02;
+          state.regs.AC = 0x08;
+          state.pins = { MAR_Load: 0, RAM_Read_MBR: 0, IR_Load: 0, PC_Inc: 0, AC_Exec: 1 };
+        }
+      }
+    ];
+
+    function runGuidedStep() {
+      const step = guidedSteps[state.guidedStep];
+      if (step.customAction) {
+        step.customAction();
+        renderCircuit();
       } else {
-        if (btn) btn.textContent = 'Pausar';
-        btn.classList.add('is-active');
-        timerId = setInterval(() => {
-          nextStep();
-        }, 1800);
+        state.pins = { ...step.pins };
+        pulseClock();
+      }
+
+      document.getElementById('step-title').textContent = step.title;
+      document.getElementById('step-desc').textContent = step.desc;
+      document.getElementById('step-counter').textContent = `Passo ${state.guidedStep + 1} / ${guidedSteps.length}`;
+
+      state.guidedStep = (state.guidedStep + 1) % guidedSteps.length;
+    }
+
+    function resetCPU() {
+      state.pins = { MAR_Load: 0, RAM_Read_MBR: 0, IR_Load: 0, PC_Inc: 0, AC_Exec: 0 };
+      state.regs = { PC: 0, MAR: 0, IR: 0, MBR: 0, AC: 0 };
+      state.guidedStep = 0;
+      document.getElementById('step-title').textContent = "CPU Resetada:";
+      document.getElementById('step-desc').textContent = "Todos os registradores voltaram para 00. Clique em 'Executar Próximo Passo' ou clique nos pinos verdes manualmente.";
+      document.getElementById('step-counter').textContent = "Passo 0 / 5";
+      renderCircuit();
+    }
+
+    // Filtro visual de camadas de fios para ajudar o aluno a desenhar no Logisim
+    function setWireFilter(mode) {
+      const layers = {
+        clock: document.getElementById('layer-clock'),
+        control: document.getElementById('layer-control'),
+        address: document.getElementById('layer-address'),
+        data: document.getElementById('layer-data')
+      };
+
+      ['all', 'clock', 'control', 'address', 'data'].forEach(m => {
+        const btn = document.getElementById(`btn-filter-${m}`);
+        btn.className = (m === mode)
+          ? "px-2.5 py-1 rounded bg-blue-600 text-white font-semibold"
+          : "px-2.5 py-1 rounded text-slate-300 hover:text-white";
+      });
+
+      for (const [key, el] of Object.entries(layers)) {
+        el.style.opacity = (mode === 'all' || mode === key) ? '1' : '0.12';
       }
     }
 
-    function inspectModule(modKey) {
-      const info = MODULE_INFO[modKey];
-      if (!info) return;
-      document.getElementById('inspector-title').textContent = info.title;
-      document.getElementById('inspector-desc').textContent = info.desc;
-      document.getElementById('inspector-card').classList.add('is-visible');
+    // Gerador de arquivo .circ nativo do Logisim-Evolution para download
+    function downloadCircFile() {
+      const circXml = `<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project source="3.8.0" version="1.0">
+  This file is intended to be loaded by Logisim-evolution v3.8.0(https://github.com/logisim-evolution/).
+  <lib desc="#Wiring" name="0">
+    <tool name="Pin">
+      <a name="appearance" val="classic"/>
+    </tool>
+  </lib>
+  <lib desc="#Gates" name="1"/>
+  <lib desc="#Plexers" name="2"/>
+  <lib desc="#Arithmetic" name="3"/>
+  <lib desc="#Memory" name="4"/>
+  <lib desc="#I/O" name="5"/>
+  <lib desc="#Base" name="6"/>
+  <main name="main"/>
+  <options>
+    <a name="gateUndefined" val="ignore"/>
+    <a name="simlimit" val="1000"/>
+    <a name="simrand" val="0"/>
+  </options>
+  <circuit name="main">
+    <a name="appearance" val="classic"/>
+    <a name="circuit" val="main"/>
+    <a name="simulationFrequency" val="1.0"/>
+    <comp lib="0" loc="(120,230)" name="Clock">
+      <a name="label" val="CLOCK"/>
+    </comp>
+    <comp lib="0" loc="(170,380)" name="Pin">
+      <a name="appearance" val="classic"/>
+      <a name="label" val="MAR_Load"/>
+    </comp>
+    <comp lib="0" loc="(170,410)" name="Pin">
+      <a name="appearance" val="classic"/>
+      <a name="label" val="RAM_Read_MBR"/>
+    </comp>
+    <comp lib="0" loc="(170,440)" name="Pin">
+      <a name="appearance" val="classic"/>
+      <a name="label" val="IR_Load"/>
+    </comp>
+    <comp lib="0" loc="(170,470)" name="Pin">
+      <a name="appearance" val="classic"/>
+      <a name="label" val="PC_Inc"/>
+    </comp>
+    <comp lib="0" loc="(170,500)" name="Pin">
+      <a name="appearance" val="classic"/>
+      <a name="label" val="AC_Exec"/>
+    </comp>
+    <comp lib="0" loc="(840,410)" name="Pin">
+      <a name="appearance" val="classic"/>
+      <a name="facing" val="west"/>
+      <a name="label" val="Monitor"/>
+      <a name="output" val="true"/>
+      <a name="width" val="8"/>
+    </comp>
+    <comp lib="3" loc="(600,400)" name="Adder"/>
+    <comp lib="4" loc="(260,340)" name="Counter">
+      <a name="appearance" val="classic"/>
+      <a name="label" val="PC"/>
+    </comp>
+    <comp lib="4" loc="(270,200)" name="Register">
+      <a name="appearance" val="classic"/>
+      <a name="label" val="MAR"/>
+    </comp>
+    <comp lib="4" loc="(360,240)" name="Register">
+      <a name="appearance" val="classic"/>
+      <a name="label" val="IR"/>
+    </comp>
+    <comp lib="4" loc="(460,470)" name="Register">
+      <a name="appearance" val="classic"/>
+      <a name="label" val="MBR"/>
+    </comp>
+    <comp lib="4" loc="(530,150)" name="RAM">
+      <a name="appearance" val="classic"/>
+      <a name="asynch" val="true"/>
+      <a name="databus" val="bibus"/>
+    </comp>
+    <comp lib="4" loc="(730,400)" name="Register">
+      <a name="appearance" val="classic"/>
+      <a name="label" val="ACUMULADOR"/>
+    </comp>
+    <wire from="(120,230)" to="(150,230)"/>
+    <wire from="(150,230)" to="(150,360)"/>
+    <wire from="(150,230)" to="(250,230)"/>
+    <wire from="(150,360)" to="(150,510)"/>
+    <wire from="(150,360)" to="(250,360)"/>
+    <wire from="(150,510)" to="(440,510)"/>
+    <wire from="(170,380)" to="(200,380)"/>
+    <wire from="(170,410)" to="(210,410)"/>
+    <wire from="(170,440)" to="(220,440)"/>
+    <wire from="(170,470)" to="(240,470)"/>
+    <wire from="(170,500)" to="(680,500)"/>
+    <wire from="(200,210)" to="(200,380)"/>
+    <wire from="(200,210)" to="(240,210)"/>
+    <wire from="(210,410)" to="(210,480)"/>
+    <wire from="(210,480)" to="(430,480)"/>
+    <wire from="(220,250)" to="(220,440)"/>
+    <wire from="(220,250)" to="(330,250)"/>
+    <wire from="(230,200)" to="(230,290)"/>
+    <wire from="(230,200)" to="(240,200)"/>
+    <wire from="(230,290)" to="(280,290)"/>
+    <wire from="(240,350)" to="(240,470)"/>
+    <wire from="(250,220)" to="(250,230)"/>
+    <wire from="(260,340)" to="(280,340)"/>
+    <wire from="(270,200)" to="(300,200)"/>
+    <wire from="(280,290)" to="(280,340)"/>
+    <wire from="(300,150)" to="(300,200)"/>
+    <wire from="(300,150)" to="(530,150)"/>
+    <wire from="(310,240)" to="(310,350)"/>
+    <wire from="(310,240)" to="(330,240)"/>
+    <wire from="(310,350)" to="(490,350)"/>
+    <wire from="(340,260)" to="(340,290)"/>
+    <wire from="(410,330)" to="(410,470)"/>
+    <wire from="(410,330)" to="(800,330)"/>
+    <wire from="(410,470)" to="(430,470)"/>
+    <wire from="(440,490)" to="(440,510)"/>
+    <wire from="(440,510)" to="(710,510)"/>
+    <wire from="(460,470)" to="(490,470)"/>
+    <wire from="(490,350)" to="(490,390)"/>
+    <wire from="(490,390)" to="(490,470)"/>
+    <wire from="(490,390)" to="(560,390)"/>
+    <wire from="(540,410)" to="(540,530)"/>
+    <wire from="(540,410)" to="(560,410)"/>
+    <wire from="(540,530)" to="(780,530)"/>
+    <wire from="(600,400)" to="(700,400)"/>
+    <wire from="(680,410)" to="(680,500)"/>
+    <wire from="(680,410)" to="(700,410)"/>
+    <wire from="(710,420)" to="(710,510)"/>
+    <wire from="(730,400)" to="(780,400)"/>
+    <wire from="(780,230)" to="(800,230)"/>
+    <wire from="(780,400)" to="(780,530)"/>
+    <wire from="(780,400)" to="(840,400)"/>
+    <wire from="(800,230)" to="(800,330)"/>
+    <wire from="(840,400)" to="(840,410)"/>
+  </circuit>
+</project>`;
+
+      const blob = new Blob([circXml], { type: 'application/xml' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'neocore_cpu_8bits.circ';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
     }
 
-    function closeInspector() {
-      document.getElementById('inspector-card').classList.remove('is-visible');
-    }
-
-    // Keyboard navigation (Ctrl+T or Arrow Keys)
-    document.addEventListener('keydown', (e) => {
-      if ((e.ctrlKey && e.key.toLowerCase() === 't') || e.key === 'ArrowRight') {
-        e.preventDefault();
-        nextStep();
-      } else if (e.key === 'ArrowLeft') {
-        e.preventDefault();
-        prevStep();
-      }
-    });
-
-    // Initial render
-    updateViz();
-
-    // Auto-resize message & Theme adaptation
-    const applyTheme = t => {
-      document.documentElement.setAttribute('data-theme', t);
-      if (typeof updateViz === 'function') updateViz();
-    };
-    if (!document.documentElement.hasAttribute('data-theme') && window.matchMedia?.('(prefers-color-scheme: dark)').matches) {
-      applyTheme('dark');
-    }
-    window.addEventListener('message', e => {
-      if (e.data?.type === 'set-theme' || e.data?.type === 'APPLY_THEME') applyTheme(e.data.theme);
-    });
-
-    (function autoResize() {
-      function notifyHeight() {
-        const c = document.querySelector('.widget-container') || document.body;
-        if (!c) return;
-        const h = Math.ceil(Math.max(c.getBoundingClientRect().bottom, c.scrollHeight));
-        window.parent.postMessage({type: 'widget-resize', height: h}, '*');
-      }
-      window.addEventListener('load', () => setTimeout(notifyHeight, 120));
-      new ResizeObserver(() => notifyHeight()).observe(document.querySelector('.widget-container') || document.body);
-    })();
+    // Inicializar visual
+    renderCircuit();
   </script>
-
-<script>/*luminous-slider-normalizer*/(function(){function f(r){if(!r||r.type!=='range')return;var mn=parseFloat(r.min||'0'),mx=parseFloat(r.max||'100'),v=parseFloat(r.value);if(isNaN(v))v=(mn+mx)/2;var p=mx>mn?((v-mn)/(mx-mn))*100:50;r.style.setProperty('--progress',p+'%');r.style.removeProperty('--slider-fill');}function all(){document.querySelectorAll('input[type="range"], .lumi-slider').forEach(f);}document.addEventListener('input',function(e){f(e.target);});if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',all);else all();})();</script>
 </body>
 </html>
-```

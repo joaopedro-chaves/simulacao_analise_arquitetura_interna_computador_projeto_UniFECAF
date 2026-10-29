@@ -23,17 +23,17 @@
 - [ ] Revisar o texto e exportar para PDF na pasta `dist/`
 
 ### Parte Prática – Simulador (50% da nota)
-- [ ] Escolher e abrir a ferramenta de simulação (Logisim, Tinkercad ou código)
-- [ ] Montar a memória RAM e os barramentos (Dados, Endereço e Controle)
-- [ ] Montar os componentes da CPU:
-  - [ ] Registradores (`PC`, `MAR`, `MBR`, `IR`, `AC`)
-  - [ ] Unidade Lógica e Aritmética (ULA)
-  - [ ] Unidade de Controle (UC)
-- [ ] Carregar uma instrução de teste na memória (ex: `LOAD`, `ADD` ou `STORE`)
-- [ ] Testar e validar o ciclo passo a passo:
-  - [ ] 1. **Busca (Fetch):** Enviar endereço do `PC`, buscar na memória e guardar no `IR`
-  - [ ] 2. **Decodificação (Decode):** Interpretar o que a instrução faz
-  - [ ] 3. **Execução (Execute):** Fazer a operação na ULA e salvar o resultado
+- [x] Escolher e abrir a ferramenta de simulação (Logisim, Tinkercad ou código)
+- [x] Montar a memória RAM e os barramentos (Dados, Endereço e Controle)
+- [x] Montar os componentes da CPU:
+  - [x] Registradores (`PC`, `MAR`, `MBR`, `IR`, `AC`)
+  - [x] Unidade Lógica e Aritmética (ULA)
+  - [x] Unidade de Controle (UC)
+- [x] Carregar uma instrução de teste na memória (ex: `LOAD`, `ADD` ou `STORE`)
+- [x] Testar e validar o ciclo passo a passo:
+  - [x] 1. **Busca (Fetch):** Enviar endereço do `PC`, buscar na memória e guardar no `IR`
+  - [x] 2. **Decodificação (Decode):** Interpretar o que a instrução faz
+  - [x] 3. **Execução (Execute):** Fazer a operação na ULA e salvar o resultado
 - [ ] Salvar os arquivos do circuito e imagens na pasta `src/` e `docs/assets/`
 ### Vídeo Pitch (25% da nota)
 - [ ] Revisar o roteiro em `docs/pitch/pitch_script.md` (máximo de 4 minutos)

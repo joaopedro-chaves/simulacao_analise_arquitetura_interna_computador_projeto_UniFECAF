@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project source="3.8.0" version="1.0">
+  This file is intended to be loaded by Logisim-evolution v3.8.0(https://github.com/logisim-evolution/).
+  <lib desc="#Wiring" name="0">
+    <tool name="Pin">
+      <a name="appearance" val="classic"/>
+    </tool>
+  </lib>
+  <lib desc="#Gates" name="1"/>
+  <lib desc="#Plexers" name="2"/>
+  <lib desc="#Arithmetic" name="3"/>
+  <lib desc="#Memory" name="4"/>
+  <lib desc="#I/O" name="5"/>
+  <lib desc="#Base" name="6"/>
+  <main name="main"/>
+  <options>
+    <a name="gateUndefined" val="ignore"/>
+    <a name="simlimit" val="1000"/>
+    <a name="simrand" val="0"/>
+  </options>
+  <circuit name="main">
+    <a name="appearance" val="classic"/>
+    <a name="circuit" val="main"/>
+    <a name="simulationFrequency" val="1.0"/>
+    <comp lib="0" loc="(120,230)" name="Clock">
+      <a name="label" val="CLOCK"/>
+    </comp>
+    <comp lib="0" loc="(170,380)" name="Pin">
+      <a name="appearance" val="classic"/>
+      <a name="label" val="MAR_Load"/>
+    </comp>
+    <comp lib="0" loc="(170,410)" name="Pin">
+      <a name="appearance" val="classic"/>
+      <a name="label" val="RAM_Read_MBR"/>
+    </comp>
+    <comp lib="0" loc="(170,440)" name="Pin">
+      <a name="appearance" val="classic"/>
+      <a name="label" val="IR_Load"/>
+    </comp>
+    <comp lib="0" loc="(170,470)" name="Pin">
+      <a name="appearance" val="classic"/>
+      <a name="label" val="PC_Inc"/>
+    </comp>
+    <comp lib="0" loc="(170,500)" name="Pin">
+      <a name="appearance" val="classic"/>
+      <a name="label" val="AC_Exec"/>
+    </comp>
+    <comp lib="0" loc="(840,410)" name="Pin">
+      <a name="appearance" val="classic"/>
+      <a name="facing" val="west"/>
+      <a name="label" val="Monitor"/>
+      <a name="output" val="true"/>
+      <a name="width" val="8"/>
+    </comp>
+    <comp lib="3" loc="(600,400)" name="Adder"/>
+    <comp lib="4" loc="(260,340)" name="Counter">
+      <a name="appearance" val="classic"/>
+      <a name="label" val="PC"/>
+    </comp>
+    <comp lib="4" loc="(270,200)" name="Register">
+      <a name="appearance" val="classic"/>
+      <a name="label" val="MAR"/>
+    </comp>
+    <comp lib="4" loc="(360,240)" name="Register">
+      <a name="appearance" val="classic"/>
+      <a name="label" val="IR"/>
+    </comp>
+    <comp lib="4" loc="(460,470)" name="Register">
+      <a name="appearance" val="classic"/>
+      <a name="label" val="MBR"/>
+    </comp>
+    <comp lib="4" loc="(530,150)" name="RAM">
+      <a name="appearance" val="classic"/>
+      <a name="asynch" val="true"/>
+      <a name="databus" val="bibus"/>
+    </comp>
+    <comp lib="4" loc="(730,400)" name="Register">
+      <a name="appearance" val="classic"/>
+      <a name="label" val="ACUMULADOR"/>
+    </comp>
+    <wire from="(120,230)" to="(150,230)"/>
+    <wire from="(150,230)" to="(150,360)"/>
+    <wire from="(150,230)" to="(250,230)"/>
+    <wire from="(150,360)" to="(150,510)"/>
+    <wire from="(150,360)" to="(250,360)"/>
+    <wire from="(150,510)" to="(440,510)"/>
+    <wire from="(170,380)" to="(200,380)"/>
+    <wire from="(170,410)" to="(210,410)"/>
+    <wire from="(170,440)" to="(220,440)"/>
+    <wire from="(170,470)" to="(240,470)"/>
+    <wire from="(170,500)" to="(680,500)"/>
+    <wire from="(200,210)" to="(200,380)"/>
+    <wire from="(200,210)" to="(240,210)"/>
+    <wire from="(210,410)" to="(210,480)"/>
+    <wire from="(210,480)" to="(430,480)"/>
+    <wire from="(220,250)" to="(220,440)"/>
+    <wire from="(220,250)" to="(330,250)"/>
+    <wire from="(230,200)" to="(230,290)"/>
+    <wire from="(230,200)" to="(240,200)"/>
+    <wire from="(230,290)" to="(280,290)"/>
+    <wire from="(240,350)" to="(240,470)"/>
+    <wire from="(250,220)" to="(250,230)"/>
+    <wire from="(260,340)" to="(280,340)"/>
+    <wire from="(270,200)" to="(300,200)"/>
+    <wire from="(280,290)" to="(280,340)"/>
+    <wire from="(300,150)" to="(300,200)"/>
+    <wire from="(300,150)" to="(530,150)"/>
+    <wire from="(310,240)" to="(310,350)"/>
+    <wire from="(310,240)" to="(330,240)"/>
+    <wire from="(310,350)" to="(490,350)"/>
+    <wire from="(340,260)" to="(340,290)"/>
+    <wire from="(410,330)" to="(410,470)"/>
+    <wire from="(410,330)" to="(800,330)"/>
+    <wire from="(410,470)" to="(430,470)"/>
+    <wire from="(440,490)" to="(440,510)"/>
+    <wire from="(440,510)" to="(710,510)"/>
+    <wire from="(460,470)" to="(490,470)"/>
+    <wire from="(490,350)" to="(490,390)"/>
+    <wire from="(490,390)" to="(490,470)"/>
+    <wire from="(490,390)" to="(560,390)"/>
+    <wire from="(540,410)" to="(540,530)"/>
+    <wire from="(540,410)" to="(560,410)"/>
+    <wire from="(540,530)" to="(780,530)"/>
+    <wire from="(600,400)" to="(700,400)"/>
+    <wire from="(680,410)" to="(680,500)"/>
+    <wire from="(680,410)" to="(700,410)"/>
+    <wire from="(710,420)" to="(710,510)"/>
+    <wire from="(730,400)" to="(780,400)"/>
+    <wire from="(780,230)" to="(800,230)"/>
+    <wire from="(780,400)" to="(780,530)"/>
+    <wire from="(780,400)" to="(840,400)"/>
+    <wire from="(800,230)" to="(800,330)"/>
+    <wire from="(840,400)" to="(840,410)"/>
+  </circuit>
+</project>
