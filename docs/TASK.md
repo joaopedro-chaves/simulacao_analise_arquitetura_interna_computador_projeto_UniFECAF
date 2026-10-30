@@ -34,7 +34,8 @@
   - [x] 1. **Busca (Fetch):** Enviar endereço do `PC`, buscar na memória e guardar no `IR`
   - [x] 2. **Decodificação (Decode):** Interpretar o que a instrução faz
   - [x] 3. **Execução (Execute):** Fazer a operação na ULA e salvar o resultado
-- [ ] Salvar os arquivos do circuito e imagens na pasta `src/` e `docs/assets/`
+- [x] Salvar os arquivos do circuito e imagens na pasta `src/` e `docs/assets/`
+- [x] Desenvolver simulador web interativo em Material Design 3 (`src/index.html`) espelhando o `main_board.svg` e `neocore_cpu.circ`
 ### Vídeo Pitch (25% da nota)
 - [ ] Revisar o roteiro em `docs/pitch/pitch_script.md` (máximo de 4 minutos)
 - [ ] Gravar o vídeo dividido em 4 blocos:

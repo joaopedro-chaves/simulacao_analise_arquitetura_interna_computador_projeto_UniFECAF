@@ -1,0 +1,2129 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simulador de Arquitetura de Computadores (CPU 8 bits)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;700&family=Roboto:wght@400;500;700&display=swap"
+    rel="stylesheet">
+  <style>
+    /* ==========================================================================
+       MATERIAL DESIGN 3 (M3) DESIGN TOKENS
+       ========================================================================== */
+    :root,
+    [data-theme="dark"] {
+      color-scheme: dark;
+      --md-sys-color-background: #0f141a;
+      --md-sys-color-on-background: #e0e3e8;
+      --md-sys-color-surface: #131820;
+      --md-sys-color-surface-dim: #0f141a;
+      --md-sys-color-surface-container-low: #181e27;
+      --md-sys-color-surface-container: #1c232d;
+      --md-sys-color-surface-container-high: #262e3a;
+      --md-sys-color-surface-container-highest: #313946;
+      --md-sys-color-on-surface: #e0e3e8;
+      --md-sys-color-on-surface-variant: #c1c7d0;
+      --md-sys-color-outline: #8b919a;
+      --md-sys-color-outline-variant: #3f4752;
+      --md-sys-color-primary: #9ccaff;
+      --md-sys-color-on-primary: #003258;
+      --md-sys-color-primary-container: #00497d;
+      --md-sys-color-on-primary-container: #d1e4ff;
+      --md-sys-color-secondary-container: #35485d;
+      --md-sys-color-on-secondary-container: #d1e4f8;
+      --md-sys-color-tertiary: #6dd58c;
+      --md-sys-color-tertiary-container: #0f5228;
+      --md-sys-color-on-tertiary-container: #a6f2b9;
+      --md-sys-color-amber-container: #4f3d00;
+      --md-sys-color-on-amber-container: #ffe08b;
+      --md-elevation-1: 0 1px 3px rgba(0, 0, 0, 0.35), 0 1px 2px rgba(0, 0, 0, 0.24);
+      --md-elevation-2: 0 4px 12px rgba(0, 0, 0, 0.42);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html,
+    body {
+      height: 100%;
+    }
+
+    body {
+      overflow: hidden;
+      font-family: 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--md-sys-color-background);
+      color: var(--md-sys-color-on-background);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      line-height: 1.45;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    code,
+    .mono {
+      font-family: 'Roboto Mono', monospace;
+    }
+
+    /* ==========================================================================
+       TOP APP BAR (M3)
+       ========================================================================== */
+    .top-app-bar {
+      background-color: var(--md-sys-color-surface-container);
+      border-bottom: 1px solid var(--md-sys-color-outline-variant);
+      padding: 10px 20px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-badge {
+      background-color: var(--md-sys-color-primary-container);
+      color: var(--md-sys-color-on-primary-container);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 6px;
+    }
+
+    .brand-title {
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--md-sys-color-on-surface);
+    }
+
+    .brand-subtitle {
+      font-size: 12px;
+      color: var(--md-sys-color-on-surface-variant);
+      display: block;
+    }
+
+    .toolbar-actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* M3 Segmented Button */
+    .segmented-group {
+      display: inline-flex;
+      border: 1px solid var(--md-sys-color-outline-variant);
+      border-radius: 20px;
+      overflow: hidden;
+      background-color: var(--md-sys-color-surface-container-low);
+    }
+
+    .seg-btn {
+      background: transparent;
+      border: none;
+      border-right: 1px solid var(--md-sys-color-outline-variant);
+      color: var(--md-sys-color-on-surface-variant);
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 500;
+      padding: 6px 12px;
+      cursor: pointer;
+      transition: background-color 0.15s ease, color 0.15s ease;
+    }
+
+    .seg-btn:last-child {
+      border-right: none;
+    }
+
+    .seg-btn:hover {
+      background-color: var(--md-sys-color-surface-container-high);
+      color: var(--md-sys-color-on-surface);
+    }
+
+    .seg-btn.active {
+      background-color: var(--md-sys-color-secondary-container);
+      color: var(--md-sys-color-on-secondary-container);
+      font-weight: 700;
+    }
+
+    /* M3 Buttons */
+    .m3-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      height: 34px;
+      padding: 0 14px;
+      border-radius: 17px;
+      font-family: inherit;
+      font-size: 12.5px;
+      font-weight: 500;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all 0.2s ease-in-out;
+      white-space: nowrap;
+      position: relative;
+      overflow: hidden;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* State layer M3: hover 8%, focus/pressed 12% */
+    .m3-btn::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: currentColor;
+      opacity: 0;
+      transition: opacity 0.2s ease-in-out;
+      pointer-events: none;
+    }
+
+    .m3-btn:hover::before {
+      opacity: 0.08;
+    }
+
+    .m3-btn:focus-visible::before,
+    .m3-btn:active::before {
+      opacity: 0.12;
+    }
+
+    .m3-btn:focus-visible {
+      outline: 2px solid var(--md-sys-color-primary);
+      outline-offset: 2px;
+    }
+
+    .m3-btn .ripple {
+      position: absolute;
+      border-radius: 50%;
+      background: currentColor;
+      opacity: 0.22;
+      transform: scale(0);
+      animation: m3-ripple 0.55s ease-out forwards;
+      pointer-events: none;
+    }
+
+    @keyframes m3-ripple {
+      to {
+        transform: scale(1);
+        opacity: 0;
+      }
+    }
+
+    .m3-btn:active {
+      transform: scale(0.98);
+    }
+
+    .m3-btn-filled {
+      background-color: var(--md-sys-color-primary);
+      color: var(--md-sys-color-on-primary);
+      font-weight: 700;
+    }
+
+    .m3-btn-filled:hover {
+      filter: brightness(1.08);
+    }
+
+    .m3-btn-tonal {
+      background-color: var(--md-sys-color-secondary-container);
+      color: var(--md-sys-color-on-secondary-container);
+    }
+
+    .m3-btn-tonal:hover {
+      filter: brightness(1.08);
+    }
+
+    .m3-btn-tonal.running {
+      background-color: var(--md-sys-color-tertiary-container);
+      color: var(--md-sys-color-on-tertiary-container);
+      border-color: var(--md-sys-color-tertiary);
+    }
+
+    .m3-btn-outlined {
+      background-color: transparent;
+      border-color: var(--md-sys-color-outline-variant);
+      color: var(--md-sys-color-on-surface);
+    }
+
+    .m3-btn-outlined:hover {
+      background-color: var(--md-sys-color-surface-container-high);
+    }
+
+    .m3-icon-btn {
+      width: 34px;
+      height: 34px;
+      padding: 0;
+      justify-content: center;
+      border-radius: 50%;
+    }
+
+    /* ==========================================================================
+       LOGISIM-EVOLUTION CANVAS WORKSPACE
+       ========================================================================== */
+    .workspace {
+      flex: 1;
+      min-height: 0;
+      position: relative;
+    }
+
+    .canvas-card {
+      background-color: var(--md-sys-color-surface-container);
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .canvas-viewport {
+      flex: 1;
+      min-height: 0;
+      position: relative;
+      overflow: hidden;
+      cursor: grab;
+      touch-action: none;
+      /* Grade pontilhada do Logisim-Evolution (10x10 unidades); escala e posição ajustadas via JS */
+      background-color: #ffffff;
+      background-image: radial-gradient(#888888 1px, transparent 1px);
+      background-size: 10px 10px;
+    }
+
+    .canvas-viewport.panning {
+      cursor: grabbing;
+    }
+
+    #logisim-svg {
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 0;
+      transform-origin: 0 0;
+      user-select: none;
+      will-change: transform;
+    }
+
+    .info-target,
+    .wire-layer[data-info] {
+      cursor: help;
+    }
+
+    .info-target:hover {
+      filter: drop-shadow(0 0 5px #1a73e8);
+    }
+
+    .explain-mode .poke-target {
+      cursor: help;
+    }
+
+    .canvas-version {
+      position: absolute;
+      left: 12px;
+      bottom: 8px;
+      font-family: 'Roboto Mono', monospace;
+      font-size: 11px;
+      color: #555;
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    /* Gaveta inferior com painéis de inspeção */
+    .drawer {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 8;
+      width: min(480px, 100vw);
+      overflow-y: auto;
+      padding: 16px;
+      background-color: var(--md-sys-color-surface);
+      border-left: 1px solid var(--md-sys-color-outline-variant);
+      box-shadow: -6px 0 18px rgba(0, 0, 0, 0.45);
+      transform: translateX(105%);
+      visibility: hidden;
+      transition: all 0.25s ease-in-out;
+    }
+
+    .drawer.open {
+      transform: none;
+      visibility: visible;
+    }
+
+    .drawer .inspection-grid {
+      grid-template-columns: 1fr;
+    }
+
+    /* ==========================================================================
+       FLOATING DOCK (barra flutuante) + CARD DE CONTEXTO
+       ========================================================================== */
+    .dock {
+      position: fixed;
+      left: 50%;
+      bottom: 16px;
+      transform: translateX(-50%);
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: 10px 14px;
+      max-width: calc(100vw - 24px);
+      background-color: rgba(28, 35, 45, 0.72);
+      -webkit-backdrop-filter: blur(16px) saturate(1.3);
+      backdrop-filter: blur(16px) saturate(1.3);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 28px;
+      box-shadow: 0 8px 28px rgba(0, 0, 0, 0.5), 0 2px 6px rgba(0, 0, 0, 0.35);
+      transition: all 0.2s ease-in-out;
+    }
+
+    body.drawer-open .dock {
+      left: calc(50% - min(240px, 50vw));
+    }
+
+    .dock-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .dock-exec {
+      padding-top: 8px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .dock.collapsed .dock-exec {
+      display: none;
+    }
+
+    .dock .m3-btn[aria-pressed="true"] {
+      background-color: var(--md-sys-color-primary);
+      color: var(--md-sys-color-on-primary);
+      border-color: var(--md-sys-color-primary);
+    }
+
+    .zoom-pill {
+      display: inline-flex;
+      align-items: center;
+      height: 34px;
+      border: 1px solid var(--md-sys-color-outline-variant);
+      border-radius: 17px;
+      background-color: rgba(255, 255, 255, 0.04);
+    }
+
+    .zoom-pill .m3-btn {
+      width: 32px;
+      height: 32px;
+      padding: 0;
+      justify-content: center;
+      border-radius: 50%;
+      background: transparent;
+      color: var(--md-sys-color-on-surface);
+      font-size: 16px;
+    }
+
+    .zoom-readout {
+      min-width: 48px;
+      text-align: center;
+      font-family: 'Roboto Mono', monospace;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--md-sys-color-on-surface);
+    }
+
+    .phase-chip {
+      display: inline-flex;
+      align-items: center;
+      height: 34px;
+      padding: 0 16px;
+      border-radius: 17px;
+      background-color: var(--md-sys-color-primary);
+      color: var(--md-sys-color-on-primary);
+      font-family: 'Roboto Mono', monospace;
+      font-size: 12.5px;
+      font-weight: 700;
+      white-space: nowrap;
+      box-shadow: 0 0 0 3px rgba(156, 202, 255, 0.18);
+    }
+
+    .ctx-card {
+      position: fixed;
+      left: 16px;
+      bottom: calc(var(--dock-h, 120px) + 32px);
+      z-index: 9;
+      width: min(380px, calc(100vw - 32px));
+      padding: 14px 16px 0;
+      overflow: hidden;
+      background-color: var(--md-sys-color-surface-container-high);
+      border: 1px solid var(--md-sys-color-outline-variant);
+      border-radius: 16px;
+      box-shadow: var(--md-elevation-2);
+      transition: all 0.2s ease-in-out;
+    }
+
+    .ctx-card.hidden {
+      opacity: 0;
+      transform: translateY(8px);
+      pointer-events: none;
+      visibility: hidden;
+    }
+
+    .ctx-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .ctx-head strong {
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.35;
+      color: var(--md-sys-color-on-surface);
+    }
+
+    .ctx-close {
+      flex: none;
+      width: 26px;
+      height: 26px;
+      border: none;
+      border-radius: 50%;
+      background: transparent;
+      color: var(--md-sys-color-on-surface-variant);
+      font-size: 16px;
+      line-height: 1;
+      cursor: pointer;
+      transition: all 0.2s ease-in-out;
+    }
+
+    .ctx-close:hover {
+      background-color: rgba(255, 255, 255, 0.08);
+    }
+
+    .ctx-close:focus-visible {
+      outline: 2px solid var(--md-sys-color-primary);
+    }
+
+    .ctx-body {
+      margin-top: 6px;
+      font-size: 13px;
+      line-height: 1.55;
+      color: var(--md-sys-color-on-surface-variant);
+    }
+
+    .ctx-body code {
+      color: var(--md-sys-color-primary);
+    }
+
+    .ctx-progress {
+      height: 3px;
+      margin: 12px -16px 0;
+      background-color: var(--md-sys-color-outline-variant);
+    }
+
+    .ctx-progress>div {
+      height: 100%;
+      width: 0;
+      background-color: var(--md-sys-color-primary);
+      transition: width 0.3s ease-in-out;
+    }
+
+    /* Diálogo de explicação de componentes (M3) */
+    .info-dialog {
+      margin: auto;
+      width: min(560px, calc(100vw - 32px));
+      max-height: calc(100vh - 48px);
+      overflow-y: auto;
+      padding: 0;
+      border: none;
+      border-radius: 28px;
+      background-color: var(--md-sys-color-surface-container-high);
+      color: var(--md-sys-color-on-surface);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+    }
+
+    .info-dialog::backdrop {
+      background: rgba(0, 0, 0, 0.55);
+    }
+
+    .info-dialog-body {
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .info-dialog h2 {
+      font-size: 22px;
+      font-weight: 500;
+    }
+
+    .info-chip {
+      align-self: flex-start;
+      font-size: 11.5px;
+      font-weight: 500;
+      padding: 3px 10px;
+      border-radius: 8px;
+      background-color: var(--md-sys-color-secondary-container);
+      color: var(--md-sys-color-on-secondary-container);
+    }
+
+    .info-dialog p {
+      font-size: 14px;
+      color: var(--md-sys-color-on-surface-variant);
+      line-height: 1.55;
+    }
+
+    .info-dialog dl {
+      display: grid;
+      grid-template-columns: max-content 1fr;
+      gap: 8px 14px;
+      font-size: 13px;
+    }
+
+    .info-dialog dt {
+      font-weight: 700;
+      color: var(--md-sys-color-primary);
+    }
+
+    .info-dialog dd {
+      color: var(--md-sys-color-on-surface);
+    }
+
+    .info-dialog-actions {
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .poke-target {
+      cursor: pointer;
+    }
+
+    .poke-target:hover .pin-hit {
+      stroke: #ff6600 !important;
+      stroke-width: 2.5px !important;
+    }
+
+    .wire-layer {
+      transition: opacity 0.2s ease;
+    }
+
+    .wire-line {
+      transition: stroke 0.12s ease, stroke-width 0.12s ease;
+    }
+
+    /* ==========================================================================
+       BOTTOM INSPECTION PANELS (M3 CARDS)
+       ========================================================================== */
+    .inspection-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 1.2fr 1.1fr;
+      gap: 16px;
+    }
+
+    @media (max-width: 1100px) {
+      .inspection-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .m3-card {
+      background-color: var(--md-sys-color-surface-container);
+      border: 1px solid var(--md-sys-color-outline-variant);
+      border-radius: 12px;
+      padding: 14px 16px;
+      box-shadow: var(--md-elevation-1);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .m3-card-title {
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      color: var(--md-sys-color-primary);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--md-sys-color-outline-variant);
+      padding-bottom: 8px;
+    }
+
+    .m3-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12.5px;
+    }
+
+    .m3-table th {
+      text-align: left;
+      color: var(--md-sys-color-on-surface-variant);
+      font-weight: 500;
+      padding: 5px 6px;
+      border-bottom: 1px solid var(--md-sys-color-outline-variant);
+    }
+
+    .m3-table td {
+      padding: 5px 6px;
+      border-bottom: 1px solid rgba(139, 145, 154, 0.16);
+      font-family: 'Roboto Mono', monospace;
+    }
+
+    .m3-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .reg-badge {
+      display: inline-block;
+      min-width: 42px;
+      font-weight: 700;
+      color: var(--md-sys-color-on-surface);
+    }
+
+    .ram-preset-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 2px;
+    }
+
+    .ram-edit-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+
+    .ram-slot {
+      background-color: var(--md-sys-color-surface-container-low);
+      border: 1px solid var(--md-sys-color-outline-variant);
+      border-radius: 8px;
+      padding: 6px 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .ram-slot.active-slot {
+      border-color: var(--md-sys-color-primary);
+      background-color: var(--md-sys-color-surface-container-high);
+    }
+
+    .ram-slot label {
+      font-family: 'Roboto Mono', monospace;
+      font-size: 10.5px;
+      color: var(--md-sys-color-on-surface-variant);
+    }
+
+    .ram-slot input {
+      background: transparent;
+      border: none;
+      color: var(--md-sys-color-on-surface);
+      font-family: 'Roboto Mono', monospace;
+      font-size: 13px;
+      font-weight: 700;
+      width: 100%;
+      outline: none;
+      text-transform: uppercase;
+    }
+
+    .rtl-step-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 12px;
+    }
+
+    .rtl-step-item {
+      padding: 6px 10px;
+      border-radius: 8px;
+      background-color: var(--md-sys-color-surface-container-low);
+      border: 1px solid transparent;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      cursor: pointer;
+      transition: border-color 0.15s ease, background-color 0.15s ease;
+    }
+
+    .rtl-step-item:hover {
+      background-color: var(--md-sys-color-surface-container-high);
+    }
+
+    .rtl-step-item.active-rtl {
+      border-color: var(--md-sys-color-primary);
+      background-color: var(--md-sys-color-primary-container);
+      color: var(--md-sys-color-on-primary-container);
+    }
+
+    .rtl-code {
+      font-family: 'Roboto Mono', monospace;
+      font-weight: 700;
+      font-size: 11.5px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ========================================================================
+       1. TOP APP BAR (MATERIAL DESIGN 3)
+       ======================================================================== -->
+  <header class="top-app-bar">
+    <div class="brand-group">
+      <div>
+        <h1 class="brand-title">Simulador de Arquitetura Interna — CPU 8 bits (Von Neumann)</h1>
+        <span class="brand-subtitle">Ciclo Fetch–Decode–Execute</span>
+      </div>
+    </div>
+
+    <div class="toolbar-actions">
+      <!-- Segmented Button: Filtro de Camadas -->
+      <div class="segmented-group" role="group" aria-label="Filtro de barramentos">
+        <button type="button" class="seg-btn active" id="btn-filter-all" onclick="setWireFilter('all')">Todos</button>
+        <button type="button" class="seg-btn" id="btn-filter-clock" onclick="setWireFilter('clock')">Clock</button>
+        <button type="button" class="seg-btn" id="btn-filter-control" onclick="setWireFilter('control')">Controle
+          (WE/OE)</button>
+        <button type="button" class="seg-btn" id="btn-filter-address" onclick="setWireFilter('address')">Endereços
+          (8b)</button>
+        <button type="button" class="seg-btn" id="btn-filter-data" onclick="setWireFilter('data')">Dados / ULA
+          (8b)</button>
+      </div>
+
+      <!-- Download do .circ oficial hospedado no GitHub -->
+      <button type="button" class="m3-btn m3-btn-tonal" onclick="downloadCircFile()"
+        title="Baixar neocore_cpu.circ do repositório no GitHub (Logisim-Evolution v5.0.0)">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+          <polyline points="7 10 12 15 17 10" />
+          <line x1="12" y1="15" x2="12" y2="3" />
+        </svg>
+        Baixar neocore_cpu.circ
+      </button>
+    </div>
+  </header>
+
+  <!-- ========================================================================
+       3. WORKSPACE PRINCIPAL: CANVAS LOGISIM-EVOLUTION (1:1 COM main_board.svg)
+       ======================================================================== -->
+  <main class="workspace">
+    <div class="canvas-card">
+      <div class="canvas-viewport" id="canvas-viewport">
+        <svg id="logisim-svg" width="1151" height="441" viewBox="0 0 1151 441" xmlns="http://www.w3.org/2000/svg">
+
+          <!-- ===============================================================
+               CAMADA 1: REDE DE CLOCK (Fios de 1 bit ligados ao CLOCK)
+               =============================================================== -->
+          <g id="layer-clock" class="wire-layer" data-info="BUS_CLOCK">
+            <!-- Saída do CLOCK (120,85) -> Tronco vertical x=185 -> MAR.clk (295,105) -->
+            <path class="wire-line clk-wire" d="M120,85 H185 V105 H295" fill="none" stroke="#006400" stroke-width="3"
+              stroke-linecap="square" />
+            <!-- Tronco vertical x=185 descendo de 105 até 195 -->
+            <path class="wire-line clk-wire" d="M185,105 V195" fill="none" stroke="#006400" stroke-width="3"
+              stroke-linecap="square" />
+            <!-- De (185,195) para IR.clk (475,195) e descendo até (185,315) -->
+            <path class="wire-line clk-wire" d="M475,195 H185 V315" fill="none" stroke="#006400" stroke-width="3"
+              stroke-linecap="square" />
+            <!-- De (185,315) descendo até (185,395) e indo para MBR.clk (465,395) e AC.clk (815,325) -->
+            <path class="wire-line clk-wire" d="M185,315 V395 H405 V335 H805 V325 H815" fill="none" stroke="#006400"
+              stroke-width="3" stroke-linecap="square" />
+            <path class="wire-line clk-wire" d="M405,395 H465" fill="none" stroke="#006400" stroke-width="3"
+              stroke-linecap="square" />
+            <!-- Ramo de Clock para PC.clk (315,265) via y=285 -->
+            <path class="wire-line clk-wire" d="M185,285 H225 V285 H315 V265" fill="none" stroke="#006400"
+              stroke-width="3" stroke-linecap="square" />
+
+            <!-- Pontos de junção da rede de Clock -->
+            <circle class="clk-node" cx="185" cy="105" r="4.5" fill="#006400" />
+            <circle class="clk-node" cx="185" cy="195" r="4.5" fill="#006400" />
+            <circle class="clk-node" cx="185" cy="285" r="4.5" fill="#006400" />
+            <circle class="clk-node" cx="225" cy="285" r="4.5" fill="#006400" />
+            <circle class="clk-node" cx="185" cy="315" r="4.5" fill="#006400" />
+            <circle class="clk-node" cx="185" cy="395" r="4.5" fill="#006400" />
+            <circle class="clk-node" cx="405" cy="395" r="4.5" fill="#006400" />
+          </g>
+
+          <!-- ===============================================================
+               CAMADA 2: BARRAMENTO DE CONTROLE (Sinais WE / OE / Count - 1 bit)
+               =============================================================== -->
+          <g id="layer-control" class="wire-layer" data-info="BUS_CONTROL">
+            <!-- 1. MAR_Load (155,285) -> MAR.WE (295,85) -->
+            <path id="wire-MAR_Load" class="wire-line" d="M155,285 H225 V85 H295" fill="none" stroke="#006400"
+              stroke-width="3" stroke-linecap="square" />
+
+            <!-- 2. RAM_Read_MBR (155,315) -> MBR.WE (465,375) e RAM.OE (665,105) -->
+            <path id="wire-RAM_Read_MBR-1" class="wire-line" d="M155,315 H245 V375 H465" fill="none" stroke="#006400"
+              stroke-width="3" stroke-linecap="square" />
+            <path id="wire-RAM_Read_MBR-2" class="wire-line" d="M245,315 V5 H535 V105 H665" fill="none" stroke="#006400"
+              stroke-width="3" stroke-linecap="square" />
+            <circle id="node-RAM_Read_MBR" cx="245" cy="315" r="4.5" fill="#006400" />
+
+            <!-- 3. IR_Load (155,345) -> IR.WE (475,175) -->
+            <path id="wire-IR_Load" class="wire-line" d="M155,345 H205 V175 H475" fill="none" stroke="#006400"
+              stroke-width="3" stroke-linecap="square" />
+
+            <!-- 4. PC_Inc (155,375) -> PC.ct (305,255) -->
+            <path id="wire-PC_Inc" class="wire-line" d="M155,375 H225 V355 H285 V255 H305" fill="none" stroke="#006400"
+              stroke-width="3" stroke-linecap="square" />
+
+            <!-- 5. AC_Exec (155,405) -> AC.WE (815,305) -->
+            <path id="wire-AC_Exec" class="wire-line" d="M155,405 H195 V435 H755 V305 H815" fill="none" stroke="#006400"
+              stroke-width="3" stroke-linecap="square" />
+          </g>
+
+          <!-- ===============================================================
+               CAMADA 3: BARRAMENTO DE ENDEREÇOS (8 bits - Fios Pretos Espessos)
+               =============================================================== -->
+          <g id="layer-address" class="wire-layer" data-info="BUS_ADDR">
+            <!-- PC.Q (335,245) -> MAR.D (295,65) -->
+            <path id="wire-addr-pc-mar" class="wire-line" d="M295,65 H265 V155 H375 V245 H335" fill="none"
+              stroke="#000000" stroke-width="4" stroke-linecap="square" />
+            <!-- MAR.Q (355,65) -> RAM.A (665,55) -->
+            <path id="wire-addr-mar-ram" class="wire-line" d="M665,55 H445 V65 H355" fill="none" stroke="#000000"
+              stroke-width="4" stroke-linecap="square" />
+          </g>
+
+          <!-- ===============================================================
+               CAMADA 4: BARRAMENTO DE DADOS E CICLO DA ULA (8 bits)
+               =============================================================== -->
+          <g id="layer-data" class="wire-layer" data-info="BUS_DATA">
+            <!-- Teclado (1075,95) -> RAM.D_in (665,135) passando pelo topo y=5 -->
+            <path id="wire-data-kbd-ram" class="wire-line" d="M665,135 H625 V5 H1145 V95 H1075" fill="none"
+              stroke="#000000" stroke-width="4" stroke-linecap="square" />
+
+            <!-- RAM.D_out (905,135) -> MBR.D (465,355) -->
+            <path id="wire-data-ram-mbr" class="wire-line" d="M905,135 H955 V235 H425 V355 H465" fill="none"
+              stroke="#000000" stroke-width="4" stroke-linecap="square" />
+
+            <!-- MBR.Q (525,355) -> Ponto de distribuição (565,275) -> IR.D (475,155) e ULA.inA (695,275) -->
+            <path id="wire-data-mbr-bus" class="wire-line" d="M525,355 H565 V275" fill="none" stroke="#000000"
+              stroke-width="4" stroke-linecap="square" />
+            <path id="wire-data-mbr-ula" class="wire-line" d="M475,155 H445 V275 H695" fill="none" stroke="#000000"
+              stroke-width="4" stroke-linecap="square" />
+            <circle cx="565" cy="275" r="5.5" fill="#000000" />
+
+            <!-- IR.Q (535,155) -> Bloco Decoder UC (575,185) -->
+            <path id="wire-data-ir-dec" class="wire-line" d="M535,155 H555 V185 H575" fill="none" stroke="#000000"
+              stroke-width="3" stroke-linecap="square" />
+            <circle cx="575" cy="185" r="4.5" fill="#000000" />
+
+            <!-- ULA.out (735,285) -> AC.D (815,285) -->
+            <path id="wire-data-ula-ac" class="wire-line" d="M735,285 H815" fill="none" stroke="#000000"
+              stroke-width="4" stroke-linecap="square" />
+
+            <!-- AC.Q (875,285) -> Monitor (995,315) e Realimentação para ULA.inB (695,295) -->
+            <path id="wire-data-ac-mon" class="wire-line" d="M875,285 H995 V315" fill="none" stroke="#000000"
+              stroke-width="4" stroke-linecap="square" />
+            <path id="wire-data-ac-ula" class="wire-line" d="M925,285 V385 H665 V295 H695" fill="none" stroke="#000000"
+              stroke-width="4" stroke-linecap="square" />
+            <circle cx="925" cy="285" r="5.5" fill="#000000" />
+          </g>
+
+          <!-- ===============================================================
+               CAMADA 5: COMPONENTES NATIVOS DO LOGISIM-EVOLUTION (1:1)
+               =============================================================== -->
+
+          <!-- 1. CLOCK (85,75) -->
+          <g class="poke-target" data-info="CLOCK" onclick="pulseClock()">
+            <title>CLOCK — Clique para enviar um pulso de subida (↑)</title>
+            <text fill="#000000" font-family="sans-serif" font-size="15" font-weight="bold" x="72" y="62">CLOCK</text>
+            <path class="pin-hit" d="M85,75 H110 L120,85 L110,95 H85 Z" fill="#ffffff" stroke="#000000" stroke-width="2"
+              stroke-linecap="square" />
+            <path id="clk-wave" d="M89,89 V81 H96 V89 H103 V81" fill="none" stroke="#00a000" stroke-width="2"
+              stroke-linecap="square" />
+            <circle cx="120" cy="85" r="3" fill="#ffffff" stroke="#0000ff" stroke-width="1.8" />
+          </g>
+
+          <!-- 2. PINOS DE CONTROLE MANUAIS (x=137, y=277..397) -->
+          <!-- MAR_Load (y=277) -->
+          <g class="poke-target" data-info="PIN_MAR_Load" onclick="togglePin('MAR_Load')">
+            <title>Pino MAR_Load (1 bit) — Habilita escrita do endereço do PC no MAR</title>
+            <text fill="#0000ff" font-family="sans-serif" font-size="15" font-weight="bold" text-anchor="end" x="130"
+              y="292">MAR_Load</text>
+            <rect class="pin-hit" x="137" y="277" width="18" height="18" fill="#ffffff" stroke="#000000"
+              stroke-width="2" />
+            <circle id="pin-bg-MAR_Load" cx="146" cy="286" r="6.5" fill="#006400" />
+            <text id="pin-txt-MAR_Load" x="146" y="290" text-anchor="middle" fill="#ffffff"
+              font-family="Roboto Mono, monospace" font-size="11" font-weight="bold">0</text>
+            <circle cx="155" cy="285" r="2.8" fill="#ffffff" stroke="#0000ff" stroke-width="1.6" />
+          </g>
+
+          <!-- RAM_Read_MBR (y=307) -->
+          <g class="poke-target" data-info="PIN_RAM_Read_MBR" onclick="togglePin('RAM_Read_MBR')">
+            <title>Pino RAM_Read_MBR (1 bit) — Habilita OE da RAM e gravação do dado lido no MBR</title>
+            <text fill="#0000ff" font-family="sans-serif" font-size="15" font-weight="bold" text-anchor="end" x="130"
+              y="322">RAM_Read_MBR</text>
+            <rect class="pin-hit" x="137" y="307" width="18" height="18" fill="#ffffff" stroke="#000000"
+              stroke-width="2" />
+            <circle id="pin-bg-RAM_Read_MBR" cx="146" cy="316" r="6.5" fill="#006400" />
+            <text id="pin-txt-RAM_Read_MBR" x="146" y="320" text-anchor="middle" fill="#ffffff"
+              font-family="Roboto Mono, monospace" font-size="11" font-weight="bold">0</text>
+            <circle cx="155" cy="315" r="2.8" fill="#ffffff" stroke="#0000ff" stroke-width="1.6" />
+          </g>
+
+          <!-- IR_Load (y=337) -->
+          <g class="poke-target" data-info="PIN_IR_Load" onclick="togglePin('IR_Load')">
+            <title>Pino IR_Load (1 bit) — Carrega o valor do MBR no Registrador de Instrução (IR)</title>
+            <text fill="#0000ff" font-family="sans-serif" font-size="15" font-weight="bold" text-anchor="end" x="130"
+              y="352">IR_Load</text>
+            <rect class="pin-hit" x="137" y="337" width="18" height="18" fill="#ffffff" stroke="#000000"
+              stroke-width="2" />
+            <circle id="pin-bg-IR_Load" cx="146" cy="346" r="6.5" fill="#006400" />
+            <text id="pin-txt-IR_Load" x="146" y="350" text-anchor="middle" fill="#ffffff"
+              font-family="Roboto Mono, monospace" font-size="11" font-weight="bold">0</text>
+            <circle cx="155" cy="345" r="2.8" fill="#ffffff" stroke="#0000ff" stroke-width="1.6" />
+          </g>
+
+          <!-- PC_Inc (y=367) -->
+          <g class="poke-target" data-info="PIN_PC_Inc" onclick="togglePin('PC_Inc')">
+            <title>Pino PC_Inc (1 bit) — Incrementa o Contador de Programa (PC = PC + 1)</title>
+            <text fill="#0000ff" font-family="sans-serif" font-size="15" font-weight="bold" text-anchor="end" x="130"
+              y="382">PC_Inc</text>
+            <rect class="pin-hit" x="137" y="367" width="18" height="18" fill="#ffffff" stroke="#000000"
+              stroke-width="2" />
+            <circle id="pin-bg-PC_Inc" cx="146" cy="376" r="6.5" fill="#006400" />
+            <text id="pin-txt-PC_Inc" x="146" y="380" text-anchor="middle" fill="#ffffff"
+              font-family="Roboto Mono, monospace" font-size="11" font-weight="bold">0</text>
+            <circle cx="155" cy="375" r="2.8" fill="#ffffff" stroke="#0000ff" stroke-width="1.6" />
+          </g>
+
+          <!-- AC_Exec (y=397) -->
+          <g class="poke-target" data-info="PIN_AC_Exec" onclick="togglePin('AC_Exec')">
+            <title>Pino AC_Exec (1 bit) — Grava o resultado da soma da ULA no Acumulador (AC)</title>
+            <text fill="#0000ff" font-family="sans-serif" font-size="15" font-weight="bold" text-anchor="end" x="130"
+              y="412">AC_Exec</text>
+            <rect class="pin-hit" x="137" y="397" width="18" height="18" fill="#ffffff" stroke="#000000"
+              stroke-width="2" />
+            <circle id="pin-bg-AC_Exec" cx="146" cy="406" r="6.5" fill="#006400" />
+            <text id="pin-txt-AC_Exec" x="146" y="410" text-anchor="middle" fill="#ffffff"
+              font-family="Roboto Mono, monospace" font-size="11" font-weight="bold">0</text>
+            <circle cx="155" cy="405" r="2.8" fill="#ffffff" stroke="#0000ff" stroke-width="1.6" />
+          </g>
+
+          <!-- 3. REGISTRADOR MAR (x=305, y=55) -->
+          <g class="info-target" data-info="MAR">
+            <text fill="#0000ff" font-family="sans-serif" font-size="16" font-weight="bold" text-anchor="middle" x="325"
+              y="28">MAR</text>
+            <!-- Caixa superior de valor hexadecimal (idêntica ao main_board_screen.png) -->
+            <rect x="314" y="34" width="22" height="16" fill="#cccccc" />
+            <text id="val-MAR" x="325" y="46" text-anchor="middle" font-family="Roboto Mono, monospace" font-size="12"
+              font-weight="bold" fill="#222222">00</text>
+            <!-- Sombra em camadas do registrador Logisim -->
+            <path d="M310,115 V120 H350 V60 H345" fill="#ffffff" stroke="#000000" stroke-width="2"
+              stroke-linecap="square" />
+            <path d="M315,120 V125 H355 V65 H350" fill="#ffffff" stroke="#000000" stroke-width="2"
+              stroke-linecap="square" />
+            <rect x="305" y="55" width="40" height="60" fill="#ffffff" stroke="#000000" stroke-width="2" />
+            <path d="M295,65 H303" stroke="#000000" stroke-width="5" stroke-linecap="square" />
+            <path d="M347,65 H355" stroke="#000000" stroke-width="5" stroke-linecap="square" />
+            <text x="309" y="70" font-family="sans-serif" font-size="12" fill="#000000">D</text>
+            <text x="332" y="70" font-family="sans-serif" font-size="12" fill="#000000">Q</text>
+            <text x="308" y="90" font-family="sans-serif" font-size="12" fill="#000000">WE</text>
+            <path d="M295,85 H304" stroke="#000000" stroke-width="2" />
+            <path d="M306,101 L313,105 L306,109" fill="none" stroke="#000000" stroke-width="2" />
+            <path d="M295,105 H304" stroke="#000000" stroke-width="2" />
+            <path d="M325,116 V125" stroke="#000000" stroke-width="2" />
+            <text x="322" y="110" font-family="sans-serif" font-size="12" fill="#999999">R</text>
+            <circle cx="295" cy="85" r="2.8" fill="#ffffff" stroke="#0000ff" stroke-width="1.6" />
+            <circle cx="295" cy="105" r="2.8" fill="#ffffff" stroke="#0000ff" stroke-width="1.6" />
+          </g>
+
+          <!-- 4. CONTADOR PC (x=305, y=225) -->
+          <g class="info-target" data-info="PC">
+            <text fill="#0000ff" font-family="sans-serif" font-size="16" font-weight="bold" text-anchor="middle" x="320"
+              y="218">PC</text>
+            <rect x="305" y="225" width="30" height="40" fill="#ffffff" stroke="#000000" stroke-width="2" />
+            <text id="val-PC" x="320" y="240" text-anchor="middle" font-family="Roboto Mono, monospace" font-size="12"
+              font-weight="bold" fill="#000000">00</text>
+            <text x="307" y="250" font-family="sans-serif" font-size="11" fill="#000000">D</text>
+            <text x="323" y="250" font-family="sans-serif" font-size="11" fill="#000000">Q</text>
+            <text x="308" y="262" font-family="sans-serif" font-size="11" fill="#777777">ct</text>
+            <text x="322" y="262" font-family="sans-serif" font-size="11" fill="#999999">0</text>
+            <path d="M312,264 L315,260 L318,264" fill="none" stroke="#000000" stroke-width="1.8" />
+            <circle cx="305" cy="245" r="2.8" fill="#ffffff" stroke="#0000ff" stroke-width="1.6" />
+            <circle cx="305" cy="255" r="2.8" fill="#ffffff" stroke="#0000ff" stroke-width="1.6" />
+          </g>
+
+          <!-- 5. REGISTRADOR IR (x=485, y=145) + BLOCO DECODER UC (x=575, y=155) -->
+          <g class="info-target" data-info="IR">
+            <text fill="#0000ff" font-family="sans-serif" font-size="16" font-weight="bold" text-anchor="middle" x="505"
+              y="118">IR</text>
+            <rect x="494" y="124" width="22" height="16" fill="#cccccc" />
+            <text id="val-IR" x="505" y="136" text-anchor="middle" font-family="Roboto Mono, monospace" font-size="12"
+              font-weight="bold" fill="#222222">00</text>
+            <path d="M490,205 V210 H530 V150 H525" fill="#ffffff" stroke="#000000" stroke-width="2"
+              stroke-linecap="square" />
+            <path d="M495,210 V215 H535 V155 H530" fill="#ffffff" stroke="#000000" stroke-width="2"
+              stroke-linecap="square" />
+            <rect x="485" y="145" width="40" height="60" fill="#ffffff" stroke="#000000" stroke-width="2" />
+            <path d="M475,155 H483" stroke="#000000" stroke-width="5" stroke-linecap="square" />
+            <path d="M527,155 H535" stroke="#000000" stroke-width="5" stroke-linecap="square" />
+            <text x="489" y="160" font-family="sans-serif" font-size="12" fill="#000000">D</text>
+            <text x="512" y="160" font-family="sans-serif" font-size="12" fill="#000000">Q</text>
+            <text x="488" y="180" font-family="sans-serif" font-size="12" fill="#000000">WE</text>
+            <path d="M475,175 H484" stroke="#000000" stroke-width="2" />
+            <path d="M486,191 L493,195 L486,199" fill="none" stroke="#000000" stroke-width="2" />
+            <path d="M475,195 H484" stroke="#000000" stroke-width="2" />
+            <path d="M505,206 V215" stroke="#000000" stroke-width="2" />
+            <text x="502" y="200" font-family="sans-serif" font-size="12" fill="#999999">R</text>
+            <circle cx="475" cy="175" r="2.8" fill="#ffffff" stroke="#0000ff" stroke-width="1.6" />
+            <circle cx="475" cy="195" r="2.8" fill="#ffffff" stroke="#0000ff" stroke-width="1.6" />
+
+            <g class="info-target" data-info="DECODER">
+              <!-- Caixa Decoder UC exatamente em (575,155) w=80 h=50 como em main_board.svg -->
+              <rect id="box-decoder" x="575" y="155" width="80" height="50" fill="#ffffff" stroke="#000000"
+                stroke-width="2.5" />
+              <text x="615" y="175" text-anchor="middle" font-family="sans-serif" font-size="15" font-weight="bold"
+                fill="#000000">Decoder</text>
+              <text x="615" y="191" text-anchor="middle" font-family="sans-serif" font-size="14" font-weight="bold"
+                fill="#000000">UC</text>
+              <text id="val-DECODER" x="615" y="202" text-anchor="middle" font-family="Roboto Mono, monospace"
+                font-size="9.5" font-weight="bold" fill="#00497d">NOP (00)</text>
+            </g>
+          </g>
+
+          <!-- 6. REGISTRADOR MBR (x=475, y=345) -->
+          <g class="info-target" data-info="MBR">
+            <text fill="#0000ff" font-family="sans-serif" font-size="16" font-weight="bold" text-anchor="middle" x="495"
+              y="318">MBR</text>
+            <rect id="bg-val-MBR" x="484" y="324" width="22" height="16" fill="#cccccc" />
+            <text id="val-MBR" x="495" y="336" text-anchor="middle" font-family="Roboto Mono, monospace" font-size="12"
+              font-weight="bold" fill="#222222">00</text>
+            <path d="M480,405 V410 H520 V350 H515" fill="#ffffff" stroke="#000000" stroke-width="2"
+              stroke-linecap="square" />
+            <path d="M485,410 V415 H525 V355 H520" fill="#ffffff" stroke="#000000" stroke-width="2"
+              stroke-linecap="square" />
+            <rect x="475" y="345" width="40" height="60" fill="#ffffff" stroke="#000000" stroke-width="2" />
+            <path d="M465,355 H473" stroke="#000000" stroke-width="5" stroke-linecap="square" />
+            <path d="M517,355 H525" stroke="#000000" stroke-width="5" stroke-linecap="square" />
+            <text x="479" y="360" font-family="sans-serif" font-size="12" fill="#000000">D</text>
+            <text x="502" y="360" font-family="sans-serif" font-size="12" fill="#000000">Q</text>
+            <text x="478" y="380" font-family="sans-serif" font-size="12" fill="#000000">WE</text>
+            <path d="M465,375 H474" stroke="#000000" stroke-width="2" />
+            <path d="M476,391 L483,395 L476,399" fill="none" stroke="#000000" stroke-width="2" />
+            <path d="M465,395 H474" stroke="#000000" stroke-width="2" />
+            <path d="M495,406 V415" stroke="#000000" stroke-width="2" />
+            <text x="492" y="400" font-family="sans-serif" font-size="12" fill="#999999">R</text>
+            <circle cx="465" cy="375" r="2.8" fill="#ffffff" stroke="#0000ff" stroke-width="1.6" />
+            <circle cx="465" cy="395" r="2.8" fill="#ffffff" stroke="#0000ff" stroke-width="1.6" />
+          </g>
+
+          <!-- 7. MEMÓRIA PRINCIPAL RAM 256 x 8 (x=665, y=45, w=240, h=154) -->
+          <g class="info-target" data-info="RAM">
+            <text fill="#000000" font-family="sans-serif" font-size="16" font-weight="bold" text-anchor="middle" x="785"
+              y="30">RAM</text>
+            <rect x="665" y="45" width="240" height="154" fill="#ffffff" stroke="#000000" stroke-width="2" />
+            <text x="785" y="58" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#000000">RAM 256 x
+              8</text>
+            <!-- Pinos laterais -->
+            <text x="669" y="62" font-family="sans-serif" font-size="12" fill="#000000">A</text>
+            <text x="669" y="101" font-family="sans-serif" font-size="11" fill="#000000">WE</text>
+            <text x="669" y="112" font-family="sans-serif" font-size="11" fill="#000000">OE</text>
+            <path d="M666,112 L670,115 L666,118" fill="none" stroke="#000000" stroke-width="1.8" />
+            <text x="669" y="141" font-family="sans-serif" font-size="12" fill="#000000">D</text>
+            <text x="892" y="141" font-family="sans-serif" font-size="12" fill="#000000">D</text>
+            <circle cx="665" cy="105" r="2.8" fill="#ffffff" stroke="#0000ff" stroke-width="1.6" />
+
+            <!-- Painel Hexadecimal Interno da RAM (fiel ao main_board_screen.png) -->
+            <rect x="703" y="62" width="164" height="122" fill="#b5b5b5" stroke="#666666" stroke-width="1" />
+            <line x1="724" y1="62" x2="724" y2="184" stroke="#555555" stroke-width="1" />
+
+            <!-- Endereços das linhas (00, 08, 10, 18, 20, 28) -->
+            <text x="706" y="77" font-family="Roboto Mono, monospace" font-size="11" font-weight="bold"
+              fill="#111111">00</text>
+            <text x="706" y="96" font-family="Roboto Mono, monospace" font-size="11" font-weight="bold"
+              fill="#111111">08</text>
+            <text x="706" y="115" font-family="Roboto Mono, monospace" font-size="11" font-weight="bold"
+              fill="#111111">10</text>
+            <text x="706" y="134" font-family="Roboto Mono, monospace" font-size="11" font-weight="bold"
+              fill="#111111">18</text>
+            <text x="706" y="153" font-family="Roboto Mono, monospace" font-size="11" font-weight="bold"
+              fill="#111111">20</text>
+            <text x="706" y="172" font-family="Roboto Mono, monospace" font-size="11" font-weight="bold"
+              fill="#111111">28</text>
+
+            <!-- 4 primeiras células interativas da linha 00 (00, 01, 02, 03) + resto da linha -->
+            <g id="ram-svg-cells">
+              <rect id="ram-box-0" x="726" y="65" width="18" height="15" fill="#444444" />
+              <text id="ram-txt-0" x="735" y="77" text-anchor="middle" font-family="Roboto Mono, monospace"
+                font-size="11" font-weight="bold" fill="#ffffff">05</text>
+
+              <rect id="ram-box-1" x="744" y="65" width="18" height="15" fill="transparent" />
+              <text id="ram-txt-1" x="753" y="77" text-anchor="middle" font-family="Roboto Mono, monospace"
+                font-size="11" font-weight="bold" fill="#111111">03</text>
+
+              <rect id="ram-box-2" x="762" y="65" width="18" height="15" fill="transparent" />
+              <text id="ram-txt-2" x="771" y="77" text-anchor="middle" font-family="Roboto Mono, monospace"
+                font-size="11" font-weight="bold" fill="#111111">00</text>
+
+              <rect id="ram-box-3" x="780" y="65" width="18" height="15" fill="transparent" />
+              <text id="ram-txt-3" x="789" y="77" text-anchor="middle" font-family="Roboto Mono, monospace"
+                font-size="11" font-weight="bold" fill="#111111">00</text>
+            </g>
+            <text x="800" y="77" font-family="Roboto Mono, monospace" font-size="11" fill="#222222">00 00 00 00</text>
+            <text x="728" y="96" font-family="Roboto Mono, monospace" font-size="11" fill="#222222">00 00 00 00 00 00 00
+              00</text>
+            <text x="728" y="115" font-family="Roboto Mono, monospace" font-size="11" fill="#222222">00 00 00 00 00 00
+              00 00</text>
+            <text x="728" y="134" font-family="Roboto Mono, monospace" font-size="11" fill="#222222">00 00 00 00 00 00
+              00 00</text>
+            <text x="728" y="153" font-family="Roboto Mono, monospace" font-size="11" fill="#222222">00 00 00 00 00 00
+              00 00</text>
+            <text x="728" y="172" font-family="Roboto Mono, monospace" font-size="11" fill="#222222">00 00 00 00 00 00
+              00 00</text>
+          </g>
+
+          <!-- 8. ULA / ADDER (x=695, y=265, w=40, h=40) -->
+          <g class="info-target" data-info="ULA">
+            <text fill="#000000" font-family="sans-serif" font-size="16" font-weight="bold" text-anchor="middle" x="715"
+              y="256">ULA</text>
+            <rect x="695" y="265" width="40" height="40" fill="#ffffff" stroke="#000000" stroke-width="2" />
+            <text x="704" y="279" font-family="sans-serif" font-size="11" fill="#999999">c in</text>
+            <text x="701" y="301" font-family="sans-serif" font-size="11" fill="#999999">c out</text>
+            <path d="M720,285 H730" stroke="#000000" stroke-width="2" stroke-linecap="square" />
+            <path d="M725,280 V290" stroke="#000000" stroke-width="2" stroke-linecap="square" />
+          </g>
+
+          <!-- 9. REGISTRADOR AC (x=825, y=275, w=40, h=60) -->
+          <g class="info-target" data-info="AC">
+            <text fill="#0000ff" font-family="sans-serif" font-size="16" font-weight="bold" text-anchor="middle" x="845"
+              y="248">AC</text>
+            <rect x="834" y="254" width="22" height="16" fill="#cccccc" />
+            <text id="val-AC" x="845" y="266" text-anchor="middle" font-family="Roboto Mono, monospace" font-size="12"
+              font-weight="bold" fill="#222222">00</text>
+            <path d="M830,335 V340 H870 V280 H865" fill="#ffffff" stroke="#000000" stroke-width="2"
+              stroke-linecap="square" />
+            <path d="M835,340 V345 H875 V285 H870" fill="#ffffff" stroke="#000000" stroke-width="2"
+              stroke-linecap="square" />
+            <rect x="825" y="275" width="40" height="60" fill="#ffffff" stroke="#000000" stroke-width="2" />
+            <path d="M815,285 H823" stroke="#000000" stroke-width="5" stroke-linecap="square" />
+            <path d="M867,285 H875" stroke="#000000" stroke-width="5" stroke-linecap="square" />
+            <text x="829" y="290" font-family="sans-serif" font-size="12" fill="#000000">D</text>
+            <text x="852" y="290" font-family="sans-serif" font-size="12" fill="#000000">Q</text>
+            <text x="828" y="310" font-family="sans-serif" font-size="12" fill="#000000">WE</text>
+            <path d="M815,305 H824" stroke="#000000" stroke-width="2" />
+            <path d="M826,321 L833,325 L826,329" fill="none" stroke="#000000" stroke-width="2" />
+            <path d="M815,325 H824" stroke="#000000" stroke-width="2" />
+            <path d="M845,336 V345" stroke="#000000" stroke-width="2" />
+            <text x="842" y="330" font-family="sans-serif" font-size="12" fill="#999999">R</text>
+            <circle cx="815" cy="305" r="2.8" fill="#ffffff" stroke="#0000ff" stroke-width="1.6" />
+            <circle cx="815" cy="325" r="2.8" fill="#ffffff" stroke="#0000ff" stroke-width="1.6" />
+          </g>
+
+          <!-- 10. MONITOR (Pino de Saída 8 bits - x=957, y=317) -->
+          <g class="info-target" data-info="MONITOR">
+            <rect x="957" y="317" width="78" height="18" rx="4" ry="4" fill="#ffffff" stroke="#000000"
+              stroke-width="2" />
+            <text id="val-Monitor" x="996" y="330" text-anchor="middle" font-family="Roboto Mono, monospace"
+              font-size="11.5" font-weight="bold" fill="#000000">00000000</text>
+            <text x="996" y="350" text-anchor="middle" font-family="sans-serif" font-size="16" font-weight="bold"
+              fill="#000000">Monitor</text>
+          </g>
+
+          <!-- 11. TECLADO (Pino de Entrada 8 bits - x=997, y=87) -->
+          <g class="poke-target" data-info="TECLADO" onclick="writeTecladoToRAM()">
+            <title>Teclado (8 bits) — Clique para gravar o valor do Teclado na posição atual da RAM[MAR]</title>
+            <text fill="#0000ff" font-family="sans-serif" font-size="16" font-weight="bold" text-anchor="end" x="991"
+              y="102">Teclado</text>
+            <rect class="pin-hit" x="997" y="87" width="78" height="18" fill="#ffffff" stroke="#000000"
+              stroke-width="2" />
+            <text id="val-Teclado" x="1036" y="100" text-anchor="middle" font-family="Roboto Mono, monospace"
+              font-size="11.5" font-weight="bold" fill="#000000">00000101</text>
+            <circle cx="1075" cy="95" r="2.5" fill="#000000" />
+          </g>
+
+        </svg>
+        <span class="canvas-version">2.1.1</span>
+      </div>
+    </div>
+
+    <!-- ======================================================================
+         4. PAINÉIS DE INSPEÇÃO E DOCUMENTAÇÃO TÉCNICA (M3 OUTLINED CARDS)
+         ====================================================================== -->
+    <div class="drawer" id="drawer">
+      <div class="inspection-grid">
+
+        <!-- Card 1: Ciclo de Instrução (Fetch - Decode - Execute) -->
+        <section class="m3-card">
+          <div class="m3-card-title">
+            <span>Sequência do Ciclo de Instrução (Micro-operações)</span>
+            <span class="mono" style="font-size:11px;color:var(--md-sys-color-on-surface-variant);">Clique para
+              saltar</span>
+          </div>
+          <ul class="rtl-step-list" id="rtl-list">
+            <li class="rtl-step-item" id="rtl-step-0" onclick="jumpToGuidedStep(0)">
+              <span><strong>T0 · Busca (Fetch A):</strong> Endereçamento da RAM</span>
+              <span class="rtl-code">MAR ← PC</span>
+            </li>
+            <li class="rtl-step-item" id="rtl-step-1" onclick="jumpToGuidedStep(1)">
+              <span><strong>T1 · Busca (Fetch B):</strong> Leitura de Memória</span>
+              <span class="rtl-code">MBR ← RAM[MAR]</span>
+            </li>
+            <li class="rtl-step-item" id="rtl-step-2" onclick="jumpToGuidedStep(2)">
+              <span><strong>T2 · Decodificação (Decode):</strong> Opcode e PC+1</span>
+              <span class="rtl-code">IR ← MBR; PC ← PC+1</span>
+            </li>
+            <li class="rtl-step-item" id="rtl-step-3" onclick="jumpToGuidedStep(3)">
+              <span><strong>T3 · Execução (Execute):</strong> Operação na ULA</span>
+              <span class="rtl-code">AC ← AC + MBR</span>
+            </li>
+            <li class="rtl-step-item" id="rtl-step-4" onclick="jumpToGuidedStep(4)">
+              <span><strong>T4 · Ciclo 2 Completo:</strong> Soma 2º Operando</span>
+              <span class="rtl-code">AC ← 05h + 03h = 08h</span>
+            </li>
+          </ul>
+        </section>
+
+        <!-- Card 2: Banco de Registradores e Barramentos em Tempo Real -->
+        <section class="m3-card">
+          <div class="m3-card-title">
+            <span>Registradores Internos da CPU</span>
+            <span class="mono" id="alu-preview" style="font-size:11px;color:var(--md-sys-color-tertiary);">ULA Out:
+              00h</span>
+          </div>
+          <table class="m3-table">
+            <thead>
+              <tr>
+                <th>Registrador</th>
+                <th>Hex</th>
+                <th>Binário (8 bits)</th>
+                <th>Decimal</th>
+                <th>Sinal de Controle</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="reg-badge">PC</span></td>
+                <td id="tbl-hex-PC">00</td>
+                <td id="tbl-bin-PC">00000000</td>
+                <td id="tbl-dec-PC">0</td>
+                <td id="tbl-ctl-PC">PC_Inc = 0</td>
+              </tr>
+              <tr>
+                <td><span class="reg-badge">MAR</span></td>
+                <td id="tbl-hex-MAR">00</td>
+                <td id="tbl-bin-MAR">00000000</td>
+                <td id="tbl-dec-MAR">0</td>
+                <td id="tbl-ctl-MAR">MAR_Load = 0</td>
+              </tr>
+              <tr>
+                <td><span class="reg-badge">MBR</span></td>
+                <td id="tbl-hex-MBR">00</td>
+                <td id="tbl-bin-MBR">00000000</td>
+                <td id="tbl-dec-MBR">0</td>
+                <td id="tbl-ctl-MBR">RAM_Read_MBR = 0</td>
+              </tr>
+              <tr>
+                <td><span class="reg-badge">IR</span></td>
+                <td id="tbl-hex-IR">00</td>
+                <td id="tbl-bin-IR">00000000</td>
+                <td id="tbl-dec-IR">0</td>
+                <td id="tbl-ctl-IR">IR_Load = 0</td>
+              </tr>
+              <tr>
+                <td><span class="reg-badge">AC</span></td>
+                <td id="tbl-hex-AC">00</td>
+                <td id="tbl-bin-AC">00000000</td>
+                <td id="tbl-dec-AC">0</td>
+                <td id="tbl-ctl-AC">AC_Exec = 0</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <!-- Card 3: Inspector de Memória RAM (256x8) e Entrada E/S (Teclado) -->
+        <section class="m3-card">
+          <div class="m3-card-title">
+            <span>Memória Principal (RAM) &amp; Entrada E/S</span>
+            <span class="mono" style="font-size:11px;color:var(--md-sys-color-on-surface-variant);">Edição Direta
+              (Hex)</span>
+          </div>
+
+          <div class="ram-edit-grid">
+            <div class="ram-slot active-slot" id="slot-ram-0">
+              <label for="inp-ram-0">RAM[00h]</label>
+              <input id="inp-ram-0" type="text" maxlength="2" value="05" onchange="updateRamFromInput(0, this.value)">
+            </div>
+            <div class="ram-slot" id="slot-ram-1">
+              <label for="inp-ram-1">RAM[01h]</label>
+              <input id="inp-ram-1" type="text" maxlength="2" value="03" onchange="updateRamFromInput(1, this.value)">
+            </div>
+            <div class="ram-slot" id="slot-ram-2">
+              <label for="inp-ram-2">RAM[02h]</label>
+              <input id="inp-ram-2" type="text" maxlength="2" value="0A" onchange="updateRamFromInput(2, this.value)">
+            </div>
+            <div class="ram-slot" id="slot-ram-3">
+              <label for="inp-ram-3">RAM[03h]</label>
+              <input id="inp-ram-3" type="text" maxlength="2" value="00" onchange="updateRamFromInput(3, this.value)">
+            </div>
+          </div>
+
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:4px;">
+            <div style="font-size:12px;color:var(--md-sys-color-on-surface-variant);">
+              <strong>Teclado E/S (Hex):</strong>
+              <input id="inp-teclado" type="text" maxlength="2" value="05" onchange="updateTecladoFromInput(this.value)"
+                style="width:44px;margin-left:6px;padding:3px 6px;border-radius:6px;border:1px solid var(--md-sys-color-outline-variant);background:var(--md-sys-color-surface-container-low);color:var(--md-sys-color-on-surface);font-family:'Roboto Mono',monospace;font-weight:700;text-transform:uppercase;">
+            </div>
+            <button type="button" class="m3-btn m3-btn-tonal" onclick="writeTecladoToRAM()"
+              style="height:30px;font-size:11.5px;">
+              Gravar Teclado → RAM[MAR]
+            </button>
+          </div>
+        </section>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- ========================================================================
+       BARRA FLUTUANTE (DOCK) + CARD DE CONTEXTO DO CICLO
+       ======================================================================== -->
+  <aside class="ctx-card" id="ctx-card" aria-live="polite">
+    <div class="ctx-head">
+      <strong id="step-title">Pronto para simular</strong>
+      <button type="button" class="ctx-close" onclick="hideCtxCard()" aria-label="Ocultar explicação">×</button>
+    </div>
+    <p class="ctx-body" id="step-desc">Clique nos pinos de controle (<code>MAR_Load</code>, <code>RAM_Read_MBR</code>,
+      <code>IR_Load</code>, <code>PC_Inc</code>, <code>AC_Exec</code>), no <code>CLOCK</code> ou avance pelo guia passo
+      a passo.
+    </p>
+    <div class="ctx-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"
+      id="ctx-progressbar">
+      <div id="ctx-progress-fill"></div>
+    </div>
+  </aside>
+
+  <nav class="dock" id="dock" aria-label="Controles do simulador">
+    <div class="dock-row dock-tools">
+      <button type="button" class="m3-btn m3-btn-tonal" id="btn-drawer" aria-pressed="false" onclick="toggleDrawer()"
+        title="Abrir painéis de registradores, RAM e ciclo">Painéis</button>
+      <button type="button" class="m3-btn m3-btn-tonal" id="btn-explain" aria-pressed="false"
+        onclick="toggleExplainMode()"
+        title="Quando ativo, clicar em pinos, CLOCK e Teclado abre a explicação em vez de acioná-los">Modo
+        Explicação</button>
+      <button type="button" class="m3-btn m3-btn-tonal" onclick="fitCanvas()"
+        title="Ajustar o circuito à tela">Ajustar</button>
+      <div class="zoom-pill" role="group" aria-label="Zoom">
+        <button type="button" class="m3-btn" onclick="zoomBy(0.8)" title="Afastar" aria-label="Diminuir zoom">−</button>
+        <span class="zoom-readout" id="zoom-readout">100%</span>
+        <button type="button" class="m3-btn" onclick="zoomBy(1.25)" title="Aproximar"
+          aria-label="Aumentar zoom">+</button>
+      </div>
+      <button type="button" class="m3-btn m3-btn-outlined m3-icon-btn" id="btn-dock-collapse" onclick="toggleDock()"
+        aria-expanded="true" title="Minimizar / expandir controles de execução" aria-label="Minimizar controles">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="6 9 12 15 18 9" />
+        </svg>
+      </button>
+    </div>
+    <div class="dock-row dock-exec" id="dock-exec">
+      <span class="phase-chip" id="step-counter" role="status">T0 · PRONTO</span>
+      <button type="button" class="m3-btn m3-btn-filled" onclick="runGuidedStep()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+          <polygon points="5 3 19 12 5 21 5 3" />
+        </svg>
+        Próximo Passo
+      </button>
+      <button type="button" class="m3-btn m3-btn-tonal" id="btn-autoclock" onclick="toggleAutoClock()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10" />
+          <polyline points="12 6 12 12 16 14" />
+        </svg>
+        <span id="txt-autoclock">Auto-Clock (1 Hz)</span>
+      </button>
+      <button type="button" class="m3-btn m3-btn-outlined" onclick="pulseClock()">Pulso Manual de Clock</button>
+      <button type="button" class="m3-btn m3-btn-outlined" onclick="resetCPU()">Resetar CPU</button>
+    </div>
+  </nav>
+
+
+  <dialog class="info-dialog" id="info-dialog" aria-labelledby="info-title">
+    <div class="info-dialog-body">
+      <h2 id="info-title"></h2>
+      <span class="info-chip" id="info-chip"></span>
+      <p id="info-desc"></p>
+      <dl id="info-fields"></dl>
+      <div class="info-dialog-actions">
+        <button type="button" class="m3-btn m3-btn-filled"
+          onclick="document.getElementById('info-dialog').close()">Fechar</button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- ========================================================================
+       MOTOR DE SIMULAÇÃO SÍNCRONO FIEL AO LOGISIM-EVOLUTION v5.0.0
+       ======================================================================== -->
+  <script>
+    const state = {
+      pins: {
+        MAR_Load: 0,
+        RAM_Read_MBR: 0,
+        IR_Load: 0,
+        PC_Inc: 0,
+        AC_Exec: 0
+      },
+      regs: {
+        PC: 0x00,
+        MAR: 0x00,
+        IR: 0x00,
+        MBR: 0x00,
+        AC: 0x00
+      },
+      mbrInitialized: true,
+      teclado: 0x05,
+      ram: [0x05, 0x03, 0x0A, 0x00],
+      guidedStep: 0,
+      autoClockTimer: null
+    };
+
+    function toHex2(val) {
+      return (val & 0xFF).toString(16).toUpperCase().padStart(2, '0');
+    }
+
+    function toBin8(val) {
+      return (val & 0xFF).toString(2).padStart(8, '0');
+    }
+
+    function togglePin(pinName) {
+      state.pins[pinName] = state.pins[pinName] === 1 ? 0 : 1;
+      renderCircuit();
+    }
+
+    function updateRamFromInput(idx, rawVal) {
+      const parsed = parseInt(rawVal, 16);
+      state.ram[idx] = Number.isNaN(parsed) ? 0 : (parsed & 0xFF);
+      renderCircuit();
+    }
+
+    function updateTecladoFromInput(rawVal) {
+      const parsed = parseInt(rawVal, 16);
+      state.teclado = Number.isNaN(parsed) ? 0 : (parsed & 0xFF);
+      renderCircuit();
+    }
+
+    function writeTecladoToRAM() {
+      const addr = state.regs.MAR & 0x03;
+      state.ram[addr] = state.teclado & 0xFF;
+      document.getElementById('step-counter').textContent = 'E/S · WRITE';
+      document.getElementById('step-title').textContent = `Escrita E/S na RAM[${toHex2(addr)}]:`;
+      document.getElementById('step-desc').innerHTML = `O byte <code>${toHex2(state.teclado)}h</code> (<code>${toBin8(state.teclado)}</code>) do pino <code>Teclado</code> foi gravado na posição <code>${toHex2(addr)}h</code> da memória RAM.`;
+      renderCircuit();
+    }
+
+    function pulseClock() {
+      // Destaque visual da borda de subida nos fios de Clock
+      const clkWires = document.querySelectorAll('.clk-wire');
+      const clkNodes = document.querySelectorAll('.clk-node');
+      clkWires.forEach(w => w.setAttribute('stroke', '#00d800'));
+      clkNodes.forEach(n => n.setAttribute('fill', '#00d800'));
+      setTimeout(() => {
+        clkWires.forEach(w => w.setAttribute('stroke', '#006400'));
+        clkNodes.forEach(n => n.setAttribute('fill', '#006400'));
+      }, 220);
+
+      // 1. Captura entradas antes da borda de subida (semântica síncrona de registradores Mestre-Escravo / Borda de Subida)
+      const prevPC = state.regs.PC;
+      const prevMAR = state.regs.MAR;
+      const prevMBR = state.regs.MBR;
+      const prevAC = state.regs.AC;
+      const aluSum = (prevAC + prevMBR) & 0xFF;
+
+      // 2. Aplica micro-operações habilitadas pelos sinais WE / Count
+      if (state.pins.MAR_Load === 1) {
+        state.regs.MAR = prevPC;
+      }
+      if (state.pins.RAM_Read_MBR === 1) {
+        const addr = prevMAR & 0x03;
+        state.regs.MBR = state.ram[addr];
+        state.mbrInitialized = true;
+      }
+      if (state.pins.IR_Load === 1) {
+        state.regs.IR = prevMBR;
+      }
+      if (state.pins.PC_Inc === 1) {
+        state.regs.PC = (prevPC + 1) & 0xFF;
+      }
+      if (state.pins.AC_Exec === 1) {
+        state.regs.AC = aluSum;
+      }
+
+      renderCircuit();
+    }
+
+    const guidedSteps = [
+      {
+        code: 'T0 · FETCH A',
+        title: 'Passo 1 (Busca / Fetch — Parte A): PC → MAR',
+        desc: 'Ativamos <code>MAR_Load = 1</code> e pulsamos o <code>CLOCK</code>. O endereço <code>00h</code> do <code>PC</code> é copiado para o <code>MAR</code> e seleciona a célula <code>00h</code> da <code>RAM</code> pelo Barramento de Endereços.',
+        pins: { MAR_Load: 1, RAM_Read_MBR: 0, IR_Load: 0, PC_Inc: 0, AC_Exec: 0 }
+      },
+      {
+        code: 'T1 · FETCH B',
+        title: 'Passo 2 (Busca / Fetch — Parte B): RAM[MAR] → MBR',
+        desc: 'Ativamos <code>RAM_Read_MBR = 1</code> (habilitando <code>OE</code> na RAM e <code>WE</code> no MBR) e pulsamos o <code>CLOCK</code>. O dado <code>' + '05h</code> sai da <code>RAM</code> e é armazenado no <code>MBR</code>.',
+        pins: { MAR_Load: 0, RAM_Read_MBR: 1, IR_Load: 0, PC_Inc: 0, AC_Exec: 0 }
+      },
+      {
+        code: 'T2 · DECODE',
+        title: 'Passo 3 (Decodificação / Decode): MBR → IR e PC ← PC + 1',
+        desc: 'Ativamos <code>IR_Load = 1</code> e <code>PC_Inc = 1</code> simultaneamente. O <code>IR</code> recebe <code>05h</code> para o <code>Decoder UC</code> interpretar e o <code>PC</code> avança para <code>01h</code>.',
+        pins: { MAR_Load: 0, RAM_Read_MBR: 0, IR_Load: 1, PC_Inc: 1, AC_Exec: 0 }
+      },
+      {
+        code: 'T3 · EXECUTE',
+        title: 'Passo 4 (Execução / Execute): ULA soma AC + MBR → AC',
+        desc: 'Ativamos <code>AC_Exec = 1</code> e pulsamos o <code>CLOCK</code>. A <code>ULA</code> soma <code>AC (00h) + MBR (05h) = 05h</code>, gravando no <code>AC</code> e exibindo <code>00000101</code> no <code>Monitor</code>.',
+        pins: { MAR_Load: 0, RAM_Read_MBR: 0, IR_Load: 0, PC_Inc: 0, AC_Exec: 1 }
+      },
+      {
+        code: 'T4 · CICLO 2',
+        title: 'Passo 5 (Segundo Ciclo Completo): Busca RAM[01h] e Soma no AC',
+        desc: 'Executamos o ciclo completo para o endereço <code>01h</code>: <code>MAR ← 01h</code>, <code>MBR ← RAM[01h]</code>, <code>IR ← MBR</code>, <code>PC ← 02h</code> e a <code>ULA</code> soma o valor acumulado no <code>AC</code>.',
+        customAction: () => {
+          state.regs.MAR = 0x01;
+          const op2 = state.ram[1] & 0xFF;
+          state.regs.MBR = op2;
+          state.regs.IR = op2;
+          state.regs.PC = 0x02;
+          state.regs.AC = (state.ram[0] + op2) & 0xFF;
+          state.pins = { MAR_Load: 0, RAM_Read_MBR: 0, IR_Load: 0, PC_Inc: 0, AC_Exec: 1 };
+        }
+      }
+    ];
+
+    function runGuidedStep() {
+      const idx = state.guidedStep;
+      const step = guidedSteps[idx];
+      if (step.customAction) {
+        step.customAction();
+        renderCircuit();
+      } else {
+        state.pins = { ...step.pins };
+        pulseClock();
+      }
+
+      highlightRtlStep(idx);
+      document.getElementById('step-counter').textContent = step.code;
+      document.getElementById('step-title').textContent = step.title;
+      document.getElementById('step-desc').innerHTML = step.desc;
+      showCtxCard(((idx + 1) / guidedSteps.length) * 100);
+
+      state.guidedStep = (state.guidedStep + 1) % guidedSteps.length;
+    }
+
+    function jumpToGuidedStep(targetIdx) {
+      // Reinicia o estado e executa até o passo desejado para garantir determinismo
+      state.regs = { PC: 0, MAR: 0, IR: 0, MBR: 0, AC: 0 };
+      state.guidedStep = 0;
+      for (let i = 0; i <= targetIdx; i++) {
+        runGuidedStep();
+      }
+    }
+
+    function highlightRtlStep(activeIdx) {
+      for (let i = 0; i < 5; i++) {
+        const el = document.getElementById(`rtl-step-${i}`);
+        if (el) el.classList.toggle('active-rtl', i === activeIdx);
+      }
+    }
+
+    function toggleAutoClock() {
+      const btn = document.getElementById('btn-autoclock');
+      const txt = document.getElementById('txt-autoclock');
+      if (state.autoClockTimer) {
+        clearInterval(state.autoClockTimer);
+        state.autoClockTimer = null;
+        btn.classList.remove('running');
+        txt.textContent = 'Auto-Clock (1 Hz)';
+      } else {
+        btn.classList.add('running');
+        txt.textContent = 'Pausar Clock (1 Hz)';
+        runGuidedStep();
+        state.autoClockTimer = setInterval(runGuidedStep, 1100);
+      }
+    }
+
+    function resetCPU() {
+      if (state.autoClockTimer) toggleAutoClock();
+      state.pins = { MAR_Load: 0, RAM_Read_MBR: 0, IR_Load: 0, PC_Inc: 0, AC_Exec: 0 };
+      state.regs = { PC: 0, MAR: 0, IR: 0, MBR: 0, AC: 0 };
+      state.guidedStep = 0;
+      highlightRtlStep(-1);
+      document.getElementById('step-counter').textContent = 'T0 · RESET';
+      document.getElementById('step-title').textContent = 'CPU Resetada:';
+      document.getElementById('step-desc').innerHTML = 'Todos os registradores (<code>PC</code>, <code>MAR</code>, <code>MBR</code>, <code>IR</code>, <code>AC</code>) voltaram para <code>00h</code>. Os dados na <code>RAM</code> foram preservados.';
+      showCtxCard(0);
+      renderCircuit();
+    }
+
+    function setWireFilter(mode) {
+      const layers = {
+        clock: document.getElementById('layer-clock'),
+        control: document.getElementById('layer-control'),
+        address: document.getElementById('layer-address'),
+        data: document.getElementById('layer-data')
+      };
+
+      ['all', 'clock', 'control', 'address', 'data'].forEach(m => {
+        const btn = document.getElementById(`btn-filter-${m}`);
+        if (btn) btn.classList.toggle('active', m === mode);
+      });
+
+      for (const [key, el] of Object.entries(layers)) {
+        el.style.opacity = (mode === 'all' || mode === key) ? '1' : '0.12';
+      }
+    }
+
+    function renderCircuit() {
+      // 1. Pinos e Fios de Controle
+      const pinWireMap = {
+        MAR_Load: ['wire-MAR_Load'],
+        RAM_Read_MBR: ['wire-RAM_Read_MBR-1', 'wire-RAM_Read_MBR-2'],
+        IR_Load: ['wire-IR_Load'],
+        PC_Inc: ['wire-PC_Inc'],
+        AC_Exec: ['wire-AC_Exec']
+      };
+
+      for (const [pin, val] of Object.entries(state.pins)) {
+        const bg = document.getElementById(`pin-bg-${pin}`);
+        const txt = document.getElementById(`pin-txt-${pin}`);
+        const color = val === 1 ? '#00d800' : '#006400';
+        bg.setAttribute('fill', color);
+        txt.textContent = val.toString();
+
+        pinWireMap[pin].forEach(wId => {
+          const w = document.getElementById(wId);
+          if (w) {
+            w.setAttribute('stroke', color);
+            w.setAttribute('stroke-width', val === 1 ? '3.5' : '3');
+          }
+        });
+      }
+      document.getElementById('node-RAM_Read_MBR').setAttribute(
+        'fill',
+        state.pins.RAM_Read_MBR === 1 ? '#00d800' : '#006400'
+      );
+
+      // 2. Registradores no Canvas SVG
+      document.getElementById('val-PC').textContent = toHex2(state.regs.PC);
+      document.getElementById('val-MAR').textContent = toHex2(state.regs.MAR);
+      document.getElementById('val-IR').textContent = toHex2(state.regs.IR);
+      document.getElementById('val-MBR').textContent = toHex2(state.regs.MBR);
+      document.getElementById('val-AC').textContent = toHex2(state.regs.AC);
+      document.getElementById('val-Monitor').textContent = toBin8(state.regs.AC);
+      document.getElementById('val-Teclado').textContent = toBin8(state.teclado);
+      document.getElementById('inp-teclado').value = toHex2(state.teclado);
+
+      // 3. Bloco Decoder UC
+      const decEl = document.getElementById('val-DECODER');
+      if (state.regs.IR === 0) decEl.textContent = 'NOP (00h)';
+      else decEl.textContent = `ADD/LOAD ${toHex2(state.regs.IR)}h`;
+
+      // 4. Células da RAM no SVG e nos inputs inferiores
+      const activeAddr = state.regs.MAR & 0x03;
+      for (let i = 0; i < 4; i++) {
+        const box = document.getElementById(`ram-box-${i}`);
+        const txt = document.getElementById(`ram-txt-${i}`);
+        const inp = document.getElementById(`inp-ram-${i}`);
+        const slot = document.getElementById(`slot-ram-${i}`);
+        const hex = toHex2(state.ram[i]);
+
+        txt.textContent = hex;
+        if (inp && document.activeElement !== inp) inp.value = hex;
+
+        if (i === activeAddr) {
+          box.setAttribute('fill', '#444444');
+          txt.setAttribute('fill', '#ffffff');
+          slot.classList.add('active-slot');
+        } else {
+          box.setAttribute('fill', 'transparent');
+          txt.setAttribute('fill', '#111111');
+          slot.classList.remove('active-slot');
+        }
+      }
+
+      // 5. Tabela de Registradores e Previsão da ULA
+      const aluOut = (state.regs.AC + state.regs.MBR) & 0xFF;
+      document.getElementById('alu-preview').textContent = `ULA Out: ${toHex2(aluOut)}h (${aluOut})`;
+
+      const regPinMap = {
+        PC: ['PC_Inc', state.pins.PC_Inc],
+        MAR: ['MAR_Load', state.pins.MAR_Load],
+        MBR: ['RAM_Read_MBR', state.pins.RAM_Read_MBR],
+        IR: ['IR_Load', state.pins.IR_Load],
+        AC: ['AC_Exec', state.pins.AC_Exec]
+      };
+
+      for (const [rName, rVal] of Object.entries(state.regs)) {
+        document.getElementById(`tbl-hex-${rName}`).textContent = toHex2(rVal) + 'h';
+        document.getElementById(`tbl-bin-${rName}`).textContent = toBin8(rVal);
+        document.getElementById(`tbl-dec-${rName}`).textContent = rVal.toString();
+        const [pLabel, pVal] = regPinMap[rName];
+        const ctlCell = document.getElementById(`tbl-ctl-${rName}`);
+        ctlCell.textContent = `${pLabel} = ${pVal}`;
+        ctlCell.style.color = pVal === 1 ? 'var(--md-sys-color-tertiary)' : 'var(--md-sys-color-on-surface-variant)';
+      }
+    }
+
+    // Arquivo do projeto hospedado no repositório do GitHub
+    const CIRC_URL = 'https://github.com/joaopedro-chaves/simulacao_analise_arquitetura_interna_computador_projeto_UniFECAF/blob/main/src/neocore_cpu.circ';
+
+    async function downloadCircFile() {
+      try {
+        const resp = await fetch(CIRC_URL);
+        if (!resp.ok) throw new Error('HTTP ' + resp.status);
+        const blob = await resp.blob();
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'neocore_cpu.circ';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      } catch (err) {
+        // Fallback: abre o link direto do GitHub em nova aba
+        window.open(CIRC_URL, '_blank', 'noopener');
+      }
+    }
+
+    // Inicializa a interface
+    renderCircuit();
+
+    /* ======================================================================
+       CANVAS: ZOOM, ARRASTAR, EXPLICAÇÃO DE COMPONENTES E GAVETA DE PAINÉIS
+       ====================================================================== */
+    const SVG_W = 1151, SVG_H = 441;
+    const view = { x: 0, y: 0, s: 1 };
+    const viewportEl = document.getElementById('canvas-viewport');
+    const svgEl = document.getElementById('logisim-svg');
+    let explainMode = false;
+    let dragMoved = false;
+
+    function applyView() {
+      svgEl.style.transform = `translate(${view.x}px, ${view.y}px) scale(${view.s})`;
+      const g = 10 * view.s;
+      viewportEl.style.backgroundSize = `${g}px ${g}px`;
+      viewportEl.style.backgroundPosition = `${view.x - g / 2}px ${view.y - g / 2}px`;
+      document.getElementById('zoom-readout').textContent = Math.round(view.s * 100) + '%';
+    }
+
+    function zoomAt(factor, cx, cy) {
+      const ns = Math.min(6, Math.max(0.25, view.s * factor));
+      const k = ns / view.s;
+      view.x = cx - (cx - view.x) * k;
+      view.y = cy - (cy - view.y) * k;
+      view.s = ns;
+      applyView();
+    }
+
+    function zoomBy(factor) {
+      const r = viewportEl.getBoundingClientRect();
+      zoomAt(factor, r.width / 2, r.height / 2);
+    }
+
+    function updateDockMetrics() {
+      const dock = document.getElementById('dock');
+      document.documentElement.style.setProperty('--dock-h', dock.offsetHeight + 'px');
+    }
+
+    function fitCanvas() {
+      updateDockMetrics();
+      const r = viewportEl.getBoundingClientRect();
+      const dock = document.getElementById('dock');
+      const card = document.getElementById('ctx-card');
+      // Reserva a faixa inferior ocupada pela dock e pelo card, para não cobrir o circuito
+      let reserve = dock.offsetHeight + 32;
+      if (!card.classList.contains('hidden') && !dock.classList.contains('collapsed')) reserve += card.offsetHeight + 8;
+      const availH = Math.max(120, r.height - reserve);
+      const s = Math.min(r.width / SVG_W, availH / SVG_H) * 0.96;
+      view.s = s;
+      view.x = (r.width - SVG_W * s) / 2;
+      view.y = (availH - SVG_H * s) / 2;
+      applyView();
+    }
+
+    viewportEl.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      const r = viewportEl.getBoundingClientRect();
+      zoomAt(Math.exp(-e.deltaY * 0.0015), e.clientX - r.left, e.clientY - r.top);
+    }, { passive: false });
+
+    const pointers = new Map();
+    let dragStart = null;
+    let pinchDist = 0;
+
+    viewportEl.addEventListener('pointerdown', (e) => {
+      pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      if (pointers.size === 1) {
+        dragStart = { x: e.clientX, y: e.clientY, vx: view.x, vy: view.y, captured: false };
+        dragMoved = false;
+      } else if (pointers.size === 2) {
+        const [a, b] = [...pointers.values()];
+        pinchDist = Math.hypot(a.x - b.x, a.y - b.y);
+        dragMoved = true;
+      }
+    });
+
+    viewportEl.addEventListener('pointermove', (e) => {
+      if (!pointers.has(e.pointerId)) return;
+      pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      const r = viewportEl.getBoundingClientRect();
+      if (pointers.size === 2) {
+        const [a, b] = [...pointers.values()];
+        const d = Math.hypot(a.x - b.x, a.y - b.y);
+        if (pinchDist > 0) zoomAt(d / pinchDist, (a.x + b.x) / 2 - r.left, (a.y + b.y) / 2 - r.top);
+        pinchDist = d;
+        return;
+      }
+      if (!dragStart) return;
+      const dx = e.clientX - dragStart.x, dy = e.clientY - dragStart.y;
+      if (!dragStart.captured && Math.hypot(dx, dy) > 4) {
+        dragStart.captured = true;
+        dragMoved = true;
+        viewportEl.setPointerCapture(e.pointerId);
+        viewportEl.classList.add('panning');
+      }
+      if (dragStart.captured) {
+        view.x = dragStart.vx + dx;
+        view.y = dragStart.vy + dy;
+        applyView();
+      }
+    });
+
+    function endPointer(e) {
+      pointers.delete(e.pointerId);
+      if (pointers.size < 2) pinchDist = 0;
+      if (pointers.size === 0) {
+        dragStart = null;
+        viewportEl.classList.remove('panning');
+      }
+    }
+    viewportEl.addEventListener('pointerup', endPointer);
+    viewportEl.addEventListener('pointercancel', endPointer);
+
+    // Após arrastar, o clique resultante não deve acionar pinos nem abrir popups
+    viewportEl.addEventListener('click', (e) => {
+      if (dragMoved) {
+        e.stopPropagation();
+        e.preventDefault();
+        dragMoved = false;
+      }
+    }, true);
+
+    window.addEventListener('resize', fitCanvas);
+    new ResizeObserver(updateDockMetrics).observe(document.getElementById('dock'));
+
+    function toggleExplainMode() {
+      explainMode = !explainMode;
+      document.getElementById('btn-explain').setAttribute('aria-pressed', String(explainMode));
+      viewportEl.classList.toggle('explain-mode', explainMode);
+    }
+
+    function toggleDrawer() {
+      const d = document.getElementById('drawer');
+      const open = d.classList.toggle('open');
+      document.body.classList.toggle('drawer-open', open);
+      document.getElementById('btn-drawer').setAttribute('aria-pressed', String(open));
+    }
+
+    function toggleDock() {
+      const dock = document.getElementById('dock');
+      const collapsed = dock.classList.toggle('collapsed');
+      const btn = document.getElementById('btn-dock-collapse');
+      btn.setAttribute('aria-expanded', String(!collapsed));
+      btn.firstElementChild.style.transform = collapsed ? 'rotate(180deg)' : '';
+      document.getElementById('ctx-card').classList.toggle('hidden', collapsed);
+      updateDockMetrics();
+    }
+
+    function hideCtxCard() {
+      document.getElementById('ctx-card').classList.add('hidden');
+    }
+
+    function showCtxCard(pct) {
+      document.getElementById('ctx-card').classList.remove('hidden');
+      if (typeof pct === 'number') {
+        document.getElementById('ctx-progress-fill').style.width = pct + '%';
+        document.getElementById('ctx-progressbar').setAttribute('aria-valuenow', String(Math.round(pct)));
+      }
+    }
+
+    // Ripple Material nos botões
+    document.addEventListener('pointerdown', (e) => {
+      const b = e.target.closest('.m3-btn');
+      if (!b) return;
+      const rect = b.getBoundingClientRect();
+      const size = Math.max(rect.width, rect.height) * 2;
+      const rp = document.createElement('span');
+      rp.className = 'ripple';
+      rp.style.width = rp.style.height = size + 'px';
+      rp.style.left = (e.clientX - rect.left - size / 2) + 'px';
+      rp.style.top = (e.clientY - rect.top - size / 2) + 'px';
+      b.appendChild(rp);
+      rp.addEventListener('animationend', () => rp.remove());
+    });
+
+    const COMPONENT_INFO = {
+      PC: {
+        title: 'PC — Contador de Programa (Program Counter)', kind: 'Registrador · 8 bits',
+        desc: 'Guarda o endereço da próxima instrução a ser buscada na memória. Após cada busca é incrementado, o que faz o programa avançar sequencialmente.',
+        fields: [['Entradas', 'clk (clock) e ct (contagem), ligada ao sinal PC_Inc'], ['Saída', 'Q → barramento de endereços → entrada D do MAR'], ['Fase', 'Lido em T0 (MAR ← PC) e incrementado em T2 (PC ← PC + 1)']],
+        reg: 'PC'
+      },
+      MAR: {
+        title: 'MAR — Registrador de Endereço de Memória', kind: 'Registrador · 8 bits',
+        desc: 'Mantém o endereço que está sendo apresentado à memória. É a ponte entre a CPU e o barramento de endereços: nada é lido ou escrito na RAM sem passar por ele.',
+        fields: [['Entradas', 'D (endereço vindo do PC), WE (MAR_Load) e clk'], ['Saída', 'Q → barramento de endereços → porta A da RAM'], ['Fase', 'T0: MAR ← PC']],
+        reg: 'MAR'
+      },
+      MBR: {
+        title: 'MBR — Registrador de Dados de Memória', kind: 'Registrador · 8 bits',
+        desc: 'Retém temporariamente o byte lido da RAM (ou a ser gravado nela). Funciona como buffer entre o barramento de dados e o interior da CPU, distribuindo o valor para o IR e para a ULA.',
+        fields: [['Entradas', 'D (barramento de dados, saída da RAM), WE (RAM_Read_MBR) e clk'], ['Saída', 'Q → IR e entrada A da ULA'], ['Fase', 'T1: MBR ← RAM[MAR]']],
+        reg: 'MBR'
+      },
+      IR: {
+        title: 'IR — Registrador de Instrução', kind: 'Registrador · 8 bits',
+        desc: 'Armazena a instrução recém-buscada enquanto a Unidade de Controle a decodifica. Seu conteúdo (opcode) determina quais sinais de controle serão ativados.',
+        fields: [['Entradas', 'D (vinda do MBR), WE (IR_Load) e clk'], ['Saída', 'Q → Decodificador da Unidade de Controle'], ['Fase', 'T2: IR ← MBR']],
+        reg: 'IR'
+      },
+      DECODER: {
+        title: 'Decodificador / Unidade de Controle (UC)', kind: 'Lógica combinacional',
+        desc: 'Interpreta o opcode do IR e orquestra os sinais de controle (micro-operações). Conceitualmente representa a tradução de instruções CISC (estilo x86) em micro-operações simples, ao estilo RISC.',
+        fields: [['Entrada', 'Opcode vindo do IR'], ['Saídas', 'MAR_Load, RAM_Read_MBR, IR_Load, PC_Inc e AC_Exec (acionados manualmente pelos pinos no simulador)'], ['Fase', 'Decode (T2–T3)']]
+      },
+      RAM: {
+        title: 'RAM — Memória Principal 256 × 8', kind: 'Memória · 256 posições de 8 bits',
+        desc: 'Armazena instruções e dados no mesmo espaço (modelo Von Neumann). O endereço chega pelo barramento de endereços e o conteúdo trafega pelo barramento de dados.',
+        fields: [['Entradas', 'A (endereço, 8 bits), D (dado a gravar, vindo do Teclado), WE e OE (RAM_Read_MBR)'], ['Saída', 'D (8 bits) → MBR'], ['Programa de teste', '00h = 05h, 01h = 03h (editáveis no painel “Memória Principal”)']]
+      },
+      ULA: {
+        title: 'ULA — Unidade Lógica e Aritmética', kind: 'Somador · 8 bits',
+        desc: 'Executa as operações aritméticas da CPU. Neste circuito é um somador de 8 bits que recebe o valor do MBR e o conteúdo atual do AC (realimentação) e entrega a soma.',
+        fields: [['Entradas', 'A ← MBR, B ← AC (realimentação)'], ['Saída', 'A + B → entrada D do AC'], ['Fase', 'T3: AC ← AC + MBR']]
+      },
+      AC: {
+        title: 'AC — Acumulador', kind: 'Registrador · 8 bits',
+        desc: 'Registrador de trabalho que retém operandos e resultados intermediários da ULA. Seu valor também é enviado ao Monitor de saída e realimenta a ULA.',
+        fields: [['Entradas', 'D (saída da ULA), WE (AC_Exec) e clk'], ['Saídas', 'Q → Monitor e entrada B da ULA'], ['Fase', 'T3: AC ← AC + MBR']],
+        reg: 'AC'
+      },
+      MONITOR: {
+        title: 'Monitor / Saída', kind: 'Pino de saída · 8 bits',
+        desc: 'Exibe em binário o valor atual do acumulador, permitindo observar o resultado das operações (E/S de saída).',
+        fields: [['Entrada', 'Q do AC (8 bits)']]
+      },
+      TECLADO: {
+        title: 'Teclado — Entrada E/S', kind: 'Pino de entrada · 8 bits',
+        desc: 'Dispositivo de entrada que fornece um byte à memória. No simulador, clicar nele grava o valor do teclado na posição RAM[MAR].',
+        fields: [['Saída', 'Barramento de dados → entrada D da RAM'], ['Valor editável', 'Painéis → “Teclado E/S (Hex)”']]
+      },
+      CLOCK: {
+        title: 'CLOCK — Sinal de sincronização', kind: 'Fonte · 1 bit',
+        desc: 'Gera os pulsos que sincronizam todos os registradores. A cada borda de subida, os registradores com o sinal de escrita ativo capturam seus novos valores.',
+        fields: [['Saída', 'Rede de clock → entrada clk de PC, MAR, MBR, IR e AC'], ['No simulador', 'Clique para um pulso manual ou use o Auto-Clock (1 Hz)']]
+      },
+      BUS_CLOCK: {
+        title: 'Rede de Clock', kind: 'Fios · 1 bit',
+        desc: 'Distribui o sinal de clock a todos os registradores do circuito, mantendo a operação sincronizada.',
+        fields: [['Origem', 'CLOCK'], ['Destinos', 'clk de PC, MAR, MBR, IR e AC']]
+      },
+      BUS_CONTROL: {
+        title: 'Barramento de Controle', kind: 'Fios · 1 bit cada',
+        desc: 'Transporta os sinais que habilitam leitura, escrita e contagem nos componentes. Cada fio liga um pino de controle ao respectivo registrador ou à memória.',
+        fields: [['MAR_Load', 'WE do MAR'], ['RAM_Read_MBR', 'OE da RAM e WE do MBR'], ['IR_Load', 'WE do IR'], ['PC_Inc', 'ct do PC'], ['AC_Exec', 'WE do AC']]
+      },
+      BUS_ADDR: {
+        title: 'Barramento de Endereços', kind: 'Barramento · 8 bits · unidirecional',
+        desc: 'Leva o endereço da CPU até a memória, selecionando qual das 256 posições será acessada. É unidirecional: CPU → memória.',
+        fields: [['Trajeto', 'PC → MAR → entrada A da RAM']]
+      },
+      BUS_DATA: {
+        title: 'Barramento de Dados', kind: 'Barramento · 8 bits',
+        desc: 'Transporta opcodes, operandos e resultados entre memória, registradores e ULA.',
+        fields: [['Trajeto', 'RAM → MBR → IR / ULA → AC → Monitor; Teclado → RAM']]
+      },
+      PIN_MAR_Load: {
+        title: 'MAR_Load', kind: 'Sinal de controle · 1 bit',
+        desc: 'Habilita a escrita do MAR. Em nível 1, o próximo pulso de clock copia o endereço do PC para o MAR.',
+        fields: [['Destino', 'WE do MAR'], ['Fase', 'T0']]
+      },
+      PIN_RAM_Read_MBR: {
+        title: 'RAM_Read_MBR', kind: 'Sinal de controle · 1 bit',
+        desc: 'Habilita a saída da RAM (OE) e a escrita do MBR, trazendo o byte do endereço indicado pelo MAR.',
+        fields: [['Destinos', 'OE da RAM e WE do MBR'], ['Fase', 'T1']]
+      },
+      PIN_IR_Load: {
+        title: 'IR_Load', kind: 'Sinal de controle · 1 bit',
+        desc: 'Habilita a escrita do IR, que captura o opcode presente no MBR.',
+        fields: [['Destino', 'WE do IR'], ['Fase', 'T2']]
+      },
+      PIN_PC_Inc: {
+        title: 'PC_Inc', kind: 'Sinal de controle · 1 bit',
+        desc: 'Habilita a contagem do PC: o contador avança para o endereço seguinte (PC ← PC + 1).',
+        fields: [['Destino', 'ct do PC'], ['Fase', 'T2']]
+      },
+      PIN_AC_Exec: {
+        title: 'AC_Exec', kind: 'Sinal de controle · 1 bit',
+        desc: 'Habilita a escrita do AC, que armazena o resultado da soma calculada pela ULA.',
+        fields: [['Destino', 'WE do AC'], ['Fase', 'T3']]
+      }
+    };
+
+    function openInfo(key) {
+      const info = COMPONENT_INFO[key];
+      if (!info) return;
+      document.getElementById('info-title').textContent = info.title;
+      document.getElementById('info-chip').textContent = info.kind;
+      document.getElementById('info-desc').textContent = info.desc;
+      const dl = document.getElementById('info-fields');
+      dl.replaceChildren();
+      const rows = info.fields.slice();
+      if (info.reg) rows.push(['Valor atual', `${toHex2(state.regs[info.reg])}h (${toBin8(state.regs[info.reg])}b)`]);
+      for (const [k, v] of rows) {
+        const dt = document.createElement('dt'); dt.textContent = k;
+        const dd = document.createElement('dd'); dd.textContent = v;
+        dl.append(dt, dd);
+      }
+      const dlg = document.getElementById('info-dialog');
+      if (!dlg.open) dlg.showModal();
+    }
+
+    // Captura: em componentes não interativos abre o popup; em pinos/CLOCK/Teclado só no modo explicação
+    svgEl.addEventListener('click', (e) => {
+      const el = e.target.closest('[data-info]');
+      if (!el) return;
+      if (el.classList.contains('poke-target') && !explainMode) return;
+      e.stopPropagation();
+      openInfo(el.dataset.info);
+    }, true);
+
+    document.getElementById('info-dialog').addEventListener('click', (e) => {
+      if (e.target === e.currentTarget) e.currentTarget.close();
+    });
+
+    fitCanvas();
+  </script>
+</body>
+
+</html>
