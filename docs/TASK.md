@@ -35,7 +35,9 @@
   - [x] 2. **Decodificação (Decode):** Interpretar o que a instrução faz
   - [x] 3. **Execução (Execute):** Fazer a operação na ULA e salvar o resultado
 - [x] Salvar os arquivos do circuito e imagens na pasta `src/` e `docs/assets/`
-- [x] Desenvolver simulador web interativo em Material Design 3 (`src/index.html`) espelhando o `main_board.svg` e `neocore_cpu.circ`
+- [x] Desenvolver simulador web interativo (`index.html`) espelhando o `main_board.svg` e `neocore_cpu.circ`,
+- [ ] Publicar no GitHub Pages
+
 ### Vídeo Pitch (25% da nota)
 - [ ] Revisar o roteiro em `docs/pitch/pitch_script.md` (máximo de 4 minutos)
 - [ ] Gravar o vídeo dividido em 4 blocos:
@@ -50,5 +52,3 @@
 - [ ] Conferir se todos os entregáveis estão prontos (Simulador, Relatório PDF e Link do Vídeo)
 - [ ] Fazer commit e push final no Git
 - [ ] Enviar o trabalho na plataforma da UniFECAF dentro do prazo
-
-## hefesto-game (Extra)

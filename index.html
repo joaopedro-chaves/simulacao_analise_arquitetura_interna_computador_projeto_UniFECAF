@@ -53,6 +53,7 @@
     html,
     body {
       height: 100%;
+      height: 100dvh;
     }
 
     body {
@@ -61,6 +62,7 @@
       background-color: var(--md-sys-color-background);
       color: var(--md-sys-color-on-background);
       min-height: 100vh;
+      min-height: 100dvh;
       display: flex;
       flex-direction: column;
       line-height: 1.45;
@@ -130,8 +132,16 @@
       display: inline-flex;
       border: 1px solid var(--md-sys-color-outline-variant);
       border-radius: 20px;
-      overflow: hidden;
+      overflow-x: auto;
+      overflow-y: hidden;
+      max-width: 100%;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
       background-color: var(--md-sys-color-surface-container-low);
+    }
+
+    .segmented-group::-webkit-scrollbar {
+      display: none;
     }
 
     .seg-btn {
@@ -144,6 +154,8 @@
       font-weight: 500;
       padding: 6px 12px;
       cursor: pointer;
+      white-space: nowrap;
+      flex-shrink: 0;
       transition: background-color 0.15s ease, color 0.15s ease;
     }
 
@@ -313,7 +325,8 @@
       left: 0;
       transform-origin: 0 0;
       user-select: none;
-      will-change: transform;
+      text-rendering: geometricPrecision;
+      shape-rendering: geometricPrecision;
     }
 
     .info-target,
@@ -340,16 +353,16 @@
       pointer-events: none;
     }
 
-    /* Gaveta inferior com painéis de inspeção */
+    /* Gaveta lateral com painéis de inspeção */
     .drawer {
       position: absolute;
       top: 0;
       right: 0;
       bottom: 0;
-      z-index: 8;
+      z-index: 12;
       width: min(480px, 100vw);
       overflow-y: auto;
-      padding: 16px;
+      padding: 0 16px 24px;
       background-color: var(--md-sys-color-surface);
       border-left: 1px solid var(--md-sys-color-outline-variant);
       box-shadow: -6px 0 18px rgba(0, 0, 0, 0.45);
@@ -363,6 +376,26 @@
       visibility: visible;
     }
 
+    .drawer-header {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 0;
+      margin-bottom: 12px;
+      background-color: var(--md-sys-color-surface);
+      border-bottom: 1px solid var(--md-sys-color-outline-variant);
+    }
+
+    .drawer-header-title {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: var(--md-sys-color-on-surface);
+      letter-spacing: 0.3px;
+    }
+
     .drawer .inspection-grid {
       grid-template-columns: 1fr;
     }
@@ -373,25 +406,28 @@
     .dock {
       position: fixed;
       left: 50%;
-      bottom: 16px;
+      bottom: calc(16px + env(safe-area-inset-bottom, 0px));
       transform: translateX(-50%);
       z-index: 10;
       display: flex;
       flex-direction: column;
       gap: 8px;
       padding: 10px 14px;
-      max-width: calc(100vw - 24px);
-      background-color: rgba(28, 35, 45, 0.72);
+      width: max-content;
+      max-width: calc(100vw - 20px);
+      background-color: rgba(28, 35, 45, 0.78);
       -webkit-backdrop-filter: blur(16px) saturate(1.3);
       backdrop-filter: blur(16px) saturate(1.3);
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.12);
       border-radius: 28px;
       box-shadow: 0 8px 28px rgba(0, 0, 0, 0.5), 0 2px 6px rgba(0, 0, 0, 0.35);
       transition: all 0.2s ease-in-out;
     }
 
-    body.drawer-open .dock {
-      left: calc(50% - min(240px, 50vw));
+    @media (min-width: 961px) {
+      body.drawer-open .dock {
+        left: calc(50% - 240px);
+      }
     }
 
     .dock-row {
@@ -463,10 +499,10 @@
 
     .ctx-card {
       position: fixed;
-      left: 16px;
-      bottom: calc(var(--dock-h, 120px) + 32px);
+      left: max(12px, calc(50% - var(--dock-w, 680px) / 2));
+      bottom: calc(var(--dock-h, 110px) + 26px + env(safe-area-inset-bottom, 0px));
       z-index: 9;
-      width: min(380px, calc(100vw - 32px));
+      width: min(430px, calc(100vw - 24px));
       padding: 14px 16px 0;
       overflow: hidden;
       background-color: var(--md-sys-color-surface-container-high);
@@ -474,6 +510,12 @@
       border-radius: 16px;
       box-shadow: var(--md-elevation-2);
       transition: all 0.2s ease-in-out;
+    }
+
+    @media (min-width: 961px) {
+      body.drawer-open .ctx-card {
+        left: max(12px, calc(50% - 240px - var(--dock-w, 680px) / 2));
+      }
     }
 
     .ctx-card.hidden {
@@ -490,11 +532,31 @@
       gap: 8px;
     }
 
+    .ctx-title-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 4px;
+    }
+
     .ctx-head strong {
       font-size: 14px;
       font-weight: 700;
       line-height: 1.35;
       color: var(--md-sys-color-on-surface);
+    }
+
+    .info-chip {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 6px;
+      background-color: var(--md-sys-color-secondary-container);
+      color: var(--md-sys-color-on-secondary-container);
+    }
+
+    .info-chip[hidden] {
+      display: none;
     }
 
     .ctx-close {
@@ -530,6 +592,30 @@
       color: var(--md-sys-color-primary);
     }
 
+    .ctx-fields {
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      display: grid;
+      grid-template-columns: max-content 1fr;
+      gap: 5px 12px;
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    .ctx-fields:empty {
+      display: none;
+    }
+
+    .ctx-fields dt {
+      font-weight: 700;
+      color: var(--md-sys-color-primary);
+    }
+
+    .ctx-fields dd {
+      color: var(--md-sys-color-on-surface);
+    }
+
     .ctx-progress {
       height: 3px;
       margin: 12px -16px 0;
@@ -543,71 +629,8 @@
       transition: width 0.3s ease-in-out;
     }
 
-    /* Diálogo de explicação de componentes (M3) */
-    .info-dialog {
-      margin: auto;
-      width: min(560px, calc(100vw - 32px));
-      max-height: calc(100vh - 48px);
-      overflow-y: auto;
-      padding: 0;
-      border: none;
-      border-radius: 28px;
-      background-color: var(--md-sys-color-surface-container-high);
-      color: var(--md-sys-color-on-surface);
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
-    }
-
-    .info-dialog::backdrop {
-      background: rgba(0, 0, 0, 0.55);
-    }
-
-    .info-dialog-body {
-      padding: 24px;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-    }
-
-    .info-dialog h2 {
-      font-size: 22px;
-      font-weight: 500;
-    }
-
-    .info-chip {
-      align-self: flex-start;
-      font-size: 11.5px;
-      font-weight: 500;
-      padding: 3px 10px;
-      border-radius: 8px;
-      background-color: var(--md-sys-color-secondary-container);
-      color: var(--md-sys-color-on-secondary-container);
-    }
-
-    .info-dialog p {
-      font-size: 14px;
-      color: var(--md-sys-color-on-surface-variant);
-      line-height: 1.55;
-    }
-
-    .info-dialog dl {
-      display: grid;
-      grid-template-columns: max-content 1fr;
-      gap: 8px 14px;
-      font-size: 13px;
-    }
-
-    .info-dialog dt {
-      font-weight: 700;
-      color: var(--md-sys-color-primary);
-    }
-
-    .info-dialog dd {
-      color: var(--md-sys-color-on-surface);
-    }
-
-    .info-dialog-actions {
-      display: flex;
-      justify-content: flex-end;
+    [data-info].active-info {
+      filter: drop-shadow(0 0 6px #1a73e8);
     }
 
     .poke-target {
@@ -666,8 +689,15 @@
       padding-bottom: 8px;
     }
 
+    .table-scroll {
+      width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
     .m3-table {
       width: 100%;
+      min-width: 340px;
       border-collapse: collapse;
       font-size: 12.5px;
     }
@@ -779,6 +809,197 @@
       font-weight: 700;
       font-size: 11.5px;
     }
+
+    /* ==========================================================================
+       TELA DE BLOQUEIO EM TELA INTEIRA PARA SMARTPHONES (MATERIAL DESIGN 3)
+       ========================================================================== */
+    .small-screen-gate {
+      display: none;
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+      z-index: 1000;
+      overflow: hidden;
+      overscroll-behavior: none;
+      touch-action: none;
+      padding: max(16px, env(safe-area-inset-top)) 20px max(16px, env(safe-area-inset-bottom));
+      background-color: rgba(15, 20, 26, 0.88);
+      -webkit-backdrop-filter: blur(12px) saturate(1.2);
+      backdrop-filter: blur(12px) saturate(1.2);
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+    }
+
+    .gate-surface {
+      width: min(400px, 100%);
+      max-height: calc(100dvh - 32px);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      padding: 28px 24px 24px;
+      text-align: center;
+      background-color: var(--md-sys-color-surface-container);
+      border: 1px solid var(--md-sys-color-outline-variant);
+      border-radius: 28px;
+      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.6);
+      transition: all 0.2s ease-in-out;
+    }
+
+    .gate-badge {
+      font-family: 'Roboto Mono', monospace;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+      padding: 4px 12px;
+      border-radius: 999px;
+      background-color: var(--md-sys-color-secondary-container);
+      color: var(--md-sys-color-on-secondary-container);
+    }
+
+    .gate-icon {
+      width: 68px;
+      height: 68px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: var(--md-sys-color-primary-container);
+      color: var(--md-sys-color-on-primary-container);
+      transition: all 0.2s ease-in-out;
+    }
+
+    /* Quando o QR Code está aberto, recolhe o ícone superior para nunca gerar scroll */
+    .gate-surface.qr-open .gate-icon,
+    .gate-surface.qr-open .gate-lead {
+      display: none;
+    }
+
+    .gate-title {
+      font-size: 22px;
+      line-height: 28px;
+      font-weight: 500;
+      color: var(--md-sys-color-on-surface);
+    }
+
+    .gate-text {
+      font-size: 14px;
+      line-height: 21px;
+      letter-spacing: 0.2px;
+      color: var(--md-sys-color-on-surface-variant);
+    }
+
+    .gate-actions {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 2px;
+    }
+
+    .gate-actions .m3-btn {
+      width: 100%;
+      height: 44px;
+      border-radius: 22px;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .gate-qr {
+      width: 100%;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      padding: 14px;
+      border-radius: 18px;
+      background-color: var(--md-sys-color-surface-container-high);
+      border: 1px solid var(--md-sys-color-outline-variant);
+    }
+
+    .gate-qr.open {
+      display: flex;
+    }
+
+    .gate-qr-code {
+      width: min(176px, 52vw);
+      height: min(176px, 52vw);
+      padding: 8px;
+      border-radius: 12px;
+      background-color: #ffffff;
+      box-shadow: var(--md-elevation-1);
+    }
+
+    .gate-qr-code svg {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .gate-qr-caption {
+      font-size: 12px;
+      line-height: 17px;
+      color: var(--md-sys-color-on-surface-variant);
+    }
+
+    .gate-qr-url {
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-family: 'Roboto Mono', monospace;
+      font-size: 10.5px;
+      line-height: 14px;
+      color: var(--md-sys-color-primary);
+    }
+
+    .btn-download-circ .download-short-text {
+      display: none;
+    }
+
+    /* Em telas de smartphone: trava scroll, desativa barras de navegação e fixa o aviso em tela cheia */
+    @media (max-width: 767px),
+    (max-height: 450px) and (max-width: 950px) {
+
+      html,
+      body {
+        overflow: hidden !important;
+        overscroll-behavior: none !important;
+        height: 100dvh !important;
+        width: 100vw !important;
+        position: fixed !important;
+        inset: 0 !important;
+      }
+
+      .small-screen-gate {
+        display: flex;
+      }
+
+      /* Barras de navegação, dock, cards e diálogos ficam totalmente ocultos e inativos */
+      .top-app-bar,
+      .dock,
+      .ctx-card,
+      .drawer {
+        display: none !important;
+        visibility: hidden !important;
+        pointer-events: none !important;
+      }
+
+      /* O workspace do circuito ao fundo permanece visível como pano de fundo, porém 100% inativo */
+      .workspace {
+        pointer-events: none !important;
+        user-select: none !important;
+        filter: blur(5px) brightness(0.32);
+      }
+    }
   </style>
 </head>
 
@@ -809,14 +1030,15 @@
       </div>
 
       <!-- Download do .circ oficial hospedado no GitHub -->
-      <button type="button" class="m3-btn m3-btn-tonal" onclick="downloadCircFile()"
+      <button type="button" class="m3-btn m3-btn-tonal btn-download-circ" onclick="downloadCircFile()"
         title="Baixar neocore_cpu.circ do repositório no GitHub (Logisim-Evolution v5.0.0)">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
           <polyline points="7 10 12 15 17 10" />
           <line x1="12" y1="15" x2="12" y2="3" />
         </svg>
-        Baixar neocore_cpu.circ
+        <span class="download-full-text">Baixar neocore_cpu.circ</span>
+        <span class="download-short-text">.circ</span>
       </button>
     </div>
   </header>
@@ -895,9 +1117,9 @@
           <g id="layer-address" class="wire-layer" data-info="BUS_ADDR">
             <!-- PC.Q (335,245) -> MAR.D (295,65) -->
             <path id="wire-addr-pc-mar" class="wire-line" d="M295,65 H265 V155 H375 V245 H335" fill="none"
-              stroke="#000000" stroke-width="4" stroke-linecap="square" />
-            <!-- MAR.Q (355,65) -> RAM.A (665,55) -->
-            <path id="wire-addr-mar-ram" class="wire-line" d="M665,55 H445 V65 H355" fill="none" stroke="#000000"
+              stroke="#010757" stroke-width="4" stroke-linecap="square" />
+            <!-- MAR.Q (355,65) -> RAM.A (665,55) -->#3d0000
+            <path id="wire-addr-mar-ram" class="wire-line" d="M665,55 H445 V65 H355" fill="none" stroke="#010757"
               stroke-width="4" stroke-linecap="square" />
           </g>
 
@@ -907,34 +1129,34 @@
           <g id="layer-data" class="wire-layer" data-info="BUS_DATA">
             <!-- Teclado (1075,95) -> RAM.D_in (665,135) passando pelo topo y=5 -->
             <path id="wire-data-kbd-ram" class="wire-line" d="M665,135 H625 V5 H1145 V95 H1075" fill="none"
-              stroke="#000000" stroke-width="4" stroke-linecap="square" />
+              stroke="#3d0000" stroke-width="4" stroke-linecap="square" />
 
             <!-- RAM.D_out (905,135) -> MBR.D (465,355) -->
             <path id="wire-data-ram-mbr" class="wire-line" d="M905,135 H955 V235 H425 V355 H465" fill="none"
-              stroke="#000000" stroke-width="4" stroke-linecap="square" />
+              stroke="#3d0000" stroke-width="4" stroke-linecap="square" />
 
             <!-- MBR.Q (525,355) -> Ponto de distribuição (565,275) -> IR.D (475,155) e ULA.inA (695,275) -->
-            <path id="wire-data-mbr-bus" class="wire-line" d="M525,355 H565 V275" fill="none" stroke="#000000"
+            <path id="wire-data-mbr-bus" class="wire-line" d="M525,355 H565 V275" fill="none" stroke="#3d0000"
               stroke-width="4" stroke-linecap="square" />
-            <path id="wire-data-mbr-ula" class="wire-line" d="M475,155 H445 V275 H695" fill="none" stroke="#000000"
+            <path id="wire-data-mbr-ula" class="wire-line" d="M475,155 H445 V275 H695" fill="none" stroke="#3d0000"
               stroke-width="4" stroke-linecap="square" />
-            <circle cx="565" cy="275" r="5.5" fill="#000000" />
+            <circle cx="565" cy="275" r="5.5" fill="#3d0000" />
 
             <!-- IR.Q (535,155) -> Bloco Decoder UC (575,185) -->
-            <path id="wire-data-ir-dec" class="wire-line" d="M535,155 H555 V185 H575" fill="none" stroke="#000000"
+            <path id="wire-data-ir-dec" class="wire-line" d="M535,155 H555 V185 H575" fill="none" stroke="#3d0000"
               stroke-width="3" stroke-linecap="square" />
-            <circle cx="575" cy="185" r="4.5" fill="#000000" />
+            <circle cx="575" cy="185" r="4.5" fill="#3d0000" />
 
             <!-- ULA.out (735,285) -> AC.D (815,285) -->
-            <path id="wire-data-ula-ac" class="wire-line" d="M735,285 H815" fill="none" stroke="#000000"
+            <path id="wire-data-ula-ac" class="wire-line" d="M735,285 H815" fill="none" stroke="#3d0000"
               stroke-width="4" stroke-linecap="square" />
 
             <!-- AC.Q (875,285) -> Monitor (995,315) e Realimentação para ULA.inB (695,295) -->
-            <path id="wire-data-ac-mon" class="wire-line" d="M875,285 H995 V315" fill="none" stroke="#000000"
+            <path id="wire-data-ac-mon" class="wire-line" d="M875,285 H995 V315" fill="none" stroke="#3d0000"
               stroke-width="4" stroke-linecap="square" />
-            <path id="wire-data-ac-ula" class="wire-line" d="M925,285 V385 H665 V295 H695" fill="none" stroke="#000000"
+            <path id="wire-data-ac-ula" class="wire-line" d="M925,285 V385 H665 V295 H695" fill="none" stroke="#3d0000"
               stroke-width="4" stroke-linecap="square" />
-            <circle cx="925" cy="285" r="5.5" fill="#000000" />
+            <circle cx="925" cy="285" r="5.5" fill="#3d0000" />
           </g>
 
           <!-- ===============================================================
@@ -944,6 +1166,7 @@
           <!-- 1. CLOCK (85,75) -->
           <g class="poke-target" data-info="CLOCK" onclick="pulseClock()">
             <title>CLOCK — Clique para enviar um pulso de subida (↑)</title>
+            <rect x="68" y="46" width="58" height="54" fill="transparent" />
             <text fill="#000000" font-family="sans-serif" font-size="15" font-weight="bold" x="72" y="62">CLOCK</text>
             <path class="pin-hit" d="M85,75 H110 L120,85 L110,95 H85 Z" fill="#ffffff" stroke="#000000" stroke-width="2"
               stroke-linecap="square" />
@@ -955,6 +1178,7 @@
           <!-- 2. PINOS DE CONTROLE MANUAIS (x=137, y=277..397) -->
           <!-- MAR_Load (y=277) -->
           <g class="poke-target" data-info="PIN_MAR_Load" onclick="togglePin('MAR_Load')">
+            <rect x="10" y="271" width="150" height="28" fill="transparent" />
             <title>Pino MAR_Load (1 bit) — Habilita escrita do endereço do PC no MAR</title>
             <text fill="#0000ff" font-family="sans-serif" font-size="15" font-weight="bold" text-anchor="end" x="130"
               y="292">MAR_Load</text>
@@ -968,6 +1192,7 @@
 
           <!-- RAM_Read_MBR (y=307) -->
           <g class="poke-target" data-info="PIN_RAM_Read_MBR" onclick="togglePin('RAM_Read_MBR')">
+            <rect x="10" y="301" width="150" height="28" fill="transparent" />
             <title>Pino RAM_Read_MBR (1 bit) — Habilita OE da RAM e gravação do dado lido no MBR</title>
             <text fill="#0000ff" font-family="sans-serif" font-size="15" font-weight="bold" text-anchor="end" x="130"
               y="322">RAM_Read_MBR</text>
@@ -981,6 +1206,7 @@
 
           <!-- IR_Load (y=337) -->
           <g class="poke-target" data-info="PIN_IR_Load" onclick="togglePin('IR_Load')">
+            <rect x="10" y="331" width="150" height="28" fill="transparent" />
             <title>Pino IR_Load (1 bit) — Carrega o valor do MBR no Registrador de Instrução (IR)</title>
             <text fill="#0000ff" font-family="sans-serif" font-size="15" font-weight="bold" text-anchor="end" x="130"
               y="352">IR_Load</text>
@@ -994,6 +1220,7 @@
 
           <!-- PC_Inc (y=367) -->
           <g class="poke-target" data-info="PIN_PC_Inc" onclick="togglePin('PC_Inc')">
+            <rect x="10" y="361" width="150" height="28" fill="transparent" />
             <title>Pino PC_Inc (1 bit) — Incrementa o Contador de Programa (PC = PC + 1)</title>
             <text fill="#0000ff" font-family="sans-serif" font-size="15" font-weight="bold" text-anchor="end" x="130"
               y="382">PC_Inc</text>
@@ -1007,6 +1234,7 @@
 
           <!-- AC_Exec (y=397) -->
           <g class="poke-target" data-info="PIN_AC_Exec" onclick="togglePin('AC_Exec')">
+            <rect x="10" y="391" width="150" height="28" fill="transparent" />
             <title>Pino AC_Exec (1 bit) — Grava o resultado da soma da ULA no Acumulador (AC)</title>
             <text fill="#0000ff" font-family="sans-serif" font-size="15" font-weight="bold" text-anchor="end" x="130"
               y="412">AC_Exec</text>
@@ -1241,6 +1469,7 @@
           <!-- 11. TECLADO (Pino de Entrada 8 bits - x=997, y=87) -->
           <g class="poke-target" data-info="TECLADO" onclick="writeTecladoToRAM()">
             <title>Teclado (8 bits) — Clique para gravar o valor do Teclado na posição atual da RAM[MAR]</title>
+            <rect x="920" y="80" width="160" height="32" fill="transparent" />
             <text fill="#0000ff" font-family="sans-serif" font-size="16" font-weight="bold" text-anchor="end" x="991"
               y="102">Teclado</text>
             <rect class="pin-hit" x="997" y="87" width="78" height="18" fill="#ffffff" stroke="#000000"
@@ -1259,6 +1488,13 @@
          4. PAINÉIS DE INSPEÇÃO E DOCUMENTAÇÃO TÉCNICA (M3 OUTLINED CARDS)
          ====================================================================== -->
     <div class="drawer" id="drawer">
+      <div class="drawer-header">
+        <span class="drawer-header-title">Painéis de Inspeção — CPU &amp; Memória</span>
+        <button type="button" class="m3-btn m3-btn-tonal" onclick="toggleDrawer()"
+          style="height:28px;padding:0 12px;font-size:12px;">
+          Fechar ×
+        </button>
+      </div>
       <div class="inspection-grid">
 
         <!-- Card 1: Ciclo de Instrução (Fetch - Decode - Execute) -->
@@ -1299,54 +1535,56 @@
             <span class="mono" id="alu-preview" style="font-size:11px;color:var(--md-sys-color-tertiary);">ULA Out:
               00h</span>
           </div>
-          <table class="m3-table">
-            <thead>
-              <tr>
-                <th>Registrador</th>
-                <th>Hex</th>
-                <th>Binário (8 bits)</th>
-                <th>Decimal</th>
-                <th>Sinal de Controle</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><span class="reg-badge">PC</span></td>
-                <td id="tbl-hex-PC">00</td>
-                <td id="tbl-bin-PC">00000000</td>
-                <td id="tbl-dec-PC">0</td>
-                <td id="tbl-ctl-PC">PC_Inc = 0</td>
-              </tr>
-              <tr>
-                <td><span class="reg-badge">MAR</span></td>
-                <td id="tbl-hex-MAR">00</td>
-                <td id="tbl-bin-MAR">00000000</td>
-                <td id="tbl-dec-MAR">0</td>
-                <td id="tbl-ctl-MAR">MAR_Load = 0</td>
-              </tr>
-              <tr>
-                <td><span class="reg-badge">MBR</span></td>
-                <td id="tbl-hex-MBR">00</td>
-                <td id="tbl-bin-MBR">00000000</td>
-                <td id="tbl-dec-MBR">0</td>
-                <td id="tbl-ctl-MBR">RAM_Read_MBR = 0</td>
-              </tr>
-              <tr>
-                <td><span class="reg-badge">IR</span></td>
-                <td id="tbl-hex-IR">00</td>
-                <td id="tbl-bin-IR">00000000</td>
-                <td id="tbl-dec-IR">0</td>
-                <td id="tbl-ctl-IR">IR_Load = 0</td>
-              </tr>
-              <tr>
-                <td><span class="reg-badge">AC</span></td>
-                <td id="tbl-hex-AC">00</td>
-                <td id="tbl-bin-AC">00000000</td>
-                <td id="tbl-dec-AC">0</td>
-                <td id="tbl-ctl-AC">AC_Exec = 0</td>
-              </tr>
-            </tbody>
-          </table>
+          <div class="table-scroll">
+            <table class="m3-table">
+              <thead>
+                <tr>
+                  <th>Registrador</th>
+                  <th>Hex</th>
+                  <th>Binário (8 bits)</th>
+                  <th>Decimal</th>
+                  <th>Sinal de Controle</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><span class="reg-badge">PC</span></td>
+                  <td id="tbl-hex-PC">00</td>
+                  <td id="tbl-bin-PC">00000000</td>
+                  <td id="tbl-dec-PC">0</td>
+                  <td id="tbl-ctl-PC">PC_Inc = 0</td>
+                </tr>
+                <tr>
+                  <td><span class="reg-badge">MAR</span></td>
+                  <td id="tbl-hex-MAR">00</td>
+                  <td id="tbl-bin-MAR">00000000</td>
+                  <td id="tbl-dec-MAR">0</td>
+                  <td id="tbl-ctl-MAR">MAR_Load = 0</td>
+                </tr>
+                <tr>
+                  <td><span class="reg-badge">MBR</span></td>
+                  <td id="tbl-hex-MBR">00</td>
+                  <td id="tbl-bin-MBR">00000000</td>
+                  <td id="tbl-dec-MBR">0</td>
+                  <td id="tbl-ctl-MBR">RAM_Read_MBR = 0</td>
+                </tr>
+                <tr>
+                  <td><span class="reg-badge">IR</span></td>
+                  <td id="tbl-hex-IR">00</td>
+                  <td id="tbl-bin-IR">00000000</td>
+                  <td id="tbl-dec-IR">0</td>
+                  <td id="tbl-ctl-IR">IR_Load = 0</td>
+                </tr>
+                <tr>
+                  <td><span class="reg-badge">AC</span></td>
+                  <td id="tbl-hex-AC">00</td>
+                  <td id="tbl-bin-AC">00000000</td>
+                  <td id="tbl-dec-AC">0</td>
+                  <td id="tbl-ctl-AC">AC_Exec = 0</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </section>
 
         <!-- Card 3: Inspector de Memória RAM (256x8) e Entrada E/S (Teclado) -->
@@ -1398,13 +1636,17 @@
        ======================================================================== -->
   <aside class="ctx-card" id="ctx-card" aria-live="polite">
     <div class="ctx-head">
-      <strong id="step-title">Pronto para simular</strong>
+      <div class="ctx-title-wrap">
+        <span class="info-chip" id="ctx-chip" hidden></span>
+        <strong id="step-title">Pronto para simular</strong>
+      </div>
       <button type="button" class="ctx-close" onclick="hideCtxCard()" aria-label="Ocultar explicação">×</button>
     </div>
-    <p class="ctx-body" id="step-desc">Clique nos pinos de controle (<code>MAR_Load</code>, <code>RAM_Read_MBR</code>,
-      <code>IR_Load</code>, <code>PC_Inc</code>, <code>AC_Exec</code>), no <code>CLOCK</code> ou avance pelo guia passo
-      a passo.
+    <p class="ctx-body" id="step-desc">Toque em qualquer componente do circuito (<code>PC</code>, <code>MAR</code>,
+      <code>RAM</code>, <code>ULA</code>, barramentos ou pinos) para ver sua explicação aqui, ou avance pelo ciclo
+      abaixo.
     </p>
+    <dl class="ctx-fields" id="ctx-fields"></dl>
     <div class="ctx-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"
       id="ctx-progressbar">
       <div id="ctx-progress-fill"></div>
@@ -1455,18 +1697,53 @@
   </nav>
 
 
-  <dialog class="info-dialog" id="info-dialog" aria-labelledby="info-title">
-    <div class="info-dialog-body">
-      <h2 id="info-title"></h2>
-      <span class="info-chip" id="info-chip"></span>
-      <p id="info-desc"></p>
-      <dl id="info-fields"></dl>
-      <div class="info-dialog-actions">
-        <button type="button" class="m3-btn m3-btn-filled"
-          onclick="document.getElementById('info-dialog').close()">Fechar</button>
+  <!-- ========================================================================
+       TELA DE BLOQUEIO: exibida somente em telas de smartphone
+       ======================================================================== -->
+  <section class="small-screen-gate" id="small-screen-gate" role="region" aria-labelledby="gate-title">
+    <div class="gate-surface" id="gate-surface">
+      <div class="gate-icon" aria-hidden="true">
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+          stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="4" width="14" height="10" rx="1.5" />
+          <path d="M6 18h6M9 14v4" />
+          <rect x="15" y="9" width="7" height="12" rx="1.5" />
+          <path d="M18.5 18.5h.01" />
+        </svg>
+      </div>
+      <h2 class="gate-title" id="gate-title">Área de trabalho reduzida</h2>
+      <p class="gate-text gate-lead">Essa tela é muito pequena, tente acessar em telas maiores como: Tablets e Desktop.
+      </p>
+
+      <div class="gate-qr" id="gate-qr">
+        <div class="gate-qr-code" id="gate-qr-code" role="img"
+          aria-label="QR Code para abrir o simulador em um Tablet ou Desktop"></div>
+        <p class="gate-qr-caption">Aponte a câmera ou acesse o endereço abaixo em um Tablet ou Desktop:</p>
+        <span class="gate-qr-url" id="gate-qr-url"></span>
+      </div>
+
+      <div class="gate-actions">
+        <button type="button" class="m3-btn m3-btn-filled" onclick="downloadCircFile()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+            <polyline points="7 10 12 15 17 10" />
+            <line x1="12" y1="15" x2="12" y2="3" />
+          </svg>
+          Baixar o circuito
+        </button>
+        <button type="button" class="m3-btn m3-btn-tonal" id="btn-gate-qr" aria-expanded="false" aria-controls="gate-qr"
+          onclick="toggleGateQr()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="7" height="7" />
+            <rect x="14" y="3" width="7" height="7" />
+            <rect x="3" y="14" width="7" height="7" />
+            <path d="M14 14h3v3h-3zM20 14v.01M14 20h3M20 17v4" />
+          </svg>
+          <span id="txt-gate-qr">Exibir QR Code</span>
+        </button>
       </div>
     </div>
-  </dialog>
+  </section>
 
   <!-- ========================================================================
        MOTOR DE SIMULAÇÃO SÍNCRONO FIEL AO LOGISIM-EVOLUTION v5.0.0
@@ -1522,9 +1799,11 @@
     function writeTecladoToRAM() {
       const addr = state.regs.MAR & 0x03;
       state.ram[addr] = state.teclado & 0xFF;
+      clearComponentInfoView();
       document.getElementById('step-counter').textContent = 'E/S · WRITE';
       document.getElementById('step-title').textContent = `Escrita E/S na RAM[${toHex2(addr)}]:`;
       document.getElementById('step-desc').innerHTML = `O byte <code>${toHex2(state.teclado)}h</code> (<code>${toBin8(state.teclado)}</code>) do pino <code>Teclado</code> foi gravado na posição <code>${toHex2(addr)}h</code> da memória RAM.`;
+      showCtxCard(100);
       renderCircuit();
     }
 
@@ -1620,6 +1899,7 @@
         pulseClock();
       }
 
+      clearComponentInfoView();
       highlightRtlStep(idx);
       document.getElementById('step-counter').textContent = step.code;
       document.getElementById('step-title').textContent = step.title;
@@ -1666,6 +1946,7 @@
       state.pins = { MAR_Load: 0, RAM_Read_MBR: 0, IR_Load: 0, PC_Inc: 0, AC_Exec: 0 };
       state.regs = { PC: 0, MAR: 0, IR: 0, MBR: 0, AC: 0 };
       state.guidedStep = 0;
+      clearComponentInfoView();
       highlightRtlStep(-1);
       document.getElementById('step-counter').textContent = 'T0 · RESET';
       document.getElementById('step-title').textContent = 'CPU Resetada:';
@@ -1781,28 +2062,40 @@
         ctlCell.textContent = `${pLabel} = ${pVal}`;
         ctlCell.style.color = pVal === 1 ? 'var(--md-sys-color-tertiary)' : 'var(--md-sys-color-on-surface-variant)';
       }
+
+      if (state.activeInfoKey && typeof COMPONENT_INFO !== 'undefined' && COMPONENT_INFO[state.activeInfoKey]?.reg) {
+        openInfo(state.activeInfoKey);
+      }
     }
 
-    // Arquivo do projeto hospedado no repositório do GitHub
-    const CIRC_URL = 'https://github.com/joaopedro-chaves/simulacao_analise_arquitetura_interna_computador_projeto_UniFECAF/blob/main/src/neocore_cpu.circ';
+    // Arquivo do projeto (.circ) local ou via GitHub Raw
+    const CIRC_URLS = [
+      './src/neocore_cpu.circ',
+      'https://raw.githubusercontent.com/joaopedro-chaves/simulacao_analise_arquitetura_interna_computador_projeto_UniFECAF/main/src/neocore_cpu.circ'
+    ];
 
     async function downloadCircFile() {
-      try {
-        const resp = await fetch(CIRC_URL);
-        if (!resp.ok) throw new Error('HTTP ' + resp.status);
-        const blob = await resp.blob();
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'neocore_cpu.circ';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-      } catch (err) {
-        // Fallback: abre o link direto do GitHub em nova aba
-        window.open(CIRC_URL, '_blank', 'noopener');
+      for (const candidateUrl of CIRC_URLS) {
+        try {
+          const resp = await fetch(candidateUrl);
+          if (!resp.ok) continue;
+          const text = await resp.text();
+          if (!text.includes('<project')) continue;
+          const blob = new Blob([text], { type: 'application/xml' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = 'neocore_cpu.circ';
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+          return;
+        } catch (err) {
+          // Tenta o próximo endereço
+        }
       }
+      window.open(CIRC_URLS[1], '_blank', 'noopener');
     }
 
     // Inicializa a interface
@@ -1819,7 +2112,10 @@
     let dragMoved = false;
 
     function applyView() {
-      svgEl.style.transform = `translate(${view.x}px, ${view.y}px) scale(${view.s})`;
+      // Redimensiona o SVG (em vez de escalar por CSS) para o navegador re-rasterizar o vetor nítido em qualquer zoom
+      svgEl.style.width = (SVG_W * view.s) + 'px';
+      svgEl.style.height = (SVG_H * view.s) + 'px';
+      svgEl.style.transform = `translate(${view.x}px, ${view.y}px)`;
       const g = 10 * view.s;
       viewportEl.style.backgroundSize = `${g}px ${g}px`;
       viewportEl.style.backgroundPosition = `${view.x - g / 2}px ${view.y - g / 2}px`;
@@ -1843,6 +2139,7 @@
     function updateDockMetrics() {
       const dock = document.getElementById('dock');
       document.documentElement.style.setProperty('--dock-h', dock.offsetHeight + 'px');
+      document.documentElement.style.setProperty('--dock-w', dock.offsetWidth + 'px');
     }
 
     function fitCanvas() {
@@ -1850,14 +2147,20 @@
       const r = viewportEl.getBoundingClientRect();
       const dock = document.getElementById('dock');
       const card = document.getElementById('ctx-card');
+      const drawer = document.getElementById('drawer');
+      const drawerOpenDesktop = drawer.classList.contains('open') && window.innerWidth > 960;
+      const availW = Math.max(200, r.width - (drawerOpenDesktop ? drawer.offsetWidth : 0));
+
       // Reserva a faixa inferior ocupada pela dock e pelo card, para não cobrir o circuito
-      let reserve = dock.offsetHeight + 32;
-      if (!card.classList.contains('hidden') && !dock.classList.contains('collapsed')) reserve += card.offsetHeight + 8;
-      const availH = Math.max(120, r.height - reserve);
-      const s = Math.min(r.width / SVG_W, availH / SVG_H) * 0.96;
+      let reserve = dock.offsetHeight + 24;
+      if (!card.classList.contains('hidden') && !dock.classList.contains('collapsed')) {
+        reserve += card.offsetHeight + 10;
+      }
+      const availH = Math.max(140, r.height - reserve);
+      const s = Math.min(availW / SVG_W, availH / SVG_H) * 0.96;
       view.s = s;
-      view.x = (r.width - SVG_W * s) / 2;
-      view.y = (availH - SVG_H * s) / 2;
+      view.x = (availW - SVG_W * s) / 2;
+      view.y = Math.max(6, (availH - SVG_H * s) / 2);
       applyView();
     }
 
@@ -1943,6 +2246,9 @@
       const open = d.classList.toggle('open');
       document.body.classList.toggle('drawer-open', open);
       document.getElementById('btn-drawer').setAttribute('aria-pressed', String(open));
+      if (window.innerWidth > 960) {
+        setTimeout(fitCanvas, 50);
+      }
     }
 
     function toggleDock() {
@@ -1953,10 +2259,25 @@
       btn.firstElementChild.style.transform = collapsed ? 'rotate(180deg)' : '';
       document.getElementById('ctx-card').classList.toggle('hidden', collapsed);
       updateDockMetrics();
+      fitCanvas();
+    }
+
+    function clearComponentInfoView() {
+      state.activeInfoKey = null;
+      const chip = document.getElementById('ctx-chip');
+      const dl = document.getElementById('ctx-fields');
+      if (chip) {
+        chip.hidden = true;
+        chip.textContent = '';
+      }
+      if (dl) dl.replaceChildren();
+      svgEl.querySelectorAll('.active-info').forEach((el) => el.classList.remove('active-info'));
     }
 
     function hideCtxCard() {
+      clearComponentInfoView();
       document.getElementById('ctx-card').classList.add('hidden');
+      fitCanvas();
     }
 
     function showCtxCard(pct) {
@@ -1982,7 +2303,7 @@
       rp.addEventListener('animationend', () => rp.remove());
     });
 
-    const COMPONENT_INFO = {
+    var COMPONENT_INFO = {
       PC: {
         title: 'PC — Contador de Programa (Program Counter)', kind: 'Registrador · 8 bits',
         desc: 'Guarda o endereço da próxima instrução a ser buscada na memória. Após cada busca é incrementado, o que faz o programa avançar sequencialmente.',
@@ -2090,13 +2411,23 @@
       }
     };
 
-    function openInfo(key) {
+    function openInfo(key, targetEl) {
       const info = COMPONENT_INFO[key];
       if (!info) return;
-      document.getElementById('info-title').textContent = info.title;
-      document.getElementById('info-chip').textContent = info.kind;
-      document.getElementById('info-desc').textContent = info.desc;
-      const dl = document.getElementById('info-fields');
+      state.activeInfoKey = key;
+
+      svgEl.querySelectorAll('.active-info').forEach((el) => el.classList.remove('active-info'));
+      const highlightEl = targetEl || svgEl.querySelector(`[data-info="${key}"]`);
+      if (highlightEl) highlightEl.classList.add('active-info');
+
+      const chip = document.getElementById('ctx-chip');
+      chip.textContent = info.kind;
+      chip.hidden = false;
+
+      document.getElementById('step-title').textContent = info.title;
+      document.getElementById('step-desc').textContent = info.desc;
+
+      const dl = document.getElementById('ctx-fields');
       dl.replaceChildren();
       const rows = info.fields.slice();
       if (info.reg) rows.push(['Valor atual', `${toHex2(state.regs[info.reg])}h (${toBin8(state.regs[info.reg])}b)`]);
@@ -2105,24 +2436,227 @@
         const dd = document.createElement('dd'); dd.textContent = v;
         dl.append(dt, dd);
       }
-      const dlg = document.getElementById('info-dialog');
-      if (!dlg.open) dlg.showModal();
+
+      // Se a dock estiver minimizada, expande o card de contexto e destaca a barra inferior em 100%
+      showCtxCard(100);
     }
 
-    // Captura: em componentes não interativos abre o popup; em pinos/CLOCK/Teclado só no modo explicação
+    // Ao tocar/clicar em qualquer componente ou barramento com [data-info], exibe a explicação no #ctx-card.
+    // Nos pinos interativos (poke-target), se "Modo Explicação" estiver ativo, apenas explica sem acionar o pino;
+    // se estiver desativado, aciona o pino normalmente e também mostra a explicação do componente no #ctx-card.
     svgEl.addEventListener('click', (e) => {
       const el = e.target.closest('[data-info]');
       if (!el) return;
-      if (el.classList.contains('poke-target') && !explainMode) return;
+      if (el.classList.contains('poke-target')) {
+        if (explainMode) {
+          e.stopPropagation();
+          openInfo(el.dataset.info, el);
+        } else if (el.dataset.info !== 'TECLADO') {
+          setTimeout(() => openInfo(el.dataset.info, el), 0);
+        }
+        return;
+      }
       e.stopPropagation();
-      openInfo(el.dataset.info);
+      openInfo(el.dataset.info, el);
     }, true);
 
-    document.getElementById('info-dialog').addEventListener('click', (e) => {
-      if (e.target === e.currentTarget) e.currentTarget.close();
-    });
-
     fitCanvas();
+
+    /* ======================================================================
+       TELA DE BLOQUEIO EM SMARTPHONES + GERADOR DE QR CODE (offline)
+       ====================================================================== */
+    const GATE_MQ = window.matchMedia('(max-width: 767px), (max-height: 450px) and (max-width: 950px)');
+    const REPO_URL = 'https://github.com/joaopedro-chaves/simulacao_analise_arquitetura_interna_computador_projeto_UniFECAF';
+
+    function applyGate() {
+      const on = GATE_MQ.matches;
+      // Desativa (inert + aria-hidden) todos os elementos da aplicação e barras de navegação enquanto o aviso estiver ativo
+      ['.top-app-bar', '.workspace', '#dock', '#ctx-card', '#drawer'].forEach((sel) => {
+        const el = document.querySelector(sel);
+        if (el) {
+          el.inert = on;
+          el.setAttribute('aria-hidden', String(on));
+        }
+      });
+      if (on) {
+        if (state.autoClockTimer) toggleAutoClock();
+
+      } else {
+        fitCanvas();
+      }
+    }
+    GATE_MQ.addEventListener('change', applyGate);
+
+    function toggleGateQr() {
+      const box = document.getElementById('gate-qr');
+      const surface = document.getElementById('gate-surface');
+      const open = box.classList.toggle('open');
+      surface.classList.toggle('qr-open', open);
+      document.getElementById('btn-gate-qr').setAttribute('aria-expanded', String(open));
+      document.getElementById('txt-gate-qr').textContent = open ? 'Ocultar QR Code' : 'Exibir QR Code';
+      if (open && !box.dataset.ready) {
+        let url = /^https?:$/.test(location.protocol) ? location.href.split('#')[0] : REPO_URL;
+        let svg;
+        try { svg = qrToSvg(url); } catch (err) { url = REPO_URL; svg = qrToSvg(url); }
+        document.getElementById('gate-qr-code').innerHTML = svg;
+        document.getElementById('gate-qr-url').textContent = url;
+        box.dataset.ready = '1';
+      }
+    }
+
+    /* Gerador de QR Code (modo byte, correção M, versões 1–10), baseado no algoritmo da ISO/IEC 18004 */
+    const QR_ECC_PER_BLOCK = [-1, 10, 16, 26, 18, 24, 16, 18, 22, 22, 26];
+    const QR_NUM_BLOCKS = [-1, 1, 1, 2, 2, 4, 4, 4, 5, 5, 5];
+
+    function qrMake(text) {
+      const bytes = Array.from(new TextEncoder().encode(text));
+      const rawModules = (v) => {
+        let r = (16 * v + 128) * v + 64;
+        if (v >= 2) { const n = Math.floor(v / 7) + 2; r -= (25 * n - 10) * n - 55; if (v >= 7) r -= 36; }
+        return r;
+      };
+      let ver = 1, dataCw = 0;
+      for (; ver <= 10; ver++) {
+        dataCw = Math.floor(rawModules(ver) / 8) - QR_ECC_PER_BLOCK[ver] * QR_NUM_BLOCKS[ver];
+        const cntBits = ver < 10 ? 8 : 16;
+        if (4 + cntBits + bytes.length * 8 <= dataCw * 8) break;
+      }
+      if (ver > 10) throw new Error('URL longa demais para o QR Code');
+
+      // 1. Bits de dados
+      const bits = [];
+      const put = (val, len) => { for (let i = len - 1; i >= 0; i--) bits.push((val >>> i) & 1); };
+      put(0x4, 4); put(bytes.length, ver < 10 ? 8 : 16);
+      bytes.forEach((b) => put(b, 8));
+      put(0, Math.min(4, dataCw * 8 - bits.length));
+      put(0, (8 - bits.length % 8) % 8);
+      for (let pad = 0xEC; bits.length < dataCw * 8; pad ^= 0xEC ^ 0x11) put(pad, 8);
+      const data = [];
+      for (let i = 0; i < bits.length; i += 8) {
+        let b = 0; for (let j = 0; j < 8; j++) b = (b << 1) | bits[i + j]; data.push(b);
+      }
+
+      // 2. Reed-Solomon (GF(256), polinômio 0x11D) e intercalação de blocos
+      const mul = (x, y) => { let z = 0; for (let i = 7; i >= 0; i--) { z = (z << 1) ^ ((z >>> 7) * 0x11D); z ^= ((y >>> i) & 1) * x; } return z; };
+      const eccLen = QR_ECC_PER_BLOCK[ver], nBlocks = QR_NUM_BLOCKS[ver];
+      const div = new Array(eccLen).fill(0); div[eccLen - 1] = 1;
+      for (let i = 0, root = 1; i < eccLen; i++) {
+        for (let j = 0; j < eccLen; j++) { div[j] = mul(div[j], root); if (j + 1 < eccLen) div[j] ^= div[j + 1]; }
+        root = mul(root, 2);
+      }
+      const rs = (blk) => {
+        const res = new Array(eccLen).fill(0);
+        blk.forEach((b) => { const f = b ^ res.shift(); res.push(0); div.forEach((c, i) => { res[i] ^= mul(c, f); }); });
+        return res;
+      };
+      const rawCw = Math.floor(rawModules(ver) / 8);
+      const nShort = nBlocks - rawCw % nBlocks, shortLen = Math.floor(rawCw / nBlocks);
+      const blocks = [];
+      for (let i = 0, k = 0; i < nBlocks; i++) {
+        const dat = data.slice(k, k + shortLen - eccLen + (i < nShort ? 0 : 1)); k += dat.length;
+        const ecc = rs(dat); if (i < nShort) dat.push(0);
+        blocks.push(dat.concat(ecc));
+      }
+      const all = [];
+      for (let i = 0; i < blocks[0].length; i++) {
+        blocks.forEach((blk, j) => { if (i !== shortLen - eccLen || j >= nShort) all.push(blk[i]); });
+      }
+
+      // 3. Matriz de módulos e padrões de função
+      const size = ver * 4 + 17;
+      const mod = Array.from({ length: size }, () => new Array(size).fill(false));
+      const fn = Array.from({ length: size }, () => new Array(size).fill(false));
+      const setFn = (x, y, d) => { mod[y][x] = d; fn[y][x] = true; };
+      for (let i = 0; i < size; i++) { setFn(6, i, i % 2 === 0); setFn(i, 6, i % 2 === 0); }
+      const finder = (cx, cy) => {
+        for (let dy = -4; dy <= 4; dy++) for (let dx = -4; dx <= 4; dx++) {
+          const d = Math.max(Math.abs(dx), Math.abs(dy)), x = cx + dx, y = cy + dy;
+          if (x >= 0 && x < size && y >= 0 && y < size) setFn(x, y, d !== 2 && d !== 4);
+        }
+      };
+      finder(3, 3); finder(size - 4, 3); finder(3, size - 4);
+      const nAlign = ver === 1 ? 0 : Math.floor(ver / 7) + 2;
+      const alignPos = [];
+      if (nAlign) {
+        const step = Math.ceil((ver * 4 + 4) / (nAlign * 2 - 2)) * 2;
+        alignPos.push(6);
+        for (let p = size - 7; alignPos.length < nAlign; p -= step) alignPos.splice(1, 0, p);
+      }
+      alignPos.forEach((ax, i) => alignPos.forEach((ay, j) => {
+        if ((i === 0 && j === 0) || (i === 0 && j === nAlign - 1) || (i === nAlign - 1 && j === 0)) return;
+        for (let dy = -2; dy <= 2; dy++) for (let dx = -2; dx <= 2; dx++) setFn(ax + dx, ay + dy, Math.max(Math.abs(dx), Math.abs(dy)) !== 1);
+      }));
+      const drawFormat = (mask) => {
+        const d = (0 << 3) | mask; // correção M = 00
+        let rem = d; for (let i = 0; i < 10; i++) rem = (rem << 1) ^ ((rem >>> 9) * 0x537);
+        const f = ((d << 10) | rem) ^ 0x5412, bit = (i) => ((f >>> i) & 1) !== 0;
+        for (let i = 0; i <= 5; i++) setFn(8, i, bit(i));
+        setFn(8, 7, bit(6)); setFn(8, 8, bit(7)); setFn(7, 8, bit(8));
+        for (let i = 9; i < 15; i++) setFn(14 - i, 8, bit(i));
+        for (let i = 0; i < 8; i++) setFn(size - 1 - i, 8, bit(i));
+        for (let i = 8; i < 15; i++) setFn(8, size - 15 + i, bit(i));
+        setFn(8, size - 8, true);
+      };
+      drawFormat(0);
+      if (ver >= 7) {
+        let rem = ver; for (let i = 0; i < 12; i++) rem = (rem << 1) ^ ((rem >>> 11) * 0x1F25);
+        const v = (ver << 12) | rem;
+        for (let i = 0; i < 18; i++) {
+          const c = ((v >>> i) & 1) !== 0, a = size - 11 + i % 3, b = Math.floor(i / 3);
+          setFn(a, b, c); setFn(b, a, c);
+        }
+      }
+
+      // 4. Posicionamento dos codewords em zigue-zague
+      let bi = 0;
+      for (let right = size - 1; right >= 1; right -= 2) {
+        if (right === 6) right = 5;
+        for (let vert = 0; vert < size; vert++) for (let j = 0; j < 2; j++) {
+          const x = right - j, up = ((right + 1) & 2) === 0, y = up ? size - 1 - vert : vert;
+          if (!fn[y][x] && bi < all.length * 8) { mod[y][x] = ((all[bi >>> 3] >>> (7 - (bi & 7))) & 1) !== 0; bi++; }
+        }
+      }
+
+      // 5. Máscara com menor penalidade
+      const maskFn = [
+        (x, y) => (x + y) % 2 === 0, (x, y) => y % 2 === 0, (x, y) => x % 3 === 0, (x, y) => (x + y) % 3 === 0,
+        (x, y) => (Math.floor(x / 3) + Math.floor(y / 2)) % 2 === 0, (x, y) => x * y % 2 + x * y % 3 === 0,
+        (x, y) => (x * y % 2 + x * y % 3) % 2 === 0, (x, y) => ((x + y) % 2 + x * y % 3) % 2 === 0
+      ];
+      const applyMask = (m) => { for (let y = 0; y < size; y++) for (let x = 0; x < size; x++) if (!fn[y][x] && maskFn[m](x, y)) mod[y][x] = !mod[y][x]; };
+      const penalty = () => {
+        let p = 0, dark = 0;
+        for (let y = 0; y < size; y++) for (let x = 0; x < size; x++) {
+          if (mod[y][x]) dark++;
+          if (x < size - 1 && y < size - 1 && mod[y][x] === mod[y][x + 1] && mod[y][x] === mod[y + 1][x] && mod[y][x] === mod[y + 1][x + 1]) p += 3;
+        }
+        for (let a = 0; a < size; a++) for (const row of [true, false]) {
+          let run = 1;
+          for (let b = 1; b < size; b++) {
+            const cur = row ? mod[a][b] : mod[b][a], prev = row ? mod[a][b - 1] : mod[b - 1][a];
+            if (cur === prev) { run++; if (run === 5) p += 3; else if (run > 5) p++; } else run = 1;
+          }
+        }
+        return p + Math.floor(Math.abs(dark * 20 - size * size * 10) / (size * size)) * 10;
+      };
+      let best = 0, bestP = Infinity;
+      for (let m = 0; m < 8; m++) {
+        applyMask(m); drawFormat(m);
+        const p = penalty(); if (p < bestP) { bestP = p; best = m; }
+        applyMask(m);
+      }
+      applyMask(best); drawFormat(best);
+      return mod;
+    }
+
+    function qrToSvg(text) {
+      const m = qrMake(text), n = m.length, q = 4;
+      let d = '';
+      for (let y = 0; y < n; y++) for (let x = 0; x < n; x++) if (m[y][x]) d += `M${x + q},${y + q}h1v1h-1z`;
+      return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${n + q * 2} ${n + q * 2}" shape-rendering="crispEdges"><rect width="100%" height="100%" fill="#fff"/><path d="${d}" fill="#000"/></svg>`;
+    }
+
+    applyGate();
   </script>
 </body>
 
