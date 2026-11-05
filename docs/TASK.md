@@ -17,10 +17,10 @@
 - [x] **Arquitetura Escolhida:** Explicar por que escolheu Von Neumann [REVISAR]
 - [x] **Componentes:** Explicar para que serve cada registrador, ULA, UC e barramentos [REVISAR]
 - [x] **Ciclo de Instrução:** Explicar o passo a passo da busca, decodificação e execução [REVISAR]
-- [ ] **Resultados e Prática:** Inserir imagens e explicar como o simulador funcionou
-- [ ] **Conclusão:** Resumir o impacto do projeto para o aprendizado
-- [ ] **Referências:** Citar os livros usados (formato ABNT)
-- [ ] Revisar o texto e exportar para PDF na pasta `dist/`
+- [x] **Resultados e Prática:** Inserir imagens e explicar como o simulador funcionou
+- [x] **Conclusão:** Resumir o impacto do projeto para o aprendizado
+- [x] **Referências:** Citar os livros usados (formato ABNT)
+- [o] Revisar o texto e exportar para PDF na pasta `dist/`
 
 ### Parte Prática – Simulador (50% da nota)
 - [x] Escolher e abrir a ferramenta de simulação (Logisim, Tinkercad ou código)
