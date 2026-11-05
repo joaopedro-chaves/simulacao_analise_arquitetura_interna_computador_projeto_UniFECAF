@@ -15,5 +15,3 @@ Thumbs.db
 
 # Simulation tools (lock files / Logisim temp files)
 *.circ.bak
-
-./docs/files/
