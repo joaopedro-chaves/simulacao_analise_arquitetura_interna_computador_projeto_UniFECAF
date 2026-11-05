@@ -19,9 +19,9 @@ Este documento consolida o **registro formal de auditoria de versionamento** do 
 
 | Métrica de Auditoria | Valor / Especificação |
 | :--- | :--- |
-| **Total de Commits Auditados** | `22 commits` |
+| **Total de Commits Auditados** | `24 commits` |
 | **Commit Inicial (Root Commit)** | `d5a931c` (23/09/2026 12:01:53) |
-| **Commit Final Auditado** | `0c1f943` (05/11/2026 14:23:58) |
+| **Commit Final Auditado** | `549e304` (05/11/2026 17:37:02) |
 | **Período Total de Desenvolvimento** | 23 de Setembro de 2026 a 05 de Novembro de 2026 (~6 semanas) |
 | **Padrão de Mensagens Adotado** | *Conventional Commits* (`feat:`, `docs:`, `refactor:`, `chore:`) |
 | **Estado do Working Tree** | Limpo (`working tree clean`, sincronizado com `main`) |
@@ -30,16 +30,16 @@ Este documento consolida o **registro formal de auditoria de versionamento** do 
 ### 1.2 Distribuição por Tipo de Alteração
 
 ```text
-  docs: 13 commits (59.1%)  ██████████████░░░░░░░░░░░░  
+  docs: 13 commits (54.2%)  █████████████░░░░░░░░░░░  
   [Documentação, Relatórios, Roteiros, Guias]
-  feat: 4 commits (18.2%)  ████░░░░░░░░░░░░░░░░░░░  
+  feat: 4 commits (16.7%)  ████░░░░░░░░░░░░░░░░░░░  
   [Circuito Logisim, Simulador Web, UI/UX M3]
-  refactor: 3 commits (13.6%)  ███░░░░░░░░░░░░░░░░░░░  
-  [Limpeza de módulos alheios, otimização]
-  chore: 3 commits (13.6%)  ███░░░░░░░░░░░░░░░░░░░  
+  refactor: 4 commits (16.7%)  ████░░░░░░░░░░░░░░░░░░░  
+  [Modularização de código, otimização, separação CSS/JS]
+  chore: 3 commits (12.5%)  ███░░░░░░░░░░░░░░░░░░░  
   [Configurações de ambiente, faxina de metadados]
   ------------------------------------------------
-  Total: 23 commits (100.0%)
+  Total: 24 commits (100.0%)
 ```
 
 ---
@@ -125,7 +125,8 @@ A tabela a seguir correlaciona os commits aos três grandes blocos de avaliaçã
 | **20** | `1ac3764` | 2026-11-05 13:30:13 | João Pedro Chaves | `chore` | `chore: remove obsidian configuration directory and files` | 4 |
 | **21** | `d48b199` | 2026-11-05 14:22:42 | João Pedro Chaves | `docs` | `docs: add theoretical documentation for computer architecture simulator` | 1 |
 | **22** | `8c1f18b` | 2026-11-05 14:23:58 | João Pedro Chaves | `docs` | `docs: remove project request and roadmap documentation files` | 4 |
-| **23** | `0c1f943` | 2026-11-05 14:33:58 | João Pedro Chaves | `docs` | `docs:  add commit audit logs and update project documentation and structure` | 4 |
+| **23** | `0c1f943` | 2026-11-05 14:33:58 | João Pedro Chaves | `docs` | `docs: add commit audit logs and update project documentation and structure` | 4 |
+| **24** | `549e304` | 2026-11-05 17:37:02 | João Pedro Chaves | `refactor` | `refactor: modularize web simulator code and add architectural model validation` | 15 |
 
 ---
 
@@ -369,12 +370,24 @@ A tabela a seguir correlaciona os commits aos três grandes blocos de avaliaçã
 
 ---
 
-### Commit 23  `0c1f943` 
+### Commit 23 · `0c1f943`
+- **Hash Completo:** `0c1f943cb7c4ceb5b8d030ea763a894b692f7bd9`
 - **Data e Hora:** 2026-11-05 14:33:58
 - **Autor:** `João Pedro Chaves <joaopedrochavescontato@gmail.com>`
-- **Mensagem:** `docs:  add commit audit logs and update project documentation and structure` 
+- **Mensagem:** `docs: add commit audit logs and update project documentation and structure`
 - **Volume:** 2 arquivos alterados (+460 inserções, -15 linhas)
 - **Arquivos:** `COMMITS.md`, `README.md`
+
+---
+
+### Commit 24 · `549e304`
+- **Hash Completo:** `549e3047f473f5a09d86b010c53fa7428e3b1baa`
+- **Data e Hora:** 2026-11-05 17:37:02
+- **Autor:** `João Pedro Chaves <joaopedrochavescontato@gmail.com>`
+- **Mensagem:** `refactor: modularize web simulator code and add architectural model validation`
+- **Volume:** 15 arquivos alterados (+4801 inserções, -2140 deleções)
+- **Arquivos:** `index.html`, `src/script.js`, `src/styles.css`, `test_model.js`, `docs/ESPECIFICACAO.md`, `docs/COMMITS.md`, `docs/TAREFAS.md`, `dist/*`, `src/Logarism-Evolution/*`
+- **Descrição Técnica:** Modularização do simulador web com separação de CSS (`src/styles.css`) e JavaScript (`src/script.js`), preservando o circuito e o modelo de micro-operações desacoplado e 100% testado em Node.js (`test_model.js`). Documentação arquitetural consolidada em `docs/ESPECIFICACAO.md` e atualização do relatório acadêmico em `dist/`.
 
 ---
 
