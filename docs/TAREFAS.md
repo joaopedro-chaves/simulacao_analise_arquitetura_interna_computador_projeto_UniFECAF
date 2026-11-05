@@ -36,7 +36,7 @@
   - [x] 3. **Execução (Execute):** Fazer a operação na ULA e salvar o resultado
 - [x] Salvar os arquivos do circuito e imagens na pasta `src/` e `docs/assets/`
 - [x] Desenvolver simulador web interativo (`index.html`) espelhando o `main_board.svg` e `neocore_cpu.circ`,
-- [ ] Publicar no GitHub Pages
+- [x] Publicar no GitHub Pages
 
 ### Vídeo Pitch (25% da nota)
 - [ ] Revisar o roteiro em `docs/pitch/pitch_script.md` (máximo de 4 minutos)
