@@ -23,10 +23,6 @@ simulacao_analise_arquitetura_interna_computador_projeto_UniFECAF/
 └── dist/                           # Entregáveis finais (PDFs, pacotes de entrega)
 ```
 
-## Kanban do projeto
-
-https://kan.bn/boards/wxa2g8a6w3ww
-
 ## Entregáveis e Critérios de Avaliação
 
 1. **Parte Teórica (25%):**
