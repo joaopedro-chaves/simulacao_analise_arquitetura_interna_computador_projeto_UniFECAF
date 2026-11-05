@@ -11,28 +11,36 @@ Este repositório contém o projeto de prova de conceito para a **NeoCore Tech**
 ```text
 simulacao_analise_arquitetura_interna_computador_projeto_UniFECAF/
 ├── .gitignore                      # Regras de exclusão do Git
-├── README.md                       # Apresentação do projeto e índice
-├── docs/                           # Documentação e Relatórios
-│   ├── REQUEST.md                  # Especificações e critérios de avaliação
-│   ├── ROADMAP_PROJECT.md          # Cronograma e diretrizes de trabalho
-│   ├── technical_report.md         # Relatório técnico acadêmico (25%)
-│   ├── assets/                     # Diagramas e esquemáticos arquiteturais
-│   └── pitch/                      # Material do Vídeo Pitch (25%)
-│       └── pitch_script.md         # Roteiro estruturado para gravação (até 4 min)
-├── src/                            # Arquivos do Simulador e Circuitos (50%)
-└── dist/                           # Entregáveis finais (PDFs, pacotes de entrega)
+├── README.md                       # Apresentação do projeto e índice geral
+├── COMMITS.md                      # Tabela resumo de commits para auditoria
+├── index.html                      # Simulador Web Interativo M3 (Von Neumann 8-bit)
+├── docs/                           # Documentação, Manuais e Auditoria
+│   ├── COMMITS.md                  # Registro detalhado e auditoria técnica de commits
+│   ├── SIMULADOR.md                # Manual didático completo do simulador web
+│   ├── ROTEIRO.md                  # Roteiro estruturado para gravação do Pitch (até 4 min)
+│   ├── TAREFAS.md                  # Matriz de controle de tarefas e status
+│   └── TRABALHO_Computer_...md     # Diretrizes e critérios acadêmicos do projeto
+├── src/                            # Circuito Logisim-Evolution e Schematics da CPU
+│   ├── neocore_cpu.circ            # Modelo digital funcional (Logisim-Evolution v5.0.0)
+│   └── main_board.*                # Exportações esquemáticas (SVG, PNG, JPG, LaTeX)
+└── dist/                           # Relatórios técnicos finais e entregáveis
+    └── Simulador de Arquitetura de Computadores - Parte teórica - 86D04K2.md
 ```
 
 ## Entregáveis e Critérios de Avaliação
 
 1. **Parte Teórica (25%):**
    - Relatório técnico fundamentado em referências clássicas (Tanenbaum, Stallings).
-   - Documento base: [`docs/technical_report.md`](file:./docs/technical_report.md).
+   - Documento final: [`dist/Simulador de Arquitetura de Computadores - Parte teórica - 86D04K2.md`](file:./dist/Simulador%20de%20Arquitetura%20de%20Computadores%20-%20Parte%20teórica%20-%2086D04K2.md).
 
 2. **Parte Prática (50%):**
-   - Modelagem funcional e simulação visual da CPU e barramentos (Logisim / Tinkercad / Código).
-   - Diretório: [`src/`](file:./src).
+   - **Simulador Web Interativo (Material 3):** [`index.html`](file:./index.html) (com suporte a microinstruções T0–T5, inspeção visual de barramentos e gate mobile com QR Code).
+   - **Guia Didático do Simulador:** [`docs/SIMULADOR.md`](file:./docs/SIMULADOR.md).
+   - **Circuito Digital Funcional:** [`src/neocore_cpu.circ`](file:./src/neocore_cpu.circ).
 
 3. **Vídeo Pitch (25%):**
-   - Apresentação em vídeo de até 4 minutos demonstrando o ciclo de instrução.
-   - Roteiro: [`docs/pitch/pitch_script.md`](file:./docs/pitch/pitch_script.md).
+   - Apresentação em vídeo de até 4 minutos demonstrando a arquitetura interna e o ciclo de instrução.
+   - Roteiro de gravação: [`docs/ROTEIRO.md`](file:./docs/ROTEIRO.md).
+
+4. **Auditoria e Rastreabilidade do Desenvolvimento:**
+   - Registro cronológico e fichas técnicas de todos os commits: [`COMMITS.md`](file:./COMMITS.md) e [`docs/COMMITS.md`](file:./docs/COMMITS.md).
