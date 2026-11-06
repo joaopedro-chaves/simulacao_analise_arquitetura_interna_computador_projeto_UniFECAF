@@ -1272,10 +1272,10 @@ function renderCacheTable() {
 
 // Download do circuito oficial
 const CIRC_URLS = [
-  './src/Logarism-Evolution/neocore_cpu.circ',
   './src/neocore_cpu.circ',
+  'https://raw.githubusercontent.com/joaopedro-chaves/simulacao_analise_arquitetura_interna_computador_projeto_UniFECAF/main/src/neocore_cpu.circ',
+  './src/Logarism-Evolution/neocore_cpu.circ',
   'https://raw.githubusercontent.com/joaopedro-chaves/simulacao_analise_arquitetura_interna_computador_projeto_UniFECAF/main/src/Logarism-Evolution/neocore_cpu.circ',
-  'https://raw.githubusercontent.com/joaopedro-chaves/simulacao_analise_arquitetura_interna_computador_projeto_UniFECAF/main/src/neocore_cpu.circ'
 ];
 
 async function downloadCircFile() {
@@ -1520,7 +1520,7 @@ var COMPONENT_INFO = {
   },
   MBR: {
     title: 'MBR — Registrador de Dados de Memória', kind: 'Registrador · 8 bits',
-    desc: 'Retém temporariamente o byte lido da RAM (ou a ser gravado nela). Funciona como buffer entre o barramento de dados e o interior da CPU, distribuindo o valor para o IR e para a ULA.',
+    desc: 'Retém temporariamente o byte lido da RAM (ou a ser gravado nela). Funciona como buffer entre o barramento de dados da memória e o interior da CPU, distribuindo a palavra para o IR e para a ULA (não participa da instrução IN, que vai direto do Teclado ao AC).',
     fields: [['Entradas', 'D (barramento de dados da RAM ou AC via MBR_From_AC), WE (RAM_Read/MBR_Load) e clk'], ['Saída', 'Q → IR, entrada A da ULA e barramento de dados para gravação na RAM'], ['Fase', 'T1: MBR ← RAM[MAR]; T5: MBR ← AC (STA)']],
     reg: 'MBR'
   },
@@ -1547,8 +1547,8 @@ var COMPONENT_INFO = {
   },
   ULA: {
     title: 'ULA — Unidade Lógica e Aritmética', kind: 'Somador / Pass-through · 8 bits',
-    desc: 'Executa as operações aritméticas e lógicas da CPU. Opera como somador de 8 bits (AC + MBR) ou transferência direta (PASS) para cargas no Acumulador.',
-    fields: [['Entradas', 'A ← MBR, B ← AC (realimentação)'], ['Saída', 'A + B ou PASS → entrada D do AC'], ['Operações', 'ADD (ADDI, ADD), PASS (LDI, LDA, IN)']]
+    desc: 'Executa as operações da CPU. No Modo Manual e na instrução ADD, opera como somador de 8 bits (AC + MBR). No Modo Automático, ADDI soma e LDI carrega o operando imediato IR[3:0] diretamente no AC; LDA transfere o MBR (PASS); e IN carrega diretamente do Teclado.',
+    fields: [['Entradas', 'A (superior) ← MBR, B (inferior) ← AC (realimentação)'], ['Saída', 'A + B ou PASS → entrada D do AC'], ['Operações', 'ADD: soma com MBR (instrução ADD e Modo Manual); PASS: transferência de MBR (LDA). ADDI e LDI usam IR[3:0] diretamente e IN carrega do Teclado.']]
   },
   AC: {
     title: 'AC — Acumulador', kind: 'Registrador · 8 bits',
@@ -1569,18 +1569,18 @@ var COMPONENT_INFO = {
   },
   TECLADO: {
     title: 'Teclado — Entrada E/S', kind: 'Pino de entrada · 8 bits',
-    desc: 'Dispositivo de entrada que fornece um byte à CPU. No Modo Automático é lido pela instrução IN (AC ← TECLADO). No simulador também permite gravação manual na RAM para testes de bancada.',
-    fields: [['Saída', 'Barramento de dados interno / entrada D da RAM'], ['Valor editável', 'Painéis → “Teclado E/S” ou input no topo']]
+    desc: 'Dispositivo de entrada que fornece um byte à CPU. No Modo Automático é lido pela instrução IN diretamente para o Acumulador (AC ← TECLADO). No simulador também permite gravação manual na RAM para testes de bancada.',
+    fields: [['Saída', 'Entrada direta do AC (instrução IN) e porta de dados da RAM (gravação manual)'], ['Valor editável', 'Painéis → “Teclado E/S” ou input no topo']]
   },
   CLOCK: {
     title: 'CLOCK — Sinal de sincronização', kind: 'Fonte · 1 bit',
     desc: 'Gera os pulsos que sincronizam todos os registradores. A cada borda de subida, os registradores com o sinal de escrita ativo capturam seus novos valores de forma síncrona.',
-    fields: [['Saída', 'Rede de clock → entrada clk de PC, MAR, MBR, IR, AC e SAIDA'], ['No simulador', 'Pulso manual ou Auto-Clock com frequência ajustável (0.25x a 2x)']]
+    fields: [['Saída', 'Rede de clock → entrada clk de PC, MAR, MBR, IR e AC (no SVG a linha não se estende ao SAIDA nem à RAM)'], ['No simulador', 'Pulso manual ou Auto-Clock com frequência ajustável (0.25x a 2x)']]
   },
   BUS_CLOCK: {
     title: 'Rede de Clock', kind: 'Fios · 1 bit',
-    desc: 'Distribui o sinal de clock a todos os registradores do circuito, mantendo a operação sincronizada.',
-    fields: [['Origem', 'CLOCK'], ['Destinos', 'clk de PC, MAR, MBR, IR, AC e SAIDA']]
+    desc: 'Distribui o sinal de clock a todos os registradores síncronos do circuito, mantendo a operação coordenada.',
+    fields: [['Origem', 'CLOCK'], ['Destinos', 'clk de PC, MAR, MBR, IR e AC (no SVG a linha não se estende ao SAIDA nem à RAM)']]
   },
   BUS_CONTROL: {
     title: 'Barramento de Controle', kind: 'Fios de controle da UC',
@@ -1595,7 +1595,7 @@ var COMPONENT_INFO = {
   BUS_DATA: {
     title: 'Barramento de Dados', kind: 'Barramento · 8 bits · bidirecional',
     desc: 'Transporta instruções, operandos e dados entre memória RAM, cache, registradores e periféricos de E/S.',
-    fields: [['Trajeto', 'RAM ↔ Cache ↔ MBR ↔ IR / ULA ↔ AC ↔ SAIDA; Teclado ↔ RAM / AC']]
+    fields: [['Trajeto', 'RAM ↔ Cache ↔ MBR ↔ IR / ULA; AC ↔ SAIDA/Monitor; Teclado → RAM (gravação manual) e Teclado → AC (instrução IN)']]
   },
   PIN_MAR_Load: {
     title: 'MAR_Load', kind: 'Sinal de controle · 1 bit',

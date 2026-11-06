@@ -6,7 +6,7 @@
 > **Disciplina:** Arquitetura e Organização de Computadores (*Computer Architecture and Organization*)  
 > **Autor / Aluno:** João Pedro Vieira da Costa Chaves  
 > **Ramo Auditado:** `main` (rastreabilidade linear e sem bifurcações pendentes)  
-> **Data de Fechamento da Auditoria:** 05 de Novembro de 2026  
+> **Data de Fechamento da Auditoria:** 06 de Novembro de 2026  
 > **Ambiente de Simulação:** Logisim-Evolution v5.0.0 & Web Simulator (HTML5/SVG/JavaScript Nativo - M3)
 
 ---
@@ -19,10 +19,10 @@ Este documento consolida o **registro formal de auditoria de versionamento** do 
 
 | Métrica de Auditoria | Valor / Especificação |
 | :--- | :--- |
-| **Total de Commits Auditados** | `24 commits` |
+| **Total de Commits Auditados** | `26 commits` |
 | **Commit Inicial (Root Commit)** | `d5a931c` (23/09/2026 12:01:53) |
-| **Commit Final Auditado** | `549e304` (05/11/2026 17:37:02) |
-| **Período Total de Desenvolvimento** | 23 de Setembro de 2026 a 05 de Novembro de 2026 (~6 semanas) |
+| **Commit Final Auditado** | `Em registro (Fase 6 — Alinhamento Teórico-Prático)` |
+| **Período Total de Desenvolvimento** | 23 de Setembro de 2026 a 06 de Novembro de 2026 (~6 semanas) |
 | **Padrão de Mensagens Adotado** | *Conventional Commits* (`feat:`, `docs:`, `refactor:`, `chore:`) |
 | **Estado do Working Tree** | Limpo (`working tree clean`, sincronizado com `main`) |
 | **Branch Principal** | `main` |
@@ -388,6 +388,31 @@ A tabela a seguir correlaciona os commits aos três grandes blocos de avaliaçã
 - **Volume:** 15 arquivos alterados (+4801 inserções, -2140 deleções)
 - **Arquivos:** `index.html`, `src/script.js`, `src/styles.css`, `test_model.js`, `docs/ESPECIFICACAO.md`, `docs/COMMITS.md`, `docs/TAREFAS.md`, `dist/*`, `src/Logarism-Evolution/*`
 - **Descrição Técnica:** Modularização do simulador web com separação de CSS (`src/styles.css`) e JavaScript (`src/script.js`), preservando o circuito e o modelo de micro-operações desacoplado e 100% testado em Node.js (`test_model.js`). Documentação arquitetural consolidada em `docs/ESPECIFICACAO.md` e atualização do relatório acadêmico em `dist/`.
+
+---
+
+### Commit 25 · `6848801`
+- **Hash Completo:** `68488011b9e272350a87fc5c7fa7bc64e202cbff`
+- **Data e Hora:** 2026-11-05 17:38:33 -0300
+- **Autor:** `João Pedro Chaves <joaopedrochavescontato@gmail.com>`
+- **Mensagem:** `docs: update audit trail and commit registry in docs/COMMITS.md`
+- **Volume:** 1 arquivo alterado (+24 inserções, -11 deleções)
+- **Arquivos:** `docs/COMMITS.md`
+- **Descrição Técnica:** Atualização do histórico de commits e trilha formal de auditoria acadêmica.
+
+---
+
+### Commit 26 · `Em registro`
+- **Data e Hora:** 2026-11-06 01:05:00 -0300
+- **Autor:** `João Pedro Chaves <joaopedrochavescontato@gmail.com>`
+- **Mensagem:** `docs: synchronize theoretical report, architecture diagram and simulator documentation`
+- **Volume:** 9 arquivos alterados
+- **Arquivos:** `dist/Simulador de Arquitetura de Computadores - Parte teórica - 86D04K2 (Revisão Final).md`, `dist/Simulador de Arquitetura de Computadores - Parte teórica - 86D04K2 (Corrigido).md`, `dist/figura1_arquitetura_neocore.svg`, `docs/SIMULADOR.md`, `docs/ROTEIRO.md`, `docs/ESPECIFICACAO.md`, `src/script.js`, `docs/COMMITS.md`
+- **Descrição Técnica:** Harmonização completa e rigorosa entre o relatório teórico, o esquemático do circuito e o simulador web da CPU didática NeoCore (8 bits):
+  - **Relatório Teórico (Parte A):** Correção do trace manual T0–T7 removendo colunas de cache e detalhando a localidade espacial (Miss/Hit na Demo 1); correção da micro-operação `IN_Read` para `AC ← TECLADO` sem tráfego por MBR; especificação exata das operações da ULA (`ADD` e `PASS`) e operandos imediatos (`IR[3:0]`); explicitação dos ciclos multiciclo ($T_0$–$T_4$ e $T_0$–$T_6$); correção das entradas da ULA e da rede de clock (sem ramificação para SAIDA nem RAM); unificação das referências ao esquemático para `src/neocore_cpu.circ`;
+  - **Diagrama da Arquitetura (Figura 1):** Geração de SVG autônomo vetorial (`dist/figura1_arquitetura_neocore.svg`) com codificação cromática rigorosa dos barramentos (endereços em azul contínuo, dados em verde contínuo incluindo Teclado, controle e clock em tracejado laranja/vermelho);
+  - **Simulador Web (Parte B):** Atualização da lista de download `CIRC_URLS` priorizando `./src/neocore_cpu.circ` e raw URL do GitHub com fallback; revisão dos cartões de inspeção contextual (`COMPONENT_INFO.MBR`, `ULA`, `TECLADO`, `CLOCK`, `BUS_CLOCK`, `BUS_DATA`);
+  - **Documentação e Validação:** Atualização do `docs/SIMULADOR.md`, `docs/ROTEIRO.md` e `docs/ESPECIFICACAO.md`; execução da suíte de 29 testes automatizados em Node.js (`test_model.js`) com 100% de aprovação (29/29) e integridade do modelo computacional intacta.
 
 ---
 

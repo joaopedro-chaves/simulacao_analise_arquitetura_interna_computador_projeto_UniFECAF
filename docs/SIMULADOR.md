@@ -1,376 +1,319 @@
-# Simulador Interativo da CPU NeoCore (8 bits) — Guia Técnico e Didático
-
-> **Projeto:** Simulação e Análise de Arquitetura Interna de um Computador
-> **Instituição:** Centro Universitário UniFECAF — *Computer Architecture and Organization*
-> **Autor:** João Pedro Vieira da Costa Chaves
-> **Cenário:** Prova de Conceito (PoC) para a empresa fictícia educacional **NeoCore Tech**
-> **Arquivo do simulador:** [`index.html`](../index.html) · **Circuito de origem:** [`src/neocore_cpu.circ`](../src/neocore_cpu.circ) (Logisim-Evolution v5.0.0)
-
----
-
-## Sumário
-
-1. [Visão geral do projeto](#1-visão-geral-do-projeto)
-2. [O que é o simulador interativo](#2-o-que-é-o-simulador-interativo)
-3. [Arquitetura modelada](#3-arquitetura-modelada)
-4. [Elementos do circuito](#4-elementos-do-circuito)
-5. [Barramentos e convenção de cores](#5-barramentos-e-convenção-de-cores)
-6. [Modelo de execução (semântica do clock)](#6-modelo-de-execução-semântica-do-clock)
-7. [Passos produzidos pela simulação guiada (T0–T4)](#7-passos-produzidos-pela-simulação-guiada-t0t4)
-8. [Interface do simulador](#8-interface-do-simulador)
-9. [Roteiro didático: primeiros passos](#9-roteiro-didático-primeiros-passos)
-10. [Atividades sugeridas](#10-atividades-sugeridas)
-11. [Relação com LOAD, ADD e STORE](#11-relação-com-load-add-e-store)
-12. [Simplificações e limitações do modelo](#12-simplificações-e-limitações-do-modelo)
-13. [Execução, compatibilidade e publicação](#13-execução-compatibilidade-e-publicação)
-14. [Referências](#14-referências)
-
----
-
+# Simulador Interativo da CPU NeoCore (8 bits)
 ## 1. Visão geral do projeto
 
-O projeto procura responder à pergunta norteadora:
+O projeto responde à pergunta norteadora da disciplina:
 
 > *Como os diferentes componentes de um computador trabalham de forma coordenada para buscar, interpretar e executar uma instrução?*
 
-Para isso, foi modelada no **Logisim-Evolution** uma CPU didática de 8 bits baseada na **arquitetura de Von Neumann**, em que instruções e dados compartilham a mesma memória principal e trafegam pelos mesmos barramentos. Sobre esse circuito foi construído um **simulador web interativo** ([`index.html`](../index.html)) que reproduz o esquemático com as mesmas coordenadas do arquivo exportado [`src/main_board.svg`](../src/main_board.svg). Assim, o ciclo de instrução pode ser demonstrado em qualquer navegador, sem instalar o Logisim.
+Para isso, foi modelada no **Logisim-Evolution v5.0.0** uma CPU didática de 8 bits baseada na **arquitetura de Von Neumann**, em que instruções e dados compartilham a mesma memória principal física (`RAM 256 × 8`). 
 
-| Entregável | Peso | Onde está |
+Sobre esse circuito foi construído um **simulador web interativo** de alta fidelidade técnica e visual, com modularização limpa em [`index.html`](../index.html), [`src/styles.css`](../src/styles.css) e [`src/script.js`](../src/script.js), permitindo executar a simulação diretamente em qualquer navegador moderno sem necessidade de ferramentas de compilação ou instalação local do Logisim.
+
+| Entregável | Peso | Localização no Repositório |
 | :--- | :---: | :--- |
-| Parte Teórica (relatório) | 25% | `docs/` e `dist/` |
-| Parte Prática (simulação) | 50% | `src/neocore_cpu.circ` e `index.html` |
-| Vídeo Pitch (≤ 4 min) | 25% | `docs/pitch/pitch_script.md` |
+| **Parte Teórica (Relatório ABNT)** | 25% | [`dist/`](../dist/) e [`docs/`](./) |
+| **Parte Prática (Circuito e Simulador Web)** | 50% | [`src/neocore_cpu.circ`](../src/neocore_cpu.circ), [`index.html`](../index.html) e [`src/`](../src/) |
+| **Vídeo Pitch (≤ 4 min)** | 25% | [`docs/ROTEIRO.md`](./ROTEIRO.md) |
 
 ---
 
 ## 2. O que é o simulador interativo
 
-O [`index.html`](../index.html) é um arquivo único (HTML, CSS e JavaScript, sem dependências externas além das fontes Roboto). Ele contém:
+O simulador web é uma aplicação rica e interativa desenvolvida com padrões modernos de desenvolvimento web e diretrizes de design **Material Design 3 (Dark Theme)**. Ele integra:
 
-- **Esquemático vetorial (SVG)** com reprodução 1:1 do circuito `main_board` exportado do Logisim-Evolution: canvas de `1151 × 441` unidades e grade pontilhada de 10 × 10.
-- **Motor de simulação síncrono**: os registradores só são atualizados na **borda de subida do clock** e apenas quando o sinal de habilitação correspondente está em nível lógico `1`.
-- **Sequência guiada de micro-operações** (`T0` a `T4`) que percorre as fases de **Busca → Decodificação → Execução**.
-- **Explicações contextuais**: tocar em qualquer componente ou barramento exibe sua função, entradas, saídas e fase do ciclo no card de contexto.
-- **Interface em Material Design 3 (tema escuro)**, com barra flutuante de controles, zoom, arraste e painéis de inspeção.
-
-O objetivo pedagógico é tornar **visível** o que normalmente é abstrato: qual registrador é escrito, por qual barramento o dado passa e qual sinal de controle autoriza cada transferência.
+- **Esquemático vetorial (SVG nativo 1:1):** reprodução em escala vetorial exata do circuito `main_board` do Logisim-Evolution (`1151 × 441` unidades com grade pontilhada e linhas ortogonais).
+- **Modelo computacional desacoplado (`/* MODEL:START */` .. `/* MODEL:END */`):** motor lógico síncrono puro em JavaScript, sem dependência do DOM, permitindo testes unitários e de integração em ambientes headless (Node.js via [`test_model.js`](../test_model.js)).
+- **Dois modos de operação complementares:**
+  - **Modo Manual:** fidelidade 1:1 à bancada do circuito `.circ`, onde o aluno atua como a Unidade de Controle comutando pinos de controle e gerando pulsos de clock.
+  - **Modo Automático:** simulação de ciclo temporal completo com Unidade de Controle baseada em autômato de estados ($T_0$ a $T_6$), decodificação de instruções (ISA), hierarquia de memória cache L1 e parada por instrução `HLT`.
+- **Painel em tempo real de sinais de controle:** bloco integrado ao canvas SVG com 12 LEDs de status e decodificação contínua.
+- **Cache L1 didática (mapeamento direto):** 4 linhas × 2 bytes com rastreamento de hits, misses e latência acumulada de ciclos.
+- **Inspetor de memória RAM de 256 bytes:** paginação hexadecimal em blocos de 16 bytes (`00h` a `FFh`) com campo de busca/salto e janela deslizante de 4 bytes sincronizada no esquemático SVG.
 
 ---
 
-## 3. Arquitetura modelada
+## 3. Arquitetura modelada e modos de operação
 
-### 3.1 Diagrama de blocos (caminho de dados)
+### 3.1 Diagrama do caminho de dados e controle
 
 ```mermaid
-flowchart LR
-    CLK["CLOCK"]
-    CTRL["Pinos de Controle (UC manual)"]
-    PC["PC"]
-    MAR["MAR"]
-    RAM["RAM 256 x 8"]
-    MBR["MBR"]
-    IR["IR"]
-    DEC["Decoder UC"]
-    ULA["ULA (somador)"]
-    AC["AC"]
-    MON["Monitor"]
-    KBD["Teclado"]
+flowchart TD
+    CLK["CLOCK Síncrono (1 Hz / Manual)"]
+    UC["Unidade de Controle (UC) / Pinos Manuais"]
+    PC["PC (Contador de Programa - 8b)"]
+    MAR["MAR (Registrador de Endereço - 8b)"]
+    CACHE["Cache L1 Didática (4L × 2B - Direto)"]
+    RAM["RAM Principal (256 × 8b)"]
+    MBR["MBR (Buffer de Dados - 8b)"]
+    IR["IR (Registrador de Instrução - 8b)"]
+    DEC["Decodificador UC (ISA 8b)"]
+    ULA["ULA / Somador (ADD / PASS)"]
+    AC["AC (Acumulador de Trabalho - 8b)"]
+    SAIDA["SAIDA (Registrador de Saída - 8b)"]
+    MON["Monitor (Bin / Hex / Dec / ASCII)"]
+    KBD["Teclado (Entrada E/S - 8b)"]
 
-    PC -->|"Endereços 8b"| MAR
-    MAR -->|"Endereços 8b"| RAM
-    RAM -->|"Dados 8b"| MBR
-    MBR -->|"Dados 8b"| IR
+    PC -->|"Barramento Endereços [8b]"| MAR
+    MAR --> CACHE
+    CACHE <-->|"Write-Through / Miss"| RAM
+    CACHE -->|"Barramento Dados [8b]"| MBR
+    MBR -->|"Instrução"| IR
     IR --> DEC
+    DEC -.->|"Sinais de Controle"| UC
     MBR -->|"Operando A"| ULA
-    AC -->|"Operando B (realimentação)"| ULA
-    ULA -->|"A + B"| AC
-    AC --> MON
-    KBD -->|"Dados 8b"| RAM
-    CLK -.->|"clk"| PC & MAR & MBR & IR & AC
-    CTRL -.->|"WE / OE / ct"| PC & MAR & RAM & MBR & IR & AC
+    AC -->|"Realimentação B"| ULA
+    ULA -->|"Resultado"| AC
+    AC -->|"Instrução OUT"| SAIDA
+    AC -->|"Modo Manual"| MON
+    SAIDA -->|"Modo Automático"| MON
+    KBD -->|"Caminho E/S"| RAM
+    KBD -->|"Instrução IN"| AC
+    CLK -.->|"Rede de Clock"| PC & MAR & MBR & IR & AC & SAIDA
 ```
 
-### 3.2 Correspondência com os subsistemas de Von Neumann
-
-| Subsistema | Representação no simulador |
-| :--- | :--- |
-| **CPU — Unidade de Controle** | Pinos de controle (`MAR_Load`, `RAM_Read_MBR`, `IR_Load`, `PC_Inc`, `AC_Exec`) + bloco `Decoder UC` |
-| **CPU — Caminho de dados** | Registradores `PC`, `MAR`, `MBR`, `IR`, `AC` e a `ULA` |
-| **Memória principal** | `RAM 256 × 8` (instruções e dados no mesmo espaço) |
-| **Barramento do sistema** | Barramentos de controle, endereços e dados |
-| **E/S** | `Teclado` (entrada) e `Monitor` (saída) |
-
----
-
-## 4. Elementos do circuito
-
-### 4.1 Registradores
-
-| Elemento | Largura | Entradas | Saída | Sinal de habilitação | Papel |
-| :--- | :---: | :--- | :--- | :--- | :--- |
-| **PC** (*Program Counter*) | 8 bits | `clk`, `ct` | `Q` → `MAR.D` | `PC_Inc` | Guarda o endereço da próxima instrução; é incrementado após a busca. |
-| **MAR** (*Memory Address Register*) | 8 bits | `D` (do PC), `WE`, `clk` | `Q` → `RAM.A` | `MAR_Load` | Apresenta o endereço à memória pelo barramento de endereços. |
-| **MBR** (*Memory Buffer Register*) | 8 bits | `D` (da RAM), `WE`, `clk` | `Q` → `IR` e `ULA` | `RAM_Read_MBR` | Retém o byte lido da memória e o distribui internamente. |
-| **IR** (*Instruction Register*) | 8 bits | `D` (do MBR), `WE`, `clk` | `Q` → `Decoder UC` | `IR_Load` | Armazena a instrução buscada para decodificação. |
-| **AC** (*Accumulator*) | 8 bits | `D` (da ULA), `WE`, `clk` | `Q` → `Monitor` e `ULA` | `AC_Exec` | Registrador de trabalho que guarda resultados da ULA. |
-
-Os valores de `MAR`, `IR`, `MBR` e `AC` aparecem em hexadecimal na caixa cinza acima de cada registrador, como no Logisim. O `PC` exibe seu valor dentro do próprio bloco.
-
-### 4.2 Unidades funcionais, memória e E/S
-
-| Elemento | Descrição |
-| :--- | :--- |
-| **ULA** | Somador de 8 bits. Entrada A ← `MBR`; entrada B ← `AC` (realimentação). A saída `A + B` alimenta `AC.D`. O resultado é truncado em 8 bits (módulo 256). |
-| **Decoder UC** | Bloco que exibe a interpretação do conteúdo do `IR`: `NOP (00h)` quando o `IR` vale `00h` e `ADD/LOAD XXh` nos demais casos. Representa conceitualmente a tradução CISC → micro-operações RISC. |
-| **RAM 256 × 8** | Memória principal. No painel interno, a célula apontada pelo `MAR` fica destacada em fundo escuro. Programa de teste padrão: `00h = 05h`, `01h = 03h`, `02h = 0Ah`, `03h = 00h`. |
-| **Teclado** | Pino de entrada de 8 bits (padrão `00000101` = `05h`). Ao clicar, grava seu valor em `RAM[MAR]`. |
-| **Monitor** | Pino de saída de 8 bits que exibe em binário o valor atual do `AC`. |
-| **CLOCK** | Fonte de sincronização. Cada clique gera uma borda de subida e a rede de clock pisca em verde claro. |
-
-### 4.3 Pinos de controle (barramento de controle)
-
-| Pino | Destino no circuito | Micro-operação habilitada (na borda do clock) |
-| :--- | :--- | :--- |
-| `MAR_Load` | `WE` do MAR | `MAR ← PC` |
-| `RAM_Read_MBR` | `OE` da RAM e `WE` do MBR | `MBR ← RAM[MAR]` |
-| `IR_Load` | `WE` do IR | `IR ← MBR` |
-| `PC_Inc` | `ct` do PC | `PC ← PC + 1` |
-| `AC_Exec` | `WE` do AC | `AC ← AC + MBR` |
-
----
-
-## 5. Barramentos e convenção de cores
-
-| Barramento | Largura | Direção | Trajeto no esquemático | Cor |
-| :--- | :---: | :--- | :--- | :--- |
-| **Clock** | 1 bit | CLOCK → registradores | `CLOCK → clk` de PC, MAR, MBR, IR e AC | Verde escuro; pisca em verde claro a cada pulso |
-| **Controle** | 1 bit por sinal | UC → componentes | Pinos de controle → `WE` / `OE` / `ct` | Verde escuro (`0`) / verde claro (`1`) |
-| **Endereços** | 8 bits | Unidirecional (CPU → memória) | `PC → MAR → RAM.A` | Preto espesso |
-| **Dados** | 8 bits | Entre memória, registradores e ULA | `RAM → MBR → IR / ULA → AC → Monitor`; `Teclado → RAM` | Preto espesso |
-
-A convenção de verdes segue o Logisim-Evolution: **verde claro = nível lógico `1`** e **verde escuro = nível lógico `0`**. Os botões de filtro na barra superior (`Todos`, `Clock`, `Controle (WE/OE)`, `Endereços (8b)`, `Dados / ULA (8b)`) esmaecem as demais camadas para isolar um barramento.
-
----
-
-## 6. Modelo de execução (semântica do clock)
-
-O motor reproduz o comportamento de **registradores sensíveis à borda de subida**. A cada pulso de clock:
-
-1. **Captura**: os valores atuais de `PC`, `MAR`, `MBR` e `AC` são lidos *antes* de qualquer escrita.
-2. **Atualização**: cada registrador com o sinal de habilitação em `1` recebe o novo valor, calculado a partir dos valores capturados.
+### 3.2 Modos de operação didáticos
 
 ```text
-se MAR_Load     = 1  →  MAR ← PC(anterior)
-se RAM_Read_MBR = 1  →  MBR ← RAM[MAR(anterior)]
-se IR_Load      = 1  →  IR  ← MBR(anterior)
-se PC_Inc       = 1  →  PC  ← PC(anterior) + 1
-se AC_Exec      = 1  →  AC  ← AC(anterior) + MBR(anterior)
+┌───────────────────────────────────┬───────────────────────────────────┐
+│           MODO MANUAL             │          MODO AUTOMÁTICO          │
+├───────────────────────────────────┼───────────────────────────────────┤
+│ • Fiel ao arquivo neocore_cpu.circ│ • UC automática com tabela FSM    │
+│ • Estudante atua como a UC        │ • Decodificação de Opcode IR[7:4] │
+│ • Acionamento manual de pinos     │ • Estados T0 a T6 automáticos     │
+│ • T2 pertence à fase FETCH        │ • T3 executa fase DECODE pura     │
+│ • Monitor reflete o Acumulador AC │ • Monitor reflete o reg. SAIDA    │
+│ • Decodificação humana ativa      │ • Suporte a Cache L1 e HLT        │
+└───────────────────────────────────┴───────────────────────────────────┘
 ```
-
-Com isso, várias micro-operações podem ocorrer **no mesmo pulso** sem interferir entre si. É o caso de `T2`, em que `IR ← MBR` e `PC ← PC + 1` acontecem simultaneamente, exatamente como em hardware síncrono real.
-
-> [!IMPORTANT]
-> Ligar um pino de controle **não** altera nenhum registrador. A transferência só acontece quando o **CLOCK** é pulsado. Essa é a principal ideia a ser fixada pelo aluno: *sinais de controle autorizam, o clock executa*.
 
 ---
 
-## 7. Passos produzidos pela simulação guiada (T0–T4)
+## 4. Conjunto de instruções (ISA 8-bit)
 
-O botão **Próximo Passo** executa a sequência abaixo. Em `T0`–`T3`, o simulador configura os pinos de controle e dispara um pulso de clock. `T4` resume um segundo ciclo completo de uma só vez.
+No Modo Automático, a CPU implementa um conjunto de instruções com formato unificado de 8 bits:
+- **Nibble Superior `IR[7:4]`**: Código de Operação (*Opcode* — 4 bits).
+- **Nibble Inferior `IR[3:0]`**: Operando imediato ($n$) ou endereço direto de memória ($addr$).
 
-### 7.1 Visão temporal
+| Opcode | Mnemônico | Operando | RTL (*Register Transfer Language*) | Ciclos ($T$) | Descrição Funcional |
+| :---: | :---: | :---: | :--- | :---: | :--- |
+| `0x0` | **ADDI** | $n$ | `AC ← AC + n` | 5 | Soma imediata: adiciona valor de 0 a 15 ao Acumulador. |
+| `0x1` | **LDI** | $n$ | `AC ← n` | 5 | Carga imediata: carrega valor imediato diretamente no AC. |
+| `0x2` | **LDA** | $addr$ | `AC ← RAM[addr]` | 7 | Carga direta: lê byte da RAM (00h–0Fh) para o AC. |
+| `0x3` | **ADD** | $addr$ | `AC ← AC + RAM[addr]` | 7 | Soma com memória: soma operando da RAM ao AC. |
+| `0x4` | **STA** | $addr$ | `RAM[addr] ← AC` | 7 | Armazenamento: grava o valor do AC na RAM (Write-Through). |
+| `0x5` | **OUT** | — | `SAIDA ← AC` | 5 | Saída de dados: envia o valor do AC ao registrador de saída. |
+| `0x6` | **IN** | — | `AC ← TECLADO` | 5 | Entrada de dados: lê o byte do Teclado para o AC. |
+| `0xF` | **HLT** | — | `HALT ← 1` | 5 | Parada da máquina: cessa a geração de pulsos de clock. |
+| *Outro*| **NOP** | — | *(nenhuma)* | 5 | Operação nula / não reconhecida: avança o contador PC. |
+
+---
+
+## 5. Elementos do circuito e subsistemas
+
+### 5.1 Registradores
+
+| Registrador | Bits | Função no Circuito | Sinal de Controle |
+| :--- | :---: | :--- | :--- |
+| **PC** (*Program Counter*) | 8 | Aponta o endereço da próxima instrução; incrementa sequencialmente. | `PC_Inc` |
+| **MAR** (*Memory Address Register*) | 8 | Mantém o endereço apresentado ao barramento de endereços da memória. | `MAR_Load` |
+| **MBR** (*Memory Buffer Register*) | 8 | Buffer bidirecional entre o barramento de dados e os blocos internos. | `RAM_Read_MBR` / `MBR_Load` |
+| **IR** (*Instruction Register*) | 8 | Retém a instrução buscada para decodificação pela UC. | `IR_Load` |
+| **AC** (*Acumulador*) | 8 | Registrador principal de trabalho aritmético da ULA. | `AC_Exec` / `AC_Load` |
+| **SAIDA** | 8 | Desacopla o Acumulador do display externo (instrução `OUT`). | `SAIDA_Load` |
+
+### 5.2 Unidades funcionais e E/S
+
+- **ULA (Unidade Lógica e Aritmética):** executa adição de 8 bits (`ADD`: $A + B$) com realimentação do AC, ou transferência direta (`PASS`: $A$).
+- **RAM Principal (256 × 8):** endereçamento linear de 8 bits (`00h` a `FFh`). As 4 primeiras posições padrão iniciam carregadas com `[05h, 03h, 0Ah, 00h]`.
+- **Monitor:** display de saída multifuncional exibindo simultaneamente representação em **Binário (8 bits), Hexadecimal, Decimal e caractere ASCII correspondente**.
+- **Teclado:** pino de entrada de 8 bits para injeção manual ou instrução `IN`. Permite gravação direta em `RAM[MAR]` para teste de bancada.
+
+---
+
+## 6. Barramentos, painel de sinais da UC e convenção visual
+
+### 6.1 Camadas de barramento
+
+| Camada | Trajeto no Esquemático | Convenção Visual |
+| :--- | :--- | :--- |
+| **Rede de Clock** | CLOCK $\rightarrow$ PC, MAR, MBR, IR, AC, SAIDA | Linha verde escura; pulso brilha em verde claro (`#00d800`). |
+| **Barramento de Controle** | UC $\rightarrow$ Linhas de habilitação (WE/OE/ct) | Verde escuro (`0`) / Verde claro (`1`). |
+| **Barramento de Endereços** | PC $\rightarrow$ MAR $\rightarrow$ RAM / Cache | Linha preta espessa; destaca em azul durante transferências de endereço. |
+| **Barramento de Dados** | RAM $\leftrightarrow$ MBR $\rightarrow$ IR / ULA $\leftrightarrow$ AC $\rightarrow$ SAIDA | Linha marrom espessa; destaca em vermelho vivo durante tráfego de dados. |
+
+### 6.2 Painel integrado de sinais da UC (Mini-HUD no Canvas SVG)
+
+Localizado à esquerda do circuito (`x=8..172, y=108..264`), o mini-HUD permanece visível durante toda a simulação sem ser afetado por filtros de camadas, monitorando **12 sinais com LEDs dedicados**:
+
+```text
+┌───────────────────────────────────────┐
+│ SINAIS DA UC              T0·FETCH    │
+│ MAR ← PC                              │
+├───────────────────────────────────────┤
+│ ● MAR_Load   ● PC_Inc                 │
+│ ○ RAM_Read   ○ AC_Load                │
+│ ○ RAM_Write  ○ ULA:IDLE               │
+│ ○ MBR_Load   ○ SAIDA_Ld               │
+│ ○ MBR←AC     ○ IN_Read                │
+│ ○ IR_Load    ○ HALT                   │
+├───────────────────────────────────────┤
+│ Ativos: MAR_Load                      │
+└───────────────────────────────────────┘
+```
+
+---
+
+## 7. Modelo de execução (semântica síncrona do clock)
+
+O motor do simulador adota **semântica síncrona estrita por borda de subida** (fiel aos flip-flops D do Logisim):
+
+1. **Amostragem Prévia:** Todos os registradores anteriores (`prevRegs`) e pinos são lidos simultaneamente.
+2. **Atualização Atômica:** Nenhum registrador tem seu valor intermediário propagado durante o mesmo ciclo. Se múltiplos sinais forem ativados (como em $T_2$: `IR ← MBR` e `PC ← PC + 1`), a atualização ocorre em paralelo sem corrida de dados.
+3. **Animação Visual:** Registradores alterados disparam animação de realce dourado (`.reg-flash`).
+
+---
+
+## 8. Hierarquia de memória e simulação da Cache L1 didática
+
+Para cobrir a fundamentação teórica de localidade e hierarquia de memória, o simulador incorpora uma memória cache didática unificada:
+
+- **Topologia:** Mapeamento Direto (*Direct Mapped*), 4 Linhas × 2 Bytes (capacidade de 8 bytes).
+- **Campos do Endereço:**
+  $$\text{Endereço (8b)} = \underbrace{\text{Tag [7:3]}}_{5\text{ bits}} \;\Vert\; \underbrace{\text{Índice [2:1]}}_{2\text{ bits}} \;\Vert\; \underbrace{\text{Offset [0]}}_{1\text{ bit}}$$
+- **Políticas:**
+  - **Leitura:** Latência de **1 ciclo** em caso de *Hit*; **4 ciclos** em caso de *Miss* (traz bloco de 2 bytes da RAM).
+  - **Escrita (STA):** Política *Write-Through* (atualiza RAM imediatamente) com *No-Write-Allocate*.
+- **Métricas em Tempo Real:** Total de leituras, contador de hits/misses, taxa percentual de acerto e custo acumulado de barramento.
+
+---
+
+## 9. Passos produzidos pela simulação guiada
+
+### 9.1 Decomposição temporal (T-states)
 
 ```mermaid
 sequenceDiagram
-    participant UC as UC / Pinos
     participant PC
     participant MAR
-    participant RAM
+    participant Cache as Cache L1 / RAM
     participant MBR
     participant IR
+    participant UC as Decodificador UC
     participant ULA
     participant AC
 
-    Note over UC,AC: T0 · FETCH A
-    UC->>MAR: MAR_Load = 1 + CLOCK
-    PC->>MAR: endereço 00h (barramento de endereços)
-    Note over UC,AC: T1 · FETCH B
-    UC->>MBR: RAM_Read_MBR = 1 + CLOCK
-    RAM->>MBR: RAM[00h] = 05h (barramento de dados)
-    Note over UC,AC: T2 · DECODE
-    UC->>IR: IR_Load = 1 e PC_Inc = 1 + CLOCK
-    MBR->>IR: 05h
-    PC->>PC: 00h → 01h
-    Note over UC,AC: T3 · EXECUTE
-    UC->>AC: AC_Exec = 1 + CLOCK
-    MBR->>ULA: A = 05h
-    AC->>ULA: B = 00h
-    ULA->>AC: 05h
-    Note over UC,AC: T4 · CICLO 2
-    RAM->>AC: busca RAM[01h] = 03h e soma → AC = 08h
+    Note over PC,AC: T0 · FETCH A (Endereçamento)
+    PC->>MAR: MAR ← PC
+    Note over PC,AC: T1 · FETCH B (Leitura Memória)
+    Cache->>MBR: MBR ← Memória[MAR] (Hit: 1c / Miss: 4c)
+    Note over PC,AC: T2 · FETCH C (Carga do IR e PC+1)
+    MBR->>IR: IR ← MBR
+    PC->>PC: PC ← PC + 1
+    Note over PC,AC: T3 · DECODE (Decodificação Pura)
+    IR->>UC: Decodifica Opcode IR[7:4] (Sem transferência)
+    Note over PC,AC: T4..T6 · EXECUTE (Execução)
+    MBR->>ULA: ULA opera com operando
+    ULA->>AC: AC atualizado conforme instrução
 ```
 
-### 7.2 Sinais de controle por passo
+---
 
-| Passo | Fase | Micro-operação (RTL) | `MAR_Load` | `RAM_Read_MBR` | `IR_Load` | `PC_Inc` | `AC_Exec` |
-| :---: | :--- | :--- | :---: | :---: | :---: | :---: | :---: |
-| **T0** | Busca A | `MAR ← PC` | **1** | 0 | 0 | 0 | 0 |
-| **T1** | Busca B | `MBR ← RAM[MAR]` | 0 | **1** | 0 | 0 | 0 |
-| **T2** | Decodificação | `IR ← MBR`; `PC ← PC + 1` | 0 | 0 | **1** | **1** | 0 |
-| **T3** | Execução | `AC ← AC + MBR` | 0 | 0 | 0 | 0 | **1** |
-| **T4** | 2º ciclo (resumido) | `MAR ← 01h`; `MBR ← RAM[01h]`; `IR ← MBR`; `PC ← 02h`; `AC ← RAM[00h] + RAM[01h]` | 0 | 0 | 0 | 0 | **1** |
+## 10. Interface do simulador e controles
 
-### 7.3 Estado dos registradores após cada passo (programa padrão)
+```text
+┌────────────────────────────────────────────────────────────────────────┐
+│  BARRA SUPERIOR: Filtros de Barramento | Baixar Circuito | Seletor Demos│
+├────────────────────────────────────────────────────────────────────────┤
+│                                                                        │
+│                      CANVAS SVG INTERATIVO (1:1)                       │
+│      [Mini-HUD UC]     [MAR] [Cache L1] [RAM 256x8]     [Teclado]      │
+│      [Pinos Controle]  [PC]  [IR] [Decoder]  [ULA]      [Monitor]      │
+│      [CLOCK]                 [MBR]           [AC]       [SAIDA]        │
+│                                                                        │
+├──────────────────────────────────────┬─────────────────────────────────┤
+│  CARD DE CONTEXTO DO CICLO           │  BARRA DE CONTROLE FLUTUANTE    │
+│  • Título da fase e RTL ativo        │  • Painéis | Modo Explicação    │
+│  • Explicação conceitual detalhada   │  • Zoom (+/- / 100%) | Velocidade│
+│  • Barra de progresso do ciclo       │  • Próximo Passo | Auto-Clock   │
+└──────────────────────────────────────┴─────────────────────────────────┘
+```
 
-Valores partindo do estado de reset, com `RAM = [05h, 03h, 0Ah, 00h]`:
-
-| Após | PC | MAR | MBR | IR | AC | Monitor | Decoder UC |
-| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :--- |
-| Reset | 00h | 00h | 00h | 00h | 00h | `00000000` | `NOP (00h)` |
-| **T0** | 00h | 00h | 00h | 00h | 00h | `00000000` | `NOP (00h)` |
-| **T1** | 00h | 00h | **05h** | 00h | 00h | `00000000` | `NOP (00h)` |
-| **T2** | **01h** | 00h | 05h | **05h** | 00h | `00000000` | `ADD/LOAD 05h` |
-| **T3** | 01h | 00h | 05h | 05h | **05h** | `00000101` | `ADD/LOAD 05h` |
-| **T4** | **02h** | **01h** | **03h** | **03h** | **08h** | `00001000` | `ADD/LOAD 03h` |
-
-> [!NOTE]
-> Em `T0` o `MAR` recebe `00h`, que já era seu valor após o reset. A mudança não é numérica, mas o fio `MAR_Load` acende e a célula `00h` da RAM fica selecionada. Para tornar a transferência visível, edite a RAM ou execute um segundo ciclo (ver [Atividade 3](#10-atividades-sugeridas)).
-
-### 7.4 Comportamento contínuo (Auto-Clock)
-
-O botão **Auto-Clock (1 Hz)** executa um passo guiado a cada ~1,1 s. Ao terminar `T4`, a sequência volta para `T0` **sem resetar os registradores**. Por isso, o segundo giro continua a partir do estado atual: por exemplo, `MAR ← 02h` e `MBR ← RAM[02h] = 0Ah`. Para demonstrações, recomenda-se clicar em **Resetar CPU** antes de iniciar.
+- **Seletor de Demos:** Alterna instantaneamente entre as 4 configurações de teste.
+- **Gaveta de Painéis:** Exibe tabela de registradores (Hex/Bin/Dec), editor de RAM (00h–FFh), tabela da Cache L1 e log histórico de micro-operações com botão de cópia em Markdown.
+- **Bloqueio para Telas Pequenas:** Em smartphones (< 768 px), bloqueia interações e exibe tela informativa com botão de download do circuito e gerador local de QR Code para abertura em Desktop/Tablet.
 
 ---
 
-## 8. Interface do simulador
+## 11. Programas de demonstração pré-carregados (Demos 0 a 3)
 
-### 8.1 Mapa da tela
-
-| Região | Conteúdo |
-| :--- | :--- |
-| **Barra superior** | Título, filtros de barramento e botão **Baixar neocore_cpu.circ**. |
-| **Canvas** | Esquemático interativo ocupando toda a área útil (arrastar e zoom). |
-| **Card de contexto** (inferior esquerdo) | Explicação do passo atual do ciclo **ou** do componente tocado, com barra de progresso azul. |
-| **Barra flutuante (dock)** | Linha superior: `Painéis`, `Modo Explicação`, `Ajustar` e zoom (`−` / `%` / `+`). Linha inferior: chip da etapa (ex.: `T0 · FETCH A`), `Próximo Passo`, `Auto-Clock (1 Hz)`, `Pulso Manual de Clock`, `Resetar CPU`. O botão de seta minimiza a linha de execução. |
-| **Painéis** (gaveta lateral) | Lista do ciclo `T0`–`T4` (clique para saltar), tabela de registradores (Hex, Binário, Decimal, sinal de controle), saída prevista da ULA, edição da RAM `00h`–`03h` e do Teclado. |
-
-### 8.2 Interações no canvas
-
-| Ação | Resultado |
-| :--- | :--- |
-| Clicar em `PC`, `MAR`, `MBR`, `IR`, `Decoder UC`, `RAM`, `ULA`, `AC`, `Monitor` ou em um barramento | O elemento recebe destaque azul e sua ficha técnica aparece no card de contexto (tipo, descrição, entradas/saídas, fase e, nos registradores, o valor atual). |
-| Clicar em um pino de controle | Alterna o nível lógico (`0` ↔ `1`) e exibe a explicação do pino. |
-| Clicar no **CLOCK** | Gera um pulso: aplica as micro-operações habilitadas. |
-| Clicar no **Teclado** | Grava o valor do teclado em `RAM[MAR]`. |
-| **Modo Explicação** ativo | Pinos, CLOCK e Teclado passam a apenas explicar, sem alterar o circuito. |
-| Arrastar / roda do mouse / pinça | Move e aproxima o circuito (25% a 600%), mantendo o vetor nítido. |
-
-### 8.3 Telas pequenas
-
-Em telas com largura ≤ 767 px (ou altura ≤ 450 px com largura ≤ 950 px), a área de trabalho é insuficiente. O simulador exibe então um **aviso em tela cheia**, sem rolagem e com a aplicação inativa ao fundo. O aviso oferece dois botões: **Baixar o circuito** e **Exibir QR Code**, este para abrir o simulador em um tablet ou computador.
+| Demo | Modo | Programa na RAM | Descrição e Caso de Teste |
+| :---: | :---: | :--- | :--- |
+| **0** | **MANUAL** | `00: 05h`, `01: 03h`, `02: 0Ah`, `03: 00h` | **Caso do Relatório UniFECAF:** Simulação de bancada original. Soma iterativa de palavras via controle manual de pinos ($5 + 3 = 8$). |
+| **1** | **AUTO** | `00: 05h` (ADDI 5)<br>`01: 03h` (ADDI 3)<br>`02: 50h` (OUT)<br>`03: F0h` (HLT) | **Soma Imediata com Parada:** Demonstra decodificação automática, saída no Monitor (`08h`) e parada síncrona por `HLT`. |
+| **2** | **AUTO** | `00: 2Eh` (LDA 0Eh)<br>`01: 3Fh` (ADD 0Fh)<br>`02: 50h` (OUT)<br>`03: F0h` (HLT)<br>`0E: 07h`, `0F: 09h` | **Acesso Direto à Memória e Cache:** Carga e soma com operandos distantes na RAM, evidenciando ciclos $T_4..T_6$, cache misses e resultado `10h` (16 decimal). |
+| **3** | **AUTO** | `00: 60h` (IN)<br>`01: 01h` (ADDI 1)<br>`02: 50h` (OUT)<br>`03: F0h` (HLT)<br>`Teclado: 0Ah` | **Entrada/Saída Completa:** Lê dado do periférico Teclado (`0Ah`), incrementa `+1` na ULA e apresenta `0Bh` (11 decimal) no registrador de saída. |
 
 ---
 
-## 9. Roteiro didático: primeiros passos
+## 12. Roteiro didático: primeiros passos
 
-Sequência recomendada para a primeira utilização (aula, monitoria ou gravação do pitch).
+### Roteiro Recomendado para Demonstrações e Aulas (≈ 5 minutos)
 
-### Etapa 1 — Reconhecer o circuito (≈ 2 min)
-
-1. Abra o [`index.html`](../index.html) em um navegador de desktop ou tablet e clique em **Ajustar**.
-2. Ative **Modo Explicação** e toque, nesta ordem, em: `PC` → `MAR` → `RAM` → `MBR` → `IR` → `Decoder UC` → `ULA` → `AC` → `Monitor`. Leia a ficha de cada um no card de contexto.
-3. Use os filtros **Endereços (8b)** e **Dados / ULA (8b)** para visualizar separadamente cada barramento. Volte para **Todos**.
-4. Desative o **Modo Explicação**.
-
-### Etapa 2 — Executar o ciclo guiado (≈ 3 min)
-
-1. Clique em **Resetar CPU** e abra **Painéis** para acompanhar a tabela de registradores.
-2. Clique em **Próximo Passo** cinco vezes, observando a cada passo:
-   - qual pino de controle acende (verde claro);
-   - qual registrador muda de valor;
-   - qual barramento transporta a informação;
-   - o texto explicativo e o avanço da barra azul no card de contexto.
-3. Ao final, confira: `AC = 08h` e Monitor `00001000` (5 + 3 = 8).
-
-### Etapa 3 — Operar manualmente como a Unidade de Controle (≈ 4 min)
-
-Reproduza `T0`–`T3` **sem** o botão Próximo Passo, assumindo o papel da UC:
-
-| Passo | Ação manual |
-| :---: | :--- |
-| 1 | **Resetar CPU**. Ligue `MAR_Load` → clique no **CLOCK** → desligue `MAR_Load`. |
-| 2 | Ligue `RAM_Read_MBR` → **CLOCK** → desligue. Verifique `MBR = 05h`. |
-| 3 | Ligue `IR_Load` **e** `PC_Inc` → **CLOCK** → desligue ambos. Verifique `IR = 05h` e `PC = 01h`. |
-| 4 | Ligue `AC_Exec` → **CLOCK** → desligue. Verifique `AC = 05h`. |
-
-> [!TIP]
-> Esquecer de desligar um pino é um ótimo erro didático. Se `AC_Exec` permanecer em `1`, cada novo pulso soma o `MBR` ao `AC` outra vez (05h → 0Ah → 0Fh…). Isso evidencia por que a UC precisa **desativar** sinais ao fim de cada micro-operação.
-
-### Etapa 4 — Consolidar (≈ 1 min)
-
-Peça ao aluno que relacione cada passo à fase do ciclo e ao barramento usado, preenchendo a tabela da [Seção 7.2](#72-sinais-de-controle-por-passo) sem consultá-la.
+1. **Visão Espacial:** Abra [`index.html`](../index.html) no navegador, clique em **Ajustar** e selecione o filtro **Endereços** e depois **Dados** para visualizar o fluxo das trilhas.
+2. **Exploração Conceitual:** Ative o **Modo Explicação** e clique nos blocos `PC`, `MAR`, `Cache L1`, `Decoder UC` e `Monitor` para inspecionar os detalhes no Card de Contexto.
+3. **Execução Automática (Demo 1):** Selecione **Demo 1** no menu superior. Clique em **Executar Instrução** passo a passo ou ative **Auto-Clock (1 Hz)**. Observe no mini-HUD os LEDs acendendo e o ciclo transitar de `FETCH` para `DECODE` e `EXECUTE`.
+4. **Inspeção de Memória e Cache:** Abra o painel **Painéis** e observe a taxa de acerto da Cache L1 e o log estruturado de micro-operações.
 
 ---
 
-## 10. Atividades sugeridas
+## 13. Atividades práticas sugeridas
 
-| # | Atividade | Objetivo de aprendizagem |
-| :---: | :--- | :--- |
-| 1 | Em **Painéis**, altere `RAM[00h]` para `0Ah` e `RAM[01h]` para `14h`; execute `T0`–`T4`. Qual o valor final do `AC`? (Resposta: `1Eh` = 30.) | Relacionar o conteúdo da memória ao resultado. |
-| 2 | Coloque `RAM[00h] = FFh` e `RAM[01h] = 02h`. Qual o resultado? (Resposta: `01h`, pois a soma é truncada em 8 bits.) | Introduzir *overflow* e aritmética módulo 2⁸. |
-| 3 | Após `T4`, continue clicando em **Próximo Passo** e explique por que o `MAR` passa a valer `02h`. | Compreender o papel do `PC` no sequenciamento. |
-| 4 | Pulse o CLOCK com **todos** os pinos em `1` a partir do reset e explique cada valor resultante com base na [Seção 6](#6-modelo-de-execução-semântica-do-clock). | Entender a captura simultânea na borda de subida. |
-| 5 | Defina `Teclado = 2Ah`, leve `MAR` a `02h` (via `PC`) e clique no Teclado. Confirme a escrita em `RAM[02h]`. | Ilustrar E/S mapeada para a memória. |
-| 6 | Use o filtro **Controle (WE/OE)** e descreva o trajeto de `RAM_Read_MBR` até a RAM e o MBR. | Mostrar que um único sinal pode controlar dois componentes. |
+1. **Alteração de Operandos na RAM:** No Modo Automático (Demo 1), altere `RAM[00h]` para `15h` (instrução `LDI 5`). Execute um ciclo e comprove que o Acumulador recebe `05h` diretamente via carga imediata.
+2. **Experimentação com Falhas de Cache:** Na Demo 2, observe o contador de custo de barramento ao buscar dados em `0Eh` e `0Fh` e compare a latência de leituras consecutivas no mesmo bloco.
+3. **Detecção de Overflow de 8 bits:** Carregue `AC = FFh` e aplique `ADDI 1`. Verifique o retorno a `00h` com descarte de carry superior.
+4. **Simulação Manual de Bancada:** Selecione a **Demo 0**, abra a gaveta lateral e reproduza os passos guiados comutando apenas os pinos azuis do circuito.
 
 ---
 
-## 11. Relação com LOAD, ADD e STORE
+## 14. Rastreabilidade: Simulador Web × Circuito Logisim-Evolution
 
-O simulador demonstra o **caminho de dados** e a **sequência temporal** do ciclo. Nas instruções clássicas de máquinas de acumulador (Stallings), o formato `OPCODE [endereço]` exige ciclos extras de busca de operando. A tabela compara a sequência canônica com o que o simulador executa.
-
-| Instrução | Sequência canônica (RTL) | Representação no simulador |
-| :--- | :--- | :--- |
-| **Busca (comum a todas)** | `T0: MAR ← PC` · `T1: MBR ← M[MAR]` · `T2: IR ← MBR; PC ← PC + 1` | Implementada fielmente em `T0`–`T2`. |
-| **LOAD [addr]** | `T3: MAR ← IR(addr)` · `T4: MBR ← M[MAR]` · `T5: AC ← MBR` | Aproximada: com `AC = 00h`, `T3` produz `AC ← 0 + MBR`, equivalente a carregar o `MBR` no `AC`. |
-| **ADD [addr]** | `T3: MAR ← IR(addr)` · `T4: MBR ← M[MAR]` · `T5: AC ← AC + MBR` | Representada em `T3`/`T4`: a ULA soma `AC + MBR` e o resultado volta ao `AC`. |
-| **STORE [addr]** | `T3: MAR ← IR(addr)` · `T4: MBR ← AC` · `T5: M[MAR] ← MBR` | **Não implementada** como micro-operação: não há sinal `MEM_WRITE` nem caminho `AC → MBR → RAM`. A única escrita em memória disponível é `RAM[MAR] ← Teclado`. |
-
----
-
-## 12. Simplificações e limitações do modelo
-
-Para fins didáticos, o modelo adota as seguintes simplificações, que devem ser explicitadas no relatório e no pitch:
-
-1. **UC manual / sequenciada:** os sinais de controle são acionados pelo usuário ou pela sequência guiada. O `Decoder UC` apenas **exibe** uma interpretação do `IR` e não gera os sinais a partir do opcode.
-2. **Sem separação opcode/operando:** o byte buscado (`05h`) é carregado no `IR` e também usado como operando da ULA via `MBR`. Não há campo de endereço no `IR` nem o passo `MAR ← IR(addr)`.
-3. **Memória efetiva de 4 posições:** embora a RAM seja `256 × 8`, o simulador web usa `MAR mod 4`, ou seja, as células `00h`–`03h`. As demais aparecem fixas em `00h` no painel.
-4. **T4 resumido:** o segundo ciclo é aplicado em uma única etapa (`AC ← RAM[00h] + RAM[01h]`), sem mostrar os pulsos intermediários.
-5. **ULA apenas soma:** não há subtração, operações lógicas nem flags (*carry*, *zero*, *overflow*). O estouro é descartado.
-6. **Sem STORE:** não existe escrita `AC → memória` (ver Seção 11).
-
-Esses pontos são oportunidades para trabalhos futuros: uma UC com contador de tempo e decodificador real, formato de instrução `[opcode | endereço]`, sinal `MEM_WRITE` e ULA com seleção de operação e flags.
+| Recurso / Componente | Presente no `.circ`? | Categoria | Papel Didático |
+| :--- | :---: | :---: | :--- |
+| **PC, MAR, MBR, IR, AC** | **Sim** | Físico 1:1 | Registradores síncronos fundamentais de 8 bits. |
+| **RAM Principal (256x8)** | **Sim** | Físico 1:1 | Memória física com barramento unificado de dados e endereços. |
+| **ULA (Somador 8b)** | **Sim** | Físico 1:1 | Caminho aritmético de cálculo com realimentação do AC. |
+| **Pinos de Controle e Clock** | **Sim** | Físico 1:1 | Permitem controle manual de bancada no Logisim. |
+| **Decodificador da UC (ISA)** | **Não** | Extensão Web | No `.circ` é estático; na Web implementa a lógica combinacional completa da ISA em $T_3$. |
+| **FSM de Controle Automático** | **Não** | Extensão Web | Autômato de estados ($T_0$ a $T_6$) orquestrado pela tabela `UC_TABLE`. |
+| **Cache L1 Didática (4L × 2B)** | **Não** | Extensão Conceitual | Preenche a lacuna do relatório quanto à localidade e hierarquia de memória. |
+| **Registrador SAIDA (OUT)** | **Não** | Extensão Web | Desacopla a saída externa do registrador de trabalho AC. |
 
 ---
 
-## 13. Execução, compatibilidade e publicação
+## 15. Execução, testes automatizados e compatibilidade
 
-| Item | Detalhe |
-| :--- | :--- |
-| **Como abrir** | Abrir `index.html` diretamente no navegador ou servi-lo por HTTP (ex.: GitHub Pages). |
-| **Navegadores** | Versões recentes de Chrome, Edge, Firefox e Safari (usa `<dialog>`-free UI, `inert`, `dvh`, `backdrop-filter`). |
-| **Tamanho mínimo** | Largura ≥ 768 px (tablets e desktops). Em telas menores aparece o aviso em tela cheia. |
-| **Download do circuito** | O botão tenta `./src/neocore_cpu.circ` e depois a versão *raw* no GitHub. Se ambos falharem (por exemplo, ao abrir via `file://` sem internet), abre o link do GitHub em nova aba. |
-| **QR Code** | Gerado localmente (sem serviço externo) com a URL da página quando servida por HTTP(S); caso contrário, usa a URL do repositório. |
-| **Arquivo Logisim** | [`src/neocore_cpu.circ`](../src/neocore_cpu.circ), compatível com Logisim-Evolution v5.0.0. |
+### 15.1 Execução no navegador
+Basta abrir o arquivo [`index.html`](../index.html) em qualquer navegador web (Google Chrome, Mozilla Firefox, Microsoft Edge, Safari) diretamente pelo protocolo `file:///` ou através de servidores locais e plataformas estáticas (como o GitHub Pages).
+
+### 15.2 Testes automatizados (Node.js)
+O projeto inclui suíte de testes de regressão sem dependência de navegadores em [`test_model.js`](../test_model.js). Para executar:
+
+```bash
+node test_model.js
+```
+
+A suíte valida automaticamente:
+- Execução determinística da Demo 0 (Modo Manual) com reatividade de RAM;
+- Execução completa até parada das Demos 1, 2 e 3 no Modo Automático;
+- Comportamento de decodificação pura em $T_3$ (sem efeitos colaterais nos registradores);
+- Acesso à memória em endereços altos (`42h`, `80h`, `FFh`) sem wrap-around;
+- Redução de latência por acertos na Cache L1;
+- Conformidade da tabela declarativa da UC (`UC_TABLE`).
 
 ---
 
-## 14. Referências
+## 16. Referências
 
-STALLINGS, William. **Arquitetura e organização de computadores**. 10. ed. São Paulo: Pearson, 2017.
-
-TANENBAUM, Andrew S.; AUSTIN, Todd. **Organização estruturada de computadores**. 6. ed. São Paulo: Pearson, 2013.
-
-LOGISIM-EVOLUTION. **Logisim-evolution: digital logic design tool and simulator**. Versão 5.0.0. Disponível em: https://github.com/logisim-evolution/logisim-evolution. Acesso em: 1 nov. 2026.
-
+STALLINGS, William. **Arquitetura e organização de computadores**. 10. ed. São Paulo: Pearson, 2017.  
+TANENBAUM, Andrew S.; AUSTIN, Todd. **Organização estruturada de computadores**. 6. ed. São Paulo: Pearson, 2013.  
+LOGISIM-EVOLUTION. **Logisim-evolution: digital logic design tool and simulator**. Versão 5.0.0. Disponível em: <https://github.com/logisim-evolution/logisim-evolution>. Acesso em: nov. 2026.

@@ -2,8 +2,6 @@
 
 Documento técnico de especificação do conjunto de instruções (ISA), microarquitetura temporal (T-states), matriz de controle da Unidade de Controle (UC), hierarquia de memória cache didática e rastreabilidade entre o simulador web e o circuito Logisim-Evolution (`neocore_cpu.circ`).
 
----
-
 ## 1. Conjunto de Instruções (ISA 8-bit)
 
 A arquitetura opera com palavras de 8 bits em formato unificado:
@@ -23,8 +21,6 @@ A arquitetura opera com palavras de 8 bits em formato unificado:
 | *Outros* | **NOP** | *(qualquer)* | `(nenhuma)` | Instrução não implementada / NOP: avança sem alterar registradores, sinalizando alerta visual. |
 
 > **Nota Didática:** No operando de memória de 4 bits (`addr`), o alcance direto abrange os endereços `00h`–`0Fh` (16 bytes inferiores da RAM). As instruções imediatas originais do caso de teste do relatório (`05h` = ADDI 5 e `03h` = ADDI 3) mantêm 100% de compatibilidade binária.
-
----
 
 ## 2. Microarquitetura Temporal: T-states × Fase × RTL
 
@@ -49,8 +45,6 @@ A execução de qualquer instrução é decomposta em pulsos discretos de clock 
 | **IN** | `AC ← TECLADO` | — | — | 5 ($T_0..T_4$) |
 | **HLT** | `HALT ← 1` | — | — | 5 ($T_0..T_4$) |
 | **NOP** | `(sem operação)` | — | — | 5 ($T_0..T_4$) |
-
----
 
 ## 3. Matriz de Sinais de Controle (Estado × Opcode → Sinais)
 
@@ -90,8 +84,6 @@ A Unidade de Controle atua como uma máquina de estados finitos que gera os segu
 | **$T_4$ IN** | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | PASS | 0 | 1 | 0 |
 | **$T_4$ HLT** | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | - | 0 | 0 | 1 |
 
----
-
 ## 4. Hierarquia de Memória: Cache Didática L1
 
 Para preencher a lacuna teórica abordada no relatório (princípio da localidade espacial e temporal e hierarquia de memória), o simulador integra uma memória cache didática unificada:
@@ -116,8 +108,6 @@ Para preencher a lacuna teórica abordada no relatório (princípio da localidad
   - **Política No-Write-Allocate:** Em caso de *miss* de escrita, a gravação ocorre direto na RAM sem carregar o bloco na cache. Se houver *hit* na linha correspondente, o byte na cache também é atualizado para manter coerência. Escritas não alteram as estatísticas de acerto/falha de leitura.
 - **Métricas:** Total de leituras, hits, misses, taxa de acerto ($\% = \frac{\text{Hits}}{\text{Total}} \times 100$) e custo temporal total acumulado ($\text{Custo} = 1 \times \text{Hits} + 4 \times \text{Misses}$).
 
----
-
 ## 5. Mapeamento de Rastreabilidade: Simulador Web × Circuito Logisim
 
 | Bloco / Recurso no Simulador | Existe no `neocore_cpu.circ`? | Categoria | Observações Técnicas |
@@ -136,4 +126,3 @@ Para preencher a lacuna teórica abordada no relatório (princípio da localidad
 | **Unidade de Controle Automática (FSM)** | **Não** | Extensão Digital | No circuito `.circ`, a comutação é manual via pinos; no simulador web, opera como autômato de estados T0–T6. |
 | **Cache Didática L1 (4 linhas × 2B)** | **Não** | Conceitual | Bloco pedagógico inserido entre MAR e RAM para demonstração de localidade e custos de acesso à memória. |
 | **Registrador SAIDA (Porta OUT)** | **Não** | Extensão Digital | Registrador dedicado para isolamento de dados de saída, desacoplando o acumulador do display externo. |
-
