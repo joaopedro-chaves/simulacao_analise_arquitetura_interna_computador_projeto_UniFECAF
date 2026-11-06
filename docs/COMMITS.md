@@ -21,7 +21,7 @@ Este documento consolida o **registro formal de auditoria de versionamento** do 
 | :--- | :--- |
 | **Total de Commits Auditados** | `30 commits` |
 | **Commit Inicial (Root Commit)** | `d5a931c` (23/09/2026 12:01:53) |
-| **Commit Final Auditado** | `Em registro (Fase 6 — Alinhamento e Trabalhos Futuros)` |
+| **Commit Final Auditado** | `381089f` (06/11/2026 20:18:47) |
 | **Período Total de Desenvolvimento** | 23 de Setembro de 2026 a 06 de Novembro de 2026 (~6 semanas) |
 | **Padrão de Mensagens Adotado** | *Conventional Commits* (`feat:`, `docs:`, `refactor:`, `chore:`) |
 | **Estado do Working Tree** | Limpo (`working tree clean`, sincronizado com `main`) |
@@ -132,7 +132,7 @@ A tabela a seguir correlaciona os commits aos três grandes blocos de avaliaçã
 | **27** | `da7f471` | 2026-11-06 01:09:08 | João Pedro Chaves | `docs` | `docs: record commit 18270f0 in audit trail of docs/COMMITS.md` | 1 |
 | **28** | `d6d19f4` | 2026-11-06 15:03:53 | João Pedro Chaves | `fix` | `fix: correct RAM SVG table alignment and auto-collapse dock with drawer` | 13 |
 | **29** | `a23dca5` | 2026-11-06 15:05:11 | João Pedro Chaves | `docs` | `docs: record commit d6d19f4 in audit trail of docs/COMMITS.md` | 1 |
-| **30** | `Em registro` | 2026-11-06 20:20:00 | João Pedro Chaves | `docs` | `docs: synchronize theoretical report, captions, test runner header and README tree` | 4 |
+| **30** | `381089f` | 2026-11-06 20:18:47 | João Pedro Chaves | `docs` | `docs: synchronize theoretical report, captions, test runner header and README tree` | 5 |
 
 ---
 
@@ -460,12 +460,13 @@ A tabela a seguir correlaciona os commits aos três grandes blocos de avaliaçã
 
 ---
 
-### Commit 30 · `Em registro`
-- **Data e Hora:** 2026-11-06 20:20:00 -0300
+### Commit 30 · `381089f`
+- **Hash Completo:** `381089f935ce4909cf69d4aab1a5da4c4c77d3d8`
+- **Data e Hora:** 2026-11-06 20:18:47 -0300
 - **Autor:** `João Pedro Chaves <joaopedrochavescontato@gmail.com>`
 - **Mensagem:** `docs: synchronize theoretical report, captions, test runner header and README tree`
-- **Volume:** 4 arquivos alterados
-- **Arquivos:** `README.md`, `test_model.js`, `dist/Simulador de Arquitetura de Computadores - Parte teórica.md`, `docs/COMMITS.md`
+- **Volume:** 5 arquivos alterados (+443 inserções, -348 deleções)
+- **Arquivos:** `README.md`, `test_model.js`, `dist/Simulador de Arquitetura de Computadores - Parte teórica.md`, `docs/COMMITS.md`, exclusão de `dist/Simulador de Arquitetura de Computadores - Parte teórica - 86D04K2.md`
 - **Descrição Técnica:** Harmonização formal e aperfeiçoamento da documentação teórica e técnica:
   - **Relatório Teórico (`dist/`):** Correção da formatação de grandezas físicas para LaTeX inline ($\alpha, C, V, f$) na fórmula de dissipação dinâmica de potência CMOS ($P \approx \alpha \cdot C \cdot V^2 \cdot f$) na Seção 2.3; restauração do início do texto do sinal `ALU_Op` na Tabela 2 (Seção 4.4); padronização do título da Seção 5.4 e fechamento do parêntese da linha `T2` na Tabela 3; inclusão de legendas padronizadas em padrão ABNT/acadêmico para as Figuras 2 a 9 e formatação do título da Seção 6.3; renomeação da Seção 7 para *Conclusões, Limitações e Trabalhos Futuros* em conformidade com o Sumário e redação da Seção 7.3 abordando a evolução da PoC (expansão da ISA para 16 bits / 2 bytes com endereçamento das 256 posições da RAM, ampliação da ULA com lógica/subtração e registrador de flags de estado para desvios condicionais, segregação Harvard da Cache L1 em L1i/L1d e introdução de pipeline didático);
   - **Apresentação e Índice do Projeto (`README.md`):** Sincronização do nome canônico do relatório teórico sem o sufixo `- 86D04K2` na árvore de diretórios e nos critérios de avaliação; inclusão dos ficheiros `test_model.js` na raiz, e `script.js` e `styles.css` em `src/`; retificação do escopo de micro-operações para T0–T6 (Modo Automático) e T0–T7 (Modo Manual);
