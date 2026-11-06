@@ -1,7 +1,7 @@
 /**
  * test_model.js
  * Teste unitário e de conformidade do modelo puro da CPU NeoCore Tech 8-bit.
- * Extrai o trecho delimitado por /* MODEL:START * / e /* MODEL:END * / de index.html
+ * Extrai o trecho delimitado por /* MODEL:START * / e /* MODEL:END * / de src/script.js (com fallback para index.html)
  * e executa as 4 Demos do projeto, além de testes de limites e integridade da memória RAM.
  */
 
