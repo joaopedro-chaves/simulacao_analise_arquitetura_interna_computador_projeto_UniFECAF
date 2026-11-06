@@ -21,7 +21,7 @@ Este documento consolida o **registro formal de auditoria de versionamento** do 
 | :--- | :--- |
 | **Total de Commits Auditados** | `28 commits` |
 | **Commit Inicial (Root Commit)** | `d5a931c` (23/09/2026 12:01:53) |
-| **Commit Final Auditado** | `Em registro (Fase 6 — Correções Visuais e Ergonomia de UI)` |
+| **Commit Final Auditado** | `d6d19f4` (06/11/2026 15:03:53) |
 | **Período Total de Desenvolvimento** | 23 de Setembro de 2026 a 06 de Novembro de 2026 (~6 semanas) |
 | **Padrão de Mensagens Adotado** | *Conventional Commits* (`feat:`, `docs:`, `refactor:`, `chore:`) |
 | **Estado do Working Tree** | Limpo (`working tree clean`, sincronizado com `main`) |
@@ -130,7 +130,7 @@ A tabela a seguir correlaciona os commits aos três grandes blocos de avaliaçã
 | **25** | `6848801` | 2026-11-05 17:38:33 | João Pedro Chaves | `docs` | `docs: update audit trail and commit registry in docs/COMMITS.md` | 1 |
 | **26** | `18270f0` | 2026-11-06 01:07:40 | João Pedro Chaves | `docs` | `docs: synchronize theoretical report, architecture diagram and simulator documentation` | 9 |
 | **27** | `da7f471` | 2026-11-06 01:09:08 | João Pedro Chaves | `docs` | `docs: record commit 18270f0 in audit trail of docs/COMMITS.md` | 1 |
-| **28** | `Em registro` | 2026-11-06 15:05:00 | João Pedro Chaves | `fix` | `fix: correct RAM SVG table alignment and auto-collapse dock with drawer` | 13 |
+| **28** | `d6d19f4` | 2026-11-06 15:03:53 | João Pedro Chaves | `fix` | `fix: correct RAM SVG table alignment and auto-collapse dock with drawer` | 13 |
 
 ---
 
@@ -432,11 +432,12 @@ A tabela a seguir correlaciona os commits aos três grandes blocos de avaliaçã
 
 ---
 
-### Commit 28 · `Em registro`
-- **Data e Hora:** 2026-11-06 15:05:00 -0300
+### Commit 28 · `d6d19f4`
+- **Hash Completo:** `d6d19f4e4b392b1b1248a92e75306108d76822d2`
+- **Data e Hora:** 2026-11-06 15:03:53 -0300
 - **Autor:** `João Pedro Chaves <joaopedrochavescontato@gmail.com>`
 - **Mensagem:** `fix: correct RAM SVG table alignment and auto-collapse dock with drawer`
-- **Volume:** 13 arquivos alterados (+129 inserções, -669 deleções)
+- **Volume:** 13 arquivos alterados (+135 inserções, -671 deleções)
 - **Arquivos:** `index.html`, `src/styles.css`, `src/script.js`, `src/neocore_cpu.circ`, `docs/COMMITS.md`, exclusão de `src/Logarism-Evolution/` e imagens raster legadas
 - **Descrição Técnica:** Correções visuais e ergonômicas no simulador web e no esquemático da CPU didática NeoCore:
   - **Alinhamento do Componente RAM no SVG:** Ajuste geométrico da matriz de células do componente de memória RAM em `index.html` — ampliação da largura útil para 182px, espaçamento uniforme de 20px por coluna, inclusão das colunas de cabeçalho 04 a 07 (`x="14".."154"`), e alinhamento métrico uniforme de todas as linhas de dados (00h a 28h) com tags `<tspan x="...">`, eliminando sobreposições e desalinhamentos entre os bytes e a grade;
