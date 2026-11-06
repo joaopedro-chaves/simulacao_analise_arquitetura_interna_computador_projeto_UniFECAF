@@ -19,9 +19,9 @@ Este documento consolida o **registro formal de auditoria de versionamento** do 
 
 | Métrica de Auditoria | Valor / Especificação |
 | :--- | :--- |
-| **Total de Commits Auditados** | `26 commits` |
+| **Total de Commits Auditados** | `28 commits` |
 | **Commit Inicial (Root Commit)** | `d5a931c` (23/09/2026 12:01:53) |
-| **Commit Final Auditado** | `18270f0` (06/11/2026 01:07:40) |
+| **Commit Final Auditado** | `Em registro (Fase 6 — Correções Visuais e Ergonomia de UI)` |
 | **Período Total de Desenvolvimento** | 23 de Setembro de 2026 a 06 de Novembro de 2026 (~6 semanas) |
 | **Padrão de Mensagens Adotado** | *Conventional Commits* (`feat:`, `docs:`, `refactor:`, `chore:`) |
 | **Estado do Working Tree** | Limpo (`working tree clean`, sincronizado com `main`) |
@@ -127,6 +127,10 @@ A tabela a seguir correlaciona os commits aos três grandes blocos de avaliaçã
 | **22** | `8c1f18b` | 2026-11-05 14:23:58 | João Pedro Chaves | `docs` | `docs: remove project request and roadmap documentation files` | 4 |
 | **23** | `0c1f943` | 2026-11-05 14:33:58 | João Pedro Chaves | `docs` | `docs: add commit audit logs and update project documentation and structure` | 4 |
 | **24** | `549e304` | 2026-11-05 17:37:02 | João Pedro Chaves | `refactor` | `refactor: modularize web simulator code and add architectural model validation` | 15 |
+| **25** | `6848801` | 2026-11-05 17:38:33 | João Pedro Chaves | `docs` | `docs: update audit trail and commit registry in docs/COMMITS.md` | 1 |
+| **26** | `18270f0` | 2026-11-06 01:07:40 | João Pedro Chaves | `docs` | `docs: synchronize theoretical report, architecture diagram and simulator documentation` | 9 |
+| **27** | `da7f471` | 2026-11-06 01:09:08 | João Pedro Chaves | `docs` | `docs: record commit 18270f0 in audit trail of docs/COMMITS.md` | 1 |
+| **28** | `Em registro` | 2026-11-06 15:05:00 | João Pedro Chaves | `fix` | `fix: correct RAM SVG table alignment and auto-collapse dock with drawer` | 13 |
 
 ---
 
@@ -414,6 +418,31 @@ A tabela a seguir correlaciona os commits aos três grandes blocos de avaliaçã
   - **Diagrama da Arquitetura (Figura 1):** Geração de SVG autônomo vetorial (`dist/figura1_arquitetura_neocore.svg`) com codificação cromática rigorosa dos barramentos (endereços em azul contínuo, dados em verde contínuo incluindo Teclado, controle e clock em tracejado laranja/vermelho);
   - **Simulador Web (Parte B):** Atualização da lista de download `CIRC_URLS` priorizando `./src/neocore_cpu.circ` e raw URL do GitHub com fallback; revisão dos cartões de inspeção contextual (`COMPONENT_INFO.MBR`, `ULA`, `TECLADO`, `CLOCK`, `BUS_CLOCK`, `BUS_DATA`);
   - **Documentação e Validação:** Atualização do `docs/SIMULADOR.md`, `docs/ROTEIRO.md` e `docs/ESPECIFICACAO.md`; execução da suíte de 29 testes automatizados em Node.js (`test_model.js`) com 100% de aprovação (29/29) e integridade do modelo computacional intacta.
+
+---
+
+### Commit 27 · `da7f471`
+- **Hash Completo:** `da7f471a62fc3d2fb39ba9f31b3c54ab4fd19ace`
+- **Data e Hora:** 2026-11-06 01:09:08 -0300
+- **Autor:** `João Pedro Chaves <joaopedrochavescontato@gmail.com>`
+- **Mensagem:** `docs: record commit 18270f0 in audit trail of docs/COMMITS.md`
+- **Volume:** 1 arquivo alterado (+6 inserções, -5 deleções)
+- **Arquivos:** `docs/COMMITS.md`
+- **Descrição Técnica:** Registro e fechamento do hash de Commit 26 na trilha formal de auditoria acadêmica.
+
+---
+
+### Commit 28 · `Em registro`
+- **Data e Hora:** 2026-11-06 15:05:00 -0300
+- **Autor:** `João Pedro Chaves <joaopedrochavescontato@gmail.com>`
+- **Mensagem:** `fix: correct RAM SVG table alignment and auto-collapse dock with drawer`
+- **Volume:** 13 arquivos alterados (+129 inserções, -669 deleções)
+- **Arquivos:** `index.html`, `src/styles.css`, `src/script.js`, `src/neocore_cpu.circ`, `docs/COMMITS.md`, exclusão de `src/Logarism-Evolution/` e imagens raster legadas
+- **Descrição Técnica:** Correções visuais e ergonômicas no simulador web e no esquemático da CPU didática NeoCore:
+  - **Alinhamento do Componente RAM no SVG:** Ajuste geométrico da matriz de células do componente de memória RAM em `index.html` — ampliação da largura útil para 182px, espaçamento uniforme de 20px por coluna, inclusão das colunas de cabeçalho 04 a 07 (`x="14".."154"`), e alinhamento métrico uniforme de todas as linhas de dados (00h a 28h) com tags `<tspan x="...">`, eliminando sobreposições e desalinhamentos entre os bytes e a grade;
+  - **Ergonomia e Espaçamento da Dock:** Resolução da sobreposição entre a Dock de controle e os painéis laterais de inspeção com muitas informações (`#drawer`). Em resoluções $\ge 961\text{px}$, a barra de controle é deslocada responsivamente (`left: calc(50vw - 330px)`, `max-width: calc(100vw - 690px)`); em resoluções $\le 960\text{px}$, a dock é ocultada enquanto o painel estiver aberto;
+  - **Recolhimento Automático Inteligente:** Implementação em `src/script.js` do recolhimento automático da dock ao expandir o painel de inspeção/editor e restauração ao fechar, proporcionando navegação desobstruída dos dados de inspeção sem perda de contexto operacional;
+  - **Refinamento do Circuito e Faxina de Arquivos:** Ajustes visuais nos rótulos de barramento e identificação da Cache L1 didática em `src/neocore_cpu.circ`; remoção da pasta redundante com erro tipográfico (`src/Logarism-Evolution/`) e de arquivos de imagem legados na raiz de `src/`.
 
 ---
 

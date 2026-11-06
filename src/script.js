@@ -1448,6 +1448,36 @@ function toggleDrawer() {
   const open = d.classList.toggle('open');
   document.body.classList.toggle('drawer-open', open);
   document.getElementById('btn-drawer').setAttribute('aria-pressed', String(open));
+
+  const dock = document.getElementById('dock');
+  const btnCollapse = document.getElementById('btn-dock-collapse');
+  if (open) {
+    // Ao abrir os painéis, recolhe a Dock para desobstruir a visualização
+    if (dock && !dock.classList.contains('collapsed')) {
+      dock.classList.add('collapsed');
+      dock.dataset.autoCollapsed = 'true';
+      if (btnCollapse) {
+        btnCollapse.setAttribute('aria-expanded', 'false');
+        if (btnCollapse.firstElementChild) {
+          btnCollapse.firstElementChild.style.transform = 'rotate(180deg)';
+        }
+      }
+    }
+  } else {
+    // Ao fechar os painéis, restaura a Dock se foi auto-recolhida
+    if (dock && dock.dataset.autoCollapsed === 'true') {
+      dock.classList.remove('collapsed');
+      delete dock.dataset.autoCollapsed;
+      if (btnCollapse) {
+        btnCollapse.setAttribute('aria-expanded', 'true');
+        if (btnCollapse.firstElementChild) {
+          btnCollapse.firstElementChild.style.transform = '';
+        }
+      }
+    }
+  }
+
+  updateDockMetrics();
   if (window.innerWidth > 960) {
     setTimeout(fitCanvas, 50);
   }
@@ -1455,6 +1485,7 @@ function toggleDrawer() {
 
 function toggleDock() {
   const dock = document.getElementById('dock');
+  delete dock.dataset.autoCollapsed;
   const collapsed = dock.classList.toggle('collapsed');
   const btn = document.getElementById('btn-dock-collapse');
   btn.setAttribute('aria-expanded', String(!collapsed));

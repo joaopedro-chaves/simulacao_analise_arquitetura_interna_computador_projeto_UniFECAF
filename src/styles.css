@@ -347,7 +347,7 @@ code,
   right: 0;
   bottom: 0;
   z-index: 12;
-  width: min(480px, 100vw);
+  width: min(660px, 100vw);
   overflow-y: auto;
   padding: 0 16px 24px;
   background-color: var(--md-sys-color-surface);
@@ -413,7 +413,14 @@ code,
 
 @media (min-width: 961px) {
   body.drawer-open .dock {
-    left: calc(50% - 240px);
+    left: calc(50vw - 330px);
+    max-width: calc(100vw - 690px);
+  }
+}
+
+@media (max-width: 960px) {
+  body.drawer-open .dock {
+    display: none;
   }
 }
 
@@ -501,7 +508,14 @@ code,
 
 @media (min-width: 961px) {
   body.drawer-open .ctx-card {
-    left: max(12px, calc(50% - 240px - var(--dock-w, 680px) / 2));
+    left: max(12px, calc(50vw - 330px - var(--dock-w, 680px) / 2));
+    max-width: calc(100vw - 690px);
+  }
+}
+
+@media (max-width: 960px) {
+  body.drawer-open .ctx-card {
+    display: none;
   }
 }
 
