@@ -21,7 +21,7 @@ Este documento consolida o **registro formal de auditoria de versionamento** do 
 | :--- | :--- |
 | **Total de Commits Auditados** | `26 commits` |
 | **Commit Inicial (Root Commit)** | `d5a931c` (23/09/2026 12:01:53) |
-| **Commit Final Auditado** | `Em registro (Fase 6 — Alinhamento Teórico-Prático)` |
+| **Commit Final Auditado** | `18270f0` (06/11/2026 01:07:40) |
 | **Período Total de Desenvolvimento** | 23 de Setembro de 2026 a 06 de Novembro de 2026 (~6 semanas) |
 | **Padrão de Mensagens Adotado** | *Conventional Commits* (`feat:`, `docs:`, `refactor:`, `chore:`) |
 | **Estado do Working Tree** | Limpo (`working tree clean`, sincronizado com `main`) |
@@ -402,12 +402,13 @@ A tabela a seguir correlaciona os commits aos três grandes blocos de avaliaçã
 
 ---
 
-### Commit 26 · `Em registro`
-- **Data e Hora:** 2026-11-06 01:05:00 -0300
+### Commit 26 · `18270f0`
+- **Hash Completo:** `18270f0a412c943389f6d504342fe02c3bb90da9`
+- **Data e Hora:** 2026-11-06 01:07:40 -0300
 - **Autor:** `João Pedro Chaves <joaopedrochavescontato@gmail.com>`
 - **Mensagem:** `docs: synchronize theoretical report, architecture diagram and simulator documentation`
-- **Volume:** 9 arquivos alterados
-- **Arquivos:** `dist/Simulador de Arquitetura de Computadores - Parte teórica - 86D04K2 (Revisão Final).md`, `dist/Simulador de Arquitetura de Computadores - Parte teórica - 86D04K2 (Corrigido).md`, `dist/figura1_arquitetura_neocore.svg`, `docs/SIMULADOR.md`, `docs/ROTEIRO.md`, `docs/ESPECIFICACAO.md`, `src/script.js`, `docs/COMMITS.md`
+- **Volume:** 9 arquivos alterados (+845 inserções, -767 deleções)
+- **Arquivos:** `dist/Simulador de Arquitetura de Computadores - Parte teórica - 86D04K2.md`, `dist/figura1_arquitetura_neocore.svg`, `docs/SIMULADOR.md`, `docs/ROTEIRO.md`, `docs/ESPECIFICACAO.md`, `src/script.js`, `docs/COMMITS.md`
 - **Descrição Técnica:** Harmonização completa e rigorosa entre o relatório teórico, o esquemático do circuito e o simulador web da CPU didática NeoCore (8 bits):
   - **Relatório Teórico (Parte A):** Correção do trace manual T0–T7 removendo colunas de cache e detalhando a localidade espacial (Miss/Hit na Demo 1); correção da micro-operação `IN_Read` para `AC ← TECLADO` sem tráfego por MBR; especificação exata das operações da ULA (`ADD` e `PASS`) e operandos imediatos (`IR[3:0]`); explicitação dos ciclos multiciclo ($T_0$–$T_4$ e $T_0$–$T_6$); correção das entradas da ULA e da rede de clock (sem ramificação para SAIDA nem RAM); unificação das referências ao esquemático para `src/neocore_cpu.circ`;
   - **Diagrama da Arquitetura (Figura 1):** Geração de SVG autônomo vetorial (`dist/figura1_arquitetura_neocore.svg`) com codificação cromática rigorosa dos barramentos (endereços em azul contínuo, dados em verde contínuo incluindo Teclado, controle e clock em tracejado laranja/vermelho);
