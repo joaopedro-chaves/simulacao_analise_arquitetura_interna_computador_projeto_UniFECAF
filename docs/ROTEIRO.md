@@ -25,18 +25,6 @@
 | **3:00–3:25**<br>*(Bloco 6: Fluxo da Instrução, Síntese Coordenada e Limitações — Item 6)* | **Tela 7 — Simulador Web (`index.html`) mostrando a lista `#rtl-list` (Histórico RTL `T0`–`T7`) e alternando brevemente a chave `Modo Manual / UC Automática` no topo.** | Em síntese, os componentes operam coordenados pelo clock: PC e MAR endereçam a RAM, o MBR entrega a palavra ao IR para interpretação, e os sinais de controle comandam a soma na ULA e a gravação no AC. No circuito base não há controle automático nem cache física, adicionados como extensão no simulador web. | 54 |
 | **3:25–3:40**<br>*(Bloco 7: Valor para o Estudante e Fechamento — Item 7)* | **Tela 8 — Simulador Web (`index.html`) destacando a tabela multi-base (`HEX / BIN / DEC`) e os fios animados.** | Com isso, o estudante enxerga cada barramento ativo, compara bases numéricas e compreende na prática o ciclo de máquina. Obrigado pela atenção; os links do projeto estão na descrição do vídeo. | 31 |
 
-**Contagem de palavras por bloco:**
-- **Bloco 1 (0:00–0:20):** 42 palavras
-- **Bloco 2 (0:20–0:45):** 45 palavras
-- **Bloco 3 (0:45–1:10):** 66 palavras
-- **Bloco 4 (1:10–1:35):** 60 palavras
-- **Bloco 5 (1:35–3:00 — soma dos sub-blocos 5.1 a 5.6):** 241 palavras (`33 + 34 + 34 + 49 + 33 + 58`)
-- **Bloco 6 (3:00–3:25):** 54 palavras
-- **Bloco 7 (3:25–3:40):** 31 palavras
-- **TOTAL GERAL DA NARRAÇÃO:** **539 palavras** (dentro da meta de 480 a 540 palavras; duração estimada de **3min40s** a ~147 palavras/minuto).
-
----
-
 ## 2. Lista de Gravação (*Shot List*) e Preparação do Ambiente
 
 ### 2.1. Ordem das Telas (Abas / Janelas abertas lado a lado ou via `Alt+Tab`)
@@ -100,9 +88,10 @@ Caso, durante o ensaio, a gravação ultrapasse 3min50s ou se aproxime dos 4 min
   - Caso de Teste Demonstrado: Soma 5 + 3 = 8 (RAM[00h] = 05h, RAM[01h] = 03h → AC = 08h / Monitor = 00001000 após os pulsos T0–T7).
 
   Links do Projeto:
-  - Simulador Interativo Web (acesso direto): [PREENCHER: link do GitHub Pages / deploy]
-  - Repositório do Projeto e Circuito Logisim-Evolution (neocore_cpu.circ): [PREENCHER: link do repositório GitHub]
-  - Documentação Técnica (PDF): [PREENCHER: link ou indicação de anexo na entrega]
+  - Simulador Interativo Web (acesso direto): https://joaopedro-chaves.github.io/simulacao_analise_arquitetura_interna_computador_projeto_UniFECAF/
+  - Repositório do Projeto e Circuito Logisim-Evolution (neocore_cpu.circ): https://github.com/joaopedro-chaves/simulacao_analise_arquitetura_interna_computador_projeto_UniFECAF
+  - Documentação Técnica (PDF / Google Docs): https://docs.google.com/document/d/1iN7AbfhUC7neMgXAucNmNMgSPVMIgc1Fp4ughGsdD_E/edit?usp=sharing
+  - Vídeo Pitch (YouTube): https://youtu.be/d8o1PwhjVuo
   ```
 - **Etiquetas (Tags) sugeridas:**
   `Arquitetura de Computadores, Organização de Computadores, Von Neumann, SAP-1, CPU 8 bits, Ciclo Fetch Decode Execute, Logisim Evolution, Simulador de CPU, NeoCore Tech, UniFECAF`
@@ -121,11 +110,11 @@ Caso, durante o ensaio, a gravação ultrapasse 3min50s ou se aproxime dos 4 min
 - [x] **7. Como a solução ajuda um estudante a compreender o funcionamento interno de um computador:** aparece em **`3:25–3:40`** (Bloco 7).
 
 ### 5.2. Conferência Técnica de Entrega
-- [ ] O vídeo final exportado possui duração **menor ou igual a 4 minutos (`04:00`)**?
-- [ ] O áudio da narração está claro, compreensível e sem ruídos ou música de fundo encobrindo a voz?
-- [ ] O vídeo foi publicado no YouTube como **Não listado** (ou *Público*) e o link abre normalmente em uma janela anônima do navegador?
-- [ ] O link do vídeo no YouTube foi inserido dentro do **documento PDF da Parte Teórica**?
-- [ ] Os 3 itens da entrega final foram verificados: **(1) PDF da Parte Teórica**, **(2) Arquivo/link da simulação prática (`neocore_cpu.circ` + simulador web)** e **(3) Link funcional do Vídeo Pitch**?
+- [x] O vídeo final exportado possui duração **menor ou igual a 4 minutos (`04:00`)**?
+- [x] O áudio da narração está claro, compreensível e sem ruídos ou música de fundo encobrindo a voz?
+- [x] O vídeo foi publicado no YouTube como **Não listado** (ou *Público*) e o link abre normalmente em uma janela anônima do navegador?
+- [x] O link do vídeo no YouTube foi inserido dentro do **documento PDF da Parte Teórica**?
+- [x] Os 3 itens da entrega final foram verificados: **(1) PDF da Parte Teórica**, **(2) Arquivo/link da simulação prática (`neocore_cpu.circ` + simulador web)** e **(3) Link funcional do Vídeo Pitch**?
 
 ---
 

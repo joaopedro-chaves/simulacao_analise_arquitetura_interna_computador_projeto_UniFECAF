@@ -19,9 +19,9 @@ Este documento consolida o **registro formal de auditoria de versionamento** do 
 
 | Métrica de Auditoria | Valor / Especificação |
 | :--- | :--- |
-| **Total de Commits Auditados** | `30 commits` |
+| **Total de Commits Auditados** | `34 commits` |
 | **Commit Inicial (Root Commit)** | `d5a931c` (23/09/2026 12:01:53) |
-| **Commit Final Auditado** | `381089f` (06/11/2026 20:18:47) |
+| **Commit Final Auditado** | `Em registro (Fase 6 — Finalização e Entrega de Entregáveis)` |
 | **Período Total de Desenvolvimento** | 23 de Setembro de 2026 a 06 de Novembro de 2026 (~6 semanas) |
 | **Padrão de Mensagens Adotado** | *Conventional Commits* (`feat:`, `docs:`, `refactor:`, `chore:`) |
 | **Estado do Working Tree** | Limpo (`working tree clean`, sincronizado com `main`) |
@@ -133,6 +133,10 @@ A tabela a seguir correlaciona os commits aos três grandes blocos de avaliaçã
 | **28** | `d6d19f4` | 2026-11-06 15:03:53 | João Pedro Chaves | `fix` | `fix: correct RAM SVG table alignment and auto-collapse dock with drawer` | 13 |
 | **29** | `a23dca5` | 2026-11-06 15:05:11 | João Pedro Chaves | `docs` | `docs: record commit d6d19f4 in audit trail of docs/COMMITS.md` | 1 |
 | **30** | `381089f` | 2026-11-06 20:18:47 | João Pedro Chaves | `docs` | `docs: synchronize theoretical report, captions, test runner header and README tree` | 5 |
+| **31** | `70df059` | 2026-11-06 20:20:00 | João Pedro Chaves | `docs` | `docs: record commit 381089f in audit trail of docs/COMMITS.md` | 1 |
+| **32** | `5756ec6` | 2026-11-07 11:55:02 | João Pedro Chaves | `refactor` | `refactor: replace architecture SVG diagram with project documentation images` | 11 |
+| **33** | `fc7a751` | 2026-11-07 11:55:26 | João Pedro Chaves | `chore` | `chore: remove empty file` | 1 |
+| **34** | `Em registro` | 2026-11-08 10:25:00 | João Pedro Chaves | `docs` | `docs: finalize project deliverables, add video pitch link and update task checklist` | 12 |
 
 ---
 
@@ -471,6 +475,53 @@ A tabela a seguir correlaciona os commits aos três grandes blocos de avaliaçã
   - **Relatório Teórico (`dist/`):** Correção da formatação de grandezas físicas para LaTeX inline ($\alpha, C, V, f$) na fórmula de dissipação dinâmica de potência CMOS ($P \approx \alpha \cdot C \cdot V^2 \cdot f$) na Seção 2.3; restauração do início do texto do sinal `ALU_Op` na Tabela 2 (Seção 4.4); padronização do título da Seção 5.4 e fechamento do parêntese da linha `T2` na Tabela 3; inclusão de legendas padronizadas em padrão ABNT/acadêmico para as Figuras 2 a 9 e formatação do título da Seção 6.3; renomeação da Seção 7 para *Conclusões, Limitações e Trabalhos Futuros* em conformidade com o Sumário e redação da Seção 7.3 abordando a evolução da PoC (expansão da ISA para 16 bits / 2 bytes com endereçamento das 256 posições da RAM, ampliação da ULA com lógica/subtração e registrador de flags de estado para desvios condicionais, segregação Harvard da Cache L1 em L1i/L1d e introdução de pipeline didático);
   - **Apresentação e Índice do Projeto (`README.md`):** Sincronização do nome canônico do relatório teórico sem o sufixo `- 86D04K2` na árvore de diretórios e nos critérios de avaliação; inclusão dos ficheiros `test_model.js` na raiz, e `script.js` e `styles.css` em `src/`; retificação do escopo de micro-operações para T0–T6 (Modo Automático) e T0–T7 (Modo Manual);
   - **Validador Automatizado (`test_model.js`):** Ajuste do comentário de cabeçalho explicitando a extração do bloco lógico a partir de `src/script.js` com mecanismo de fallback para `index.html`.
+
+---
+
+### Commit 31 · `70df059`
+- **Hash Completo:** `70df0593c66eb6ff82d921389e9f65839b0ee7fc`
+- **Data e Hora:** 2026-11-06 20:20:00 -0300
+- **Autor:** `João Pedro Chaves <joaopedrochavescontato@gmail.com>`
+- **Mensagem:** `docs: record commit 381089f in audit trail of docs/COMMITS.md`
+- **Volume:** 1 arquivo alterado (+7 inserções, -6 deleções)
+- **Arquivos:** `docs/COMMITS.md`
+- **Descrição Técnica:** Registro e fechamento do hash de Commit 30 na trilha formal de auditoria acadêmica.
+
+---
+
+### Commit 32 · `5756ec6`
+- **Hash Completo:** `5756ec65e5fca292381ae92c5c983b37ae0f4c30`
+- **Data e Hora:** 2026-11-07 11:55:02 -0300
+- **Autor:** `João Pedro Chaves <joaopedrochavescontato@gmail.com>`
+- **Mensagem:** `refactor: replace architecture SVG diagram with project documentation images`
+- **Volume:** 11 arquivos alterados (+14 inserções, -192 deleções)
+- **Arquivos:** `dist/Simulador de Arquitetura de Computadores - Parte teórica.md`, exclusão de `dist/figura1_arquitetura_neocore.svg`, inclusão de capturas de tela e recortes em `dist/img/` (`ctx-card.png`, `destaque_cabos.png`, `diagrama.png`, `dock.png`, `logarismevolution.png`, `manual_automatico.png`, `multibase.png`, `ram.png`, `simulador.png`)
+- **Descrição Técnica:** Reorganização dos artefatos visuais de documentação, substituindo diagramas vetoriais autônomos por capturas de tela e ilustrações demonstrativas do simulador web e do Logisim-Evolution organizadas no subdiretório `dist/img/`.
+
+---
+
+### Commit 33 · `fc7a751`
+- **Hash Completo:** `fc7a751dbf7df02eb6a03ebf4b1229c41dfffebc`
+- **Data e Hora:** 2026-11-07 11:55:26 -0300
+- **Autor:** `João Pedro Chaves <joaopedrochavescontato@gmail.com>`
+- **Mensagem:** `chore: remove empty file`
+- **Volume:** 1 arquivo alterado (+1 inserção, -420 deleções)
+- **Arquivos:** `dist/Simulador de Arquitetura de Computadores - Parte teórica.md`
+- **Descrição Técnica:** Limpeza e saneamento de linhas redundantes do arquivo de documentação teórica intermediário em `dist/`.
+
+---
+
+### Commit 34 · `Em registro`
+- **Data e Hora:** 2026-11-08 10:25:00 -0300
+- **Autor:** `João Pedro Chaves <joaopedrochavescontato@gmail.com>`
+- **Mensagem:** `docs: finalize project deliverables, add video pitch link and update task checklist`
+- **Volume:** 12 arquivos alterados
+- **Arquivos:** `README.md`, `dist/Simulador de Arquitetura de Computadores - Parte teórica.pdf`, `dist/Simulação_link.txt`, `dist/video-edit.kdenlive`, `dist/img/Slide 16_9*.png`, `docs/ROTEIRO.md`, `docs/TAREFAS.md`, `docs/temp.md`, `docs/COMMITS.md`, exclusão de `dist/Simulador de Arquitetura de Computadores - Parte teórica.md`
+- **Descrição Técnica:** Conclusão e entrega final dos 3 grandes blocos do projeto acadêmico da NeoCore Tech (UniFECAF):
+  - **Parte Teórica (25%):** Geração e entrega do documento final oficial formatado em PDF (`dist/Simulador de Arquitetura de Computadores - Parte teórica.pdf`) e espelhado no Google Docs;
+  - **Parte Prática (50%):** Validação dos circuitos em `src/neocore_cpu.circ` e do simulador web online no GitHub Pages com atalho direto em `dist/Simulação_link.txt`;
+  - **Vídeo Pitch (25%):** Gravação, edição e publicação oficial do Vídeo Pitch no YouTube (`https://youtu.be/d8o1PwhjVuo`), inclusão dos arquivos de projeto de edição de vídeo (`dist/video-edit.kdenlive`) e slides (`dist/img/Slide 16_9*.png`), sincronização do link do vídeo no `README.md`, `docs/ROTEIRO.md` e mensagem de entrega `docs/temp.md`;
+  - **Pós-produção e Encerramento:** Conclusão de 100% dos itens da matriz de tarefas em `docs/TAREFAS.md` e do checklist de auditoria em `docs/ROTEIRO.md`.
 
 ---
 

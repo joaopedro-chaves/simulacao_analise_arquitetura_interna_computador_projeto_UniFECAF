@@ -20,7 +20,7 @@
 - [x] **Resultados e Prática:** Inserir imagens e explicar como o simulador funcionou
 - [x] **Conclusão:** Resumir o impacto do projeto para o aprendizado
 - [x] **Referências:** Citar os livros usados (formato ABNT)
-- [o] Revisar o texto e exportar para PDF na pasta `dist/`
+- [x] Revisar o texto e exportar para PDF na pasta `dist/`
 
 ### Parte Prática – Simulador (50% da nota)
 - [x] Escolher e abrir a ferramenta de simulação (Logisim, Tinkercad ou código)
@@ -39,16 +39,16 @@
 - [x] Publicar no GitHub Pages
 
 ### Vídeo Pitch (25% da nota)
-- [ ] Revisar o roteiro em `docs/pitch/pitch_script.md` (máximo de 4 minutos)
-- [ ] Gravar o vídeo dividido em 4 blocos:
-  - [ ] Bloco 1 (~ 0:45 min): Apresentação pessoal e o objetivo do projeto
-  - [ ] Bloco 2 (~ 1:00 min): Explicação da arquitetura e dos componentes da CPU
-  - [ ] Bloco 3 (~ 1:30 min): Demonstração prática do simulador executando a instrução
-  - [ ] Bloco 4 (~ 0:45 min): Conclusão e encerramento
-- [ ] Editar o vídeo e postar no YouTube (não-listado ou público)
-- [ ] Colar o link do vídeo no README, no relatório e no roteiro
+- [x] Revisar o roteiro em `docs/pitch/pitch_script.md` (máximo de 4 minutos)
+- [x] Gravar o vídeo e audios dividido em 4 blocos:
+  - [x] Bloco 1 (~ 0:45 min): Apresentação pessoal e o objetivo do projeto
+  - [x] Bloco 2 (~ 1:00 min): Explicação da arquitetura e dos componentes da CPU
+  - [x] Bloco 3 (~ 1:30 min): Demonstração prática do simulador executando a instrução
+  - [x] Bloco 4 (~ 0:45 min): Conclusão e encerramento
+- [x] Editar o vídeo e postar no YouTube (não-listado ou público)
+- [x] Colar o link do vídeo no README, no relatório e no roteiro
 
 ## Pós-produção e Entrega
-- [ ] Conferir se todos os entregáveis estão prontos (Simulador, Relatório PDF e Link do Vídeo)
-- [ ] Fazer commit e push final no Git
-- [ ] Enviar o trabalho na plataforma da UniFECAF dentro do prazo
+- [x] Conferir se todos os entregáveis estão prontos (Simulador, Relatório PDF e Link do Vídeo)
+- [x] Fazer commit e push final no Git
+- [x] Enviar o trabalho na plataforma da UniFECAF dentro do prazo
