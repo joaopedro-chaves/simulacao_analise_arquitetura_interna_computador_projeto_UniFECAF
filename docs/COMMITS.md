@@ -21,7 +21,7 @@ Este documento consolida o **registro formal de auditoria de versionamento** do 
 | :--- | :--- |
 | **Total de Commits Auditados** | `34 commits` |
 | **Commit Inicial (Root Commit)** | `d5a931c` (23/09/2026 12:01:53) |
-| **Commit Final Auditado** | `Em registro (Fase 6 — Finalização e Entrega de Entregáveis)` |
+| **Commit Final Auditado** | `726f5a5` (08/11/2026 10:22:40) |
 | **Período Total de Desenvolvimento** | 23 de Setembro de 2026 a 06 de Novembro de 2026 (~6 semanas) |
 | **Padrão de Mensagens Adotado** | *Conventional Commits* (`feat:`, `docs:`, `refactor:`, `chore:`) |
 | **Estado do Working Tree** | Limpo (`working tree clean`, sincronizado com `main`) |
@@ -136,7 +136,7 @@ A tabela a seguir correlaciona os commits aos três grandes blocos de avaliaçã
 | **31** | `70df059` | 2026-11-06 20:20:00 | João Pedro Chaves | `docs` | `docs: record commit 381089f in audit trail of docs/COMMITS.md` | 1 |
 | **32** | `5756ec6` | 2026-11-07 11:55:02 | João Pedro Chaves | `refactor` | `refactor: replace architecture SVG diagram with project documentation images` | 11 |
 | **33** | `fc7a751` | 2026-11-07 11:55:26 | João Pedro Chaves | `chore` | `chore: remove empty file` | 1 |
-| **34** | `Em registro` | 2026-11-08 10:25:00 | João Pedro Chaves | `docs` | `docs: finalize project deliverables, add video pitch link and update task checklist` | 12 |
+| **34** | `726f5a5` | 2026-11-08 10:22:40 | João Pedro Chaves | `docs` | `docs: finalize project deliverables, add video pitch link and update task checklist` | 13 |
 
 ---
 
@@ -511,11 +511,12 @@ A tabela a seguir correlaciona os commits aos três grandes blocos de avaliaçã
 
 ---
 
-### Commit 34 · `Em registro`
-- **Data e Hora:** 2026-11-08 10:25:00 -0300
+### Commit 34 · `726f5a5`
+- **Hash Completo:** `726f5a5fa0b232e7bdf9ad1ef69cf0d8a6baeb18`
+- **Data e Hora:** 2026-11-08 10:22:40 -0300
 - **Autor:** `João Pedro Chaves <joaopedrochavescontato@gmail.com>`
 - **Mensagem:** `docs: finalize project deliverables, add video pitch link and update task checklist`
-- **Volume:** 12 arquivos alterados
+- **Volume:** 13 arquivos alterados (+4259 inserções, -42 deleções)
 - **Arquivos:** `README.md`, `dist/Simulador de Arquitetura de Computadores - Parte teórica.pdf`, `dist/Simulação_link.txt`, `dist/video-edit.kdenlive`, `dist/img/Slide 16_9*.png`, `docs/ROTEIRO.md`, `docs/TAREFAS.md`, `docs/temp.md`, `docs/COMMITS.md`, exclusão de `dist/Simulador de Arquitetura de Computadores - Parte teórica.md`
 - **Descrição Técnica:** Conclusão e entrega final dos 3 grandes blocos do projeto acadêmico da NeoCore Tech (UniFECAF):
   - **Parte Teórica (25%):** Geração e entrega do documento final oficial formatado em PDF (`dist/Simulador de Arquitetura de Computadores - Parte teórica.pdf`) e espelhado no Google Docs;
