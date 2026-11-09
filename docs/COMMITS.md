@@ -19,11 +19,11 @@ Este documento consolida o **registro formal de auditoria de versionamento** do 
 
 | Métrica de Auditoria | Valor / Especificação |
 | :--- | :--- |
-| **Total de Commits Auditados** | `34 commits` |
+| **Total de Commits Auditados** | `37 commits` |
 | **Commit Inicial (Root Commit)** | `d5a931c` (23/09/2026 12:01:53) |
-| **Commit Final Auditado** | `726f5a5` (08/11/2026 10:22:40) |
-| **Período Total de Desenvolvimento** | 23 de Setembro de 2026 a 06 de Novembro de 2026 (~6 semanas) |
-| **Padrão de Mensagens Adotado** | *Conventional Commits* (`feat:`, `docs:`, `refactor:`, `chore:`) |
+| **Commit Final Auditado** | `8546028` (09/11/2026 09:01:09) |
+| **Período Total de Desenvolvimento** | 23 de Setembro de 2026 a 09 de Novembro de 2026 (~7 semanas) |
+| **Padrão de Mensagens Adotado** | *Conventional Commits* (`feat:`, `fix:`, `docs:`, `refactor:`, `chore:`) |
 | **Estado do Working Tree** | Limpo (`working tree clean`, sincronizado com `main`) |
 | **Branch Principal** | `main` |
 
@@ -523,6 +523,44 @@ A tabela a seguir correlaciona os commits aos três grandes blocos de avaliaçã
   - **Parte Prática (50%):** Validação dos circuitos em `src/neocore_cpu.circ` e do simulador web online no GitHub Pages com atalho direto em `dist/Simulação_link.txt`;
   - **Vídeo Pitch (25%):** Gravação, edição e publicação oficial do Vídeo Pitch no YouTube (`https://youtu.be/d8o1PwhjVuo`), inclusão dos arquivos de projeto de edição de vídeo (`dist/video-edit.kdenlive`) e slides (`dist/img/Slide 16_9*.png`), sincronização do link do vídeo no `README.md`, `docs/ROTEIRO.md` e mensagem de entrega `docs/temp.md`;
   - **Pós-produção e Encerramento:** Conclusão de 100% dos itens da matriz de tarefas em `docs/TAREFAS.md` e do checklist de auditoria em `docs/ROTEIRO.md`.
+
+---
+
+### Commit 35 · `6d45106`
+- **Hash Completo:** `6d4510603ffd7541cd940f298f0d7c1a745279ea`
+- **Data e Hora:** 2026-11-08 10:24:22 -0300
+- **Autor:** `João Pedro Chaves <joaopedrochavescontato@gmail.com>`
+- **Mensagem:** `docs: record commit 726f5a5 in audit trail of docs/COMMITS.md`
+- **Volume:** 1 arquivo alterado (+6 inserções, -5 deleções)
+- **Arquivos:** `docs/COMMITS.md`
+- **Descrição Técnica:** Atualização da trilha formal de auditoria para incluir o registro e validação do Commit 34.
+
+---
+
+### Commit 36 · `9d385af`
+- **Hash Completo:** `9d385af826f09d201333479d5acbb4b6bf7b07ff`
+- **Data e Hora:** 2026-11-08 10:34:50 -0300
+- **Autor:** `João Pedro Chaves <joaopedrochavescontato@gmail.com>`
+- **Mensagem:** `docs: remove temporary submission message file`
+- **Volume:** 1 arquivo alterado (+0 inserções, -26 deleções)
+- **Arquivos:** exclusão de `docs/temp.md`
+- **Descrição Técnica:** Limpeza de arquivo temporário de rascunho de submissão acadêmica após publicação oficial dos entregáveis.
+
+---
+
+### Commit 37 · `8546028`
+- **Hash Completo:** `8546028c6dcedeb0e812e3fd9c891a4a89c751fb`
+- **Data e Hora:** 2026-11-09 09:01:09 -0300
+- **Autor:** `João Pedro Chaves <joaopedrochavescontato@gmail.com>`
+- **Mensagem:** `fix: correct Demo 0 T-state progression and resolve Monitor display rendering`
+- **Volume:** 2 arquivos alterados (+168 inserções, -48 deleções)
+- **Arquivos:** `index.html`, `src/script.js`
+- **Descrição Técnica:** Resolução de inconsistências de ciclo e apresentação no simulador web:
+  - **Progressão T0..T7 no Modo Manual (Demo 0):** Correção do cálculo do micro-estado para módulo 8 (T0 a T7), eliminação de repetições precoces de T0..T3 no segundo ciclo da soma $5 + 3 = 8$, adição de contextualização pedagógica explícita (1º Ciclo vs 2º Ciclo) e expansão da lista interativa do Drawer para conter os 8 passos discretos com navegação direta via `jumpToGuidedStep()`;
+  - **Renderização e Layout do Display Monitor:** Redimensionamento e reposicionamento vertical do pino Monitor no SVG (`bg-val-Monitor`, `val-Monitor`, `lbl-Monitor`, `val-Monitor-meta`), eliminando sobreposição visual entre rótulo e metadados;
+  - **Tratamento de Caracteres ASCII:** Mapeamento de códigos de controle padrão na função `formatAsciiByte()` (ex.: exibição de `08h · 8 dec · BS` em vez de repetição hexadecimal redundante);
+  - **Fidelidade 1:1 com Logisim no Modo Manual:** Ocultação dinâmica do registrador SAIDA no SVG canvas durante o Modo Manual (preservando o barramento direto AC $\rightarrow$ Monitor do circuito de bancada) e desativação explícita da linha SAIDA na tabela de registradores internos;
+  - **Barramento e Inspeção:** Ativação luminosa do barramento `wire-data-ac-mon` em instruções `OUT` no modo automático e detalhamento completo de origem e valor na janela de inspeção do Card de Contexto.
 
 ---
 
