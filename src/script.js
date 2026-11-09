@@ -305,19 +305,21 @@ function step(model) {
     // Atualiza os sinais de controle da instância para que o HUD no SVG e o Drawer reflitam o Modo Manual
     model.controlSignals = mappedSignals;
 
-    const tNum = (model.stepCount - 1) % 4;
-    const faseName = activePins.AC_Exec ? 'EXECUTE' : (tNum <= 2 ? 'FETCH' : 'EXECUTE');
+    const tNum = (model.stepCount - 1) % 8;
+    const faseName = activePins.AC_Exec ? 'EXECUTE' : ((tNum <= 2 || (tNum >= 4 && tNum <= 6)) ? 'FETCH' : 'EXECUTE');
     const rtl = rtlParts.length > 0 ? rtlParts.join('; ') : 'Nenhum pino ativo (Pulso NOP)';
 
+    const cicloStr = tNum < 4 ? '1º Ciclo (Palavra 1 · RAM[00h])' : '2º Ciclo (Palavra 2 · RAM[01h])';
     let desc = '';
     if (activePins.MAR_Load) {
-      desc = `Ativamos <code>MAR_Load = 1</code> e pulsamos o clock. O endereço <code>${toHex2(prevPC)}h</code> do <code>PC</code> foi copiado para o <code>MAR</code>, apontando para a RAM.`;
+      desc = `<strong>${cicloStr}:</strong> Ativamos <code>MAR_Load = 1</code> e pulsamos o clock. O endereço <code>${toHex2(prevPC)}h</code> do <code>PC</code> foi copiado para o <code>MAR</code>, apontando para a RAM.`;
     } else if (activePins.RAM_Read_MBR) {
-      desc = `Ativamos <code>RAM_Read_MBR = 1</code> (OE na RAM e WE no MBR). O byte <code>${toHex2(model.regs.MBR)}h</code> da posição <code>${toHex2(prevMAR)}h</code> foi transferido para o <code>MBR</code>.`;
+      desc = `<strong>${cicloStr}:</strong> Ativamos <code>RAM_Read_MBR = 1</code> (OE na RAM e WE no MBR). O byte <code>${toHex2(model.regs.MBR)}h</code> da posição <code>${toHex2(prevMAR)}h</code> foi transferido para o <code>MBR</code>.`;
     } else if (activePins.IR_Load || activePins.PC_Inc) {
-      desc = `Carregamos o <code>IR</code> com <code>${toHex2(model.regs.IR)}h</code> vindo do MBR e avançamos o contador <code>PC</code> para <code>${toHex2(model.regs.PC)}h</code>. No modo manual, a decodificação é exercida pelo estudante ao selecionar os pinos de controle.`;
+      desc = `<strong>${cicloStr}:</strong> Carregamos o <code>IR</code> com <code>${toHex2(model.regs.IR)}h</code> vindo do MBR e avançamos o contador <code>PC</code> para <code>${toHex2(model.regs.PC)}h</code>. No modo manual, a decodificação é exercida pelo estudante ao selecionar os pinos de controle.`;
     } else if (activePins.AC_Exec) {
-      desc = `Ativamos <code>AC_Exec = 1</code>. A <code>ULA</code> somou o acumulador anterior (<code>${toHex2(prevAC)}h</code>) com o operando do MBR (<code>${toHex2(prevMBR)}h</code>), gravando <code>${toHex2(model.regs.AC)}h</code> no <code>AC</code> e exibindo no Monitor.`;
+      const finishMsg = tNum === 7 ? ' <em>Caso de teste 5 + 3 = 8 concluído com sucesso!</em>' : '';
+      desc = `<strong>${cicloStr}:</strong> Ativamos <code>AC_Exec = 1</code>. A <code>ULA</code> somou o acumulador anterior (<code>${toHex2(prevAC)}h</code>) com o operando do MBR (<code>${toHex2(prevMBR)}h</code>), gravando <code>${toHex2(model.regs.AC)}h</code> no <code>AC</code> e exibindo no Monitor.${finishMsg}`;
     } else {
       desc = 'Pulso de clock aplicado sem pinos de controle habilitados. Nenhum registrador teve seu valor alterado.';
     }
@@ -476,8 +478,12 @@ function step(model) {
 
 function stepGuidedManual(model) {
   const stepIdx = model.guidedStep % GUIDED_MANUAL_STEPS.length;
-  model.pins = { ...GUIDED_MANUAL_STEPS[stepIdx].pins };
+  const stepDef = GUIDED_MANUAL_STEPS[stepIdx];
+  model.pins = { ...stepDef.pins };
   const trace = step(model);
+  trace.t = stepDef.t;
+  trace.fase = stepDef.fase;
+  trace.stepIdx = stepIdx;
   model.guidedStep = (model.guidedStep + 1) % GUIDED_MANUAL_STEPS.length;
   return trace;
 }
@@ -624,6 +630,10 @@ function pulseClock(useGuidedInManual = false) {
   if (state.halted && autoClockTimer) {
     toggleAutoClock();
   }
+  // Auto-Clock no Modo Manual: interrompe após concluir o ciclo T0..T7 (passo 8)
+  if (state.mode === 'MANUAL' && state.guidedStep === 0 && autoClockTimer) {
+    toggleAutoClock();
+  }
 
   renderCircuit();
   triggerRegisterFlash(trace);
@@ -641,6 +651,18 @@ function triggerRegisterFlash(trace) {
       }
     }
   });
+
+  // Flash visual no Monitor quando o valor de saída for alterado
+  const monAntes = state.mode === 'AUTO' ? trace.antes.SAIDA : trace.antes.AC;
+  const monDepois = state.mode === 'AUTO' ? trace.depois.SAIDA : trace.depois.AC;
+  if (monAntes !== monDepois) {
+    const monBg = document.getElementById('bg-val-Monitor');
+    if (monBg) {
+      monBg.classList.remove('reg-flash');
+      void monBg.offsetWidth;
+      monBg.classList.add('reg-flash');
+    }
+  }
 }
 
 function runStepInstruction() {
@@ -883,7 +905,13 @@ function renderLogTable() {
 
 function formatAsciiByte(val) {
   const v = val & 0xFF;
-  if (v === 0) return 'NUL';
+  const asciiControlNames = {
+    0: 'NUL', 1: 'SOH', 2: 'STX', 3: 'ETX', 4: 'EOT', 5: 'ENQ', 6: 'ACK', 7: 'BEL',
+    8: 'BS', 9: 'TAB', 10: 'LF', 11: 'VT', 12: 'FF', 13: 'CR', 14: 'SO', 15: 'SI',
+    16: 'DLE', 17: 'DC1', 18: 'DC2', 19: 'DC3', 20: 'DC4', 21: 'NAK', 22: 'SYN', 23: 'ETB',
+    24: 'CAN', 25: 'EM', 26: 'SUB', 27: 'ESC', 28: 'FS', 29: 'GS', 30: 'RS', 31: 'US', 127: 'DEL'
+  };
+  if (asciiControlNames[v] !== undefined) return asciiControlNames[v];
   if (v >= 32 && v <= 126) return `'${String.fromCharCode(v)}'`;
   return `0x${toHex2(v)}`;
 }
@@ -931,15 +959,18 @@ function renderRTLList() {
 
   if (state.mode === 'MANUAL') {
     const items = [
-      { idx: 0, label: 'T0 · Busca (Fetch A): Endereçamento da RAM', rtl: `MAR ← PC (${pcHex}h)` },
-      { idx: 1, label: 'T1 · Busca (Fetch B): Leitura da RAM[00h]', rtl: `MBR ← RAM[00h] (${r0}h)` },
-      { idx: 2, label: 'T2 · Busca (Fetch C): Carga do IR e PC+1', rtl: `IR ← MBR (${r0}h); PC ← 01h` },
-      { idx: 3, label: 'T3 · Execução (Execute): Soma 1ª Palavra', rtl: `AC ← 00h + ${r0}h = ${r0}h` },
-      { idx: 7, label: 'T4–T7 · Ciclo 2 Completo: Soma 2ª Palavra', rtl: `AC ← ${r0}h + ${r1}h = ${sum01}h` }
+      { idx: 0, label: 'T0 · Busca 1 (Fetch A): Endereçamento da RAM', rtl: `MAR ← PC (00h)` },
+      { idx: 1, label: 'T1 · Busca 1 (Fetch B): Leitura da RAM[00h]', rtl: `MBR ← RAM[00h] (${r0}h)` },
+      { idx: 2, label: 'T2 · Busca 1 (Fetch C): Carga do IR e PC+1', rtl: `IR ← MBR (${r0}h); PC ← 01h` },
+      { idx: 3, label: 'T3 · Execução 1 (Execute): Soma 1ª Palavra', rtl: `AC ← 00h + ${r0}h = ${r0}h` },
+      { idx: 4, label: 'T4 · Busca 2 (Fetch A): Endereçamento da RAM', rtl: `MAR ← PC (01h)` },
+      { idx: 5, label: 'T5 · Busca 2 (Fetch B): Leitura da RAM[01h]', rtl: `MBR ← RAM[01h] (${r1}h)` },
+      { idx: 6, label: 'T6 · Busca 2 (Fetch C): Carga do IR e PC+1', rtl: `IR ← MBR (${r1}h); PC ← 02h` },
+      { idx: 7, label: 'T7 · Execução 2 (Execute): Soma 2ª Palavra', rtl: `AC ← ${r0}h + ${r1}h = ${sum01}h` }
     ];
     const activeGuided = (state.guidedStep - 1 + 8) % 8;
     list.innerHTML = items.map(it => {
-      const isCurrent = state.stepCount > 0 && (activeGuided === it.idx || (it.idx === 7 && activeGuided >= 4));
+      const isCurrent = state.stepCount > 0 && activeGuided === it.idx;
       return `
         <li class="rtl-step-item ${isCurrent ? 'active-step' : ''}" onclick="jumpToGuidedStep(${it.idx})">
           <span><strong>${it.label}</strong></span>
@@ -1017,8 +1048,18 @@ function renderCircuit() {
   if (dataMbrBus) dataMbrBus.setAttribute('stroke', (sig.IR_Load || sig.AC_Load) ? '#d9381e' : '#3d0000');
   if (dataMbrUla) dataMbrUla.setAttribute('stroke', (sig.IR_Load || sig.AC_Load) ? '#d9381e' : '#3d0000');
   if (dataUlaAc) dataUlaAc.setAttribute('stroke', sig.AC_Load ? '#d9381e' : '#3d0000');
-  if (dataAcMon) dataAcMon.setAttribute('stroke', (state.mode === 'MANUAL' && sig.AC_Load) ? '#d9381e' : '#3d0000');
+  if (dataAcMon) {
+    const isAcMonActive = (state.mode === 'MANUAL' && sig.AC_Load) || (state.mode === 'AUTO' && sig.SAIDA_Load);
+    dataAcMon.setAttribute('stroke', isAcMonActive ? '#d9381e' : '#3d0000');
+  }
   if (wireAcSaida) wireAcSaida.setAttribute('stroke', sig.SAIDA_Load ? '#00d800' : '#3d0000');
+
+  // No Modo Manual, o circuito físico do Logisim não possui o registrador SAIDA (1:1 com neocore_cpu.circ).
+  // Oculta SAIDA no canvas para manter fidelidade estrita à bancada e evitar conflito com o Monitor.
+  const blockSaida = document.getElementById('block-saida');
+  if (blockSaida) {
+    blockSaida.style.display = state.mode === 'AUTO' ? '' : 'none';
+  }
 
   // 2. Registradores no Canvas SVG
   document.getElementById('val-PC').textContent = toHex2(state.regs.PC);
@@ -1034,9 +1075,9 @@ function renderCircuit() {
   const monLbl = document.getElementById('lbl-Monitor');
   const monMeta = document.getElementById('val-Monitor-meta');
   const monVal = state.mode === 'AUTO' ? state.regs.SAIDA : state.regs.AC;
-  monEl.textContent = toBin8(monVal);
+  if (monEl) monEl.textContent = toBin8(monVal);
   if (monLbl) monLbl.textContent = state.mode === 'AUTO' ? 'Monitor (SAIDA)' : 'Monitor (AC)';
-  if (monMeta) monMeta.textContent = `${toHex2(monVal)}h · ${monVal} · ${formatAsciiByte(monVal)}`;
+  if (monMeta) monMeta.textContent = `${toHex2(monVal)}h · ${monVal} dec · ${formatAsciiByte(monVal)}`;
 
   document.getElementById('val-Teclado').textContent = toBin8(state.teclado);
   const inpTec = document.getElementById('inp-teclado');
@@ -1163,6 +1204,17 @@ function renderCircuit() {
     const binEl = document.getElementById(`tbl-bin-${rName}`);
     const decEl = document.getElementById(`tbl-dec-${rName}`);
     const ctlCell = document.getElementById(`tbl-ctl-${rName}`);
+
+    if (rName === 'SAIDA' && state.mode === 'MANUAL') {
+      if (hexEl) hexEl.textContent = '--';
+      if (binEl) binEl.textContent = '--------';
+      if (decEl) decEl.textContent = '-';
+      if (ctlCell) {
+        ctlCell.textContent = 'Inativo (Modo Manual)';
+        ctlCell.style.color = 'var(--md-sys-color-on-surface-variant)';
+      }
+      continue;
+    }
 
     if (hexEl) hexEl.textContent = toHex2(rVal) + 'h';
     if (binEl) binEl.textContent = toBin8(rVal);
@@ -1674,7 +1726,17 @@ function openInfo(key, targetEl) {
   const dl = document.getElementById('ctx-fields');
   dl.replaceChildren();
   const rows = info.fields.slice();
-  if (info.reg) rows.push(['Valor atual', `${toHex2(state.regs[info.reg])}h (${toBin8(state.regs[info.reg])}b)`]);
+  if (info.reg) {
+    rows.push(['Valor atual', `${toHex2(state.regs[info.reg])}h (${toBin8(state.regs[info.reg])}b = ${state.regs[info.reg]} dec)`]);
+  } else if (key === 'MONITOR') {
+    const monVal = state.mode === 'AUTO' ? state.regs.SAIDA : state.regs.AC;
+    const srcName = state.mode === 'AUTO' ? 'SAIDA' : 'AC';
+    rows.push(['Origem de Dados', `${srcName} (${state.mode === 'AUTO' ? 'Modo Automático' : 'Modo Manual'})`]);
+    rows.push(['Valor no Display', `${toHex2(monVal)}h (${toBin8(monVal)}b = ${monVal} dec · ${formatAsciiByte(monVal)})`]);
+  } else if (key === 'TECLADO') {
+    const tecVal = state.teclado;
+    rows.push(['Valor de Entrada', `${toHex2(tecVal)}h (${toBin8(tecVal)}b = ${tecVal} dec)`]);
+  }
   for (const [k, v] of rows) {
     const dt = document.createElement('dt'); dt.textContent = k;
     const dd = document.createElement('dd'); dd.textContent = v;
